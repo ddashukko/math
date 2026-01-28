@@ -27,6 +27,16 @@
     ></script>
   </head>
   <body class="board-hidden">
+    <div id="loader-overlay">
+      <div class="loader-content">
+        <div class="spinner"></div>
+        <h2 id="loader-text">Завантаження...</h2>
+        <div class="progress-line">
+          <div id="loader-bar" class="progress-fill"></div>
+        </div>
+        <p id="loader-percent">0%</p>
+      </div>
+    </div>
     <header>
       <div style="display: flex; align-items: center; gap: 15px">
         <a href="index.html" class="btn-home">← Меню</a>
@@ -96,8 +106,36 @@
         <canvas id="board"></canvas>
       </div>
     </div>
+    <div id="modal-overlay" class="modal-overlay">
+      <div class="modal-content">
+        <div class="score-circle" id="final-score">0%</div>
+        <h2 style="margin-bottom: 10px">Чудова робота! 🎉</h2>
+        <p id="final-text" style="color: #64748b; margin-bottom: 24px">...</p>
 
-    <script src="js/engine.js"></script>
+        <a
+          href="index.html"
+          class="btn-home"
+          style="background: #4f46e5; color: white; display: inline-block"
+          >На головну</a
+        >
+        <button
+          onclick="
+            document.getElementById('modal-overlay').classList.remove('active')
+          "
+          style="
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            margin-top: 10px;
+            text-decoration: underline;
+          "
+        >
+          Залишитись тут
+        </button>
+      </div>
+    </div>
+    <script type="module" src="js/engine.js"></script>
     <script src="js/board.js"></script>
   </body>
 </html>

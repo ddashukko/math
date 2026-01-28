@@ -116,3 +116,167 @@ header {
 .btn-nav-link.lesson:hover {
   background-color: #dcfce7;
 }
+
+/* --- СМУЖКА ПРОГРЕСУ НА ГОЛОВНІЙ --- */
+.progress-container {
+  background-color: #f1f5f9;
+  border-radius: 10px;
+  height: 10px;
+  width: 100%;
+  margin-top: 12px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+}
+
+.progress-bar {
+  height: 100%;
+  transition: width 0.5s ease;
+}
+
+.progress-correct {
+  background-color: #22c55e;
+} /* Зелений */
+.progress-wrong {
+  background-color: #ef4444;
+} /* Червоний */
+
+.stats-text {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-top: 5px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* --- МОДАЛЬНЕ ВІКНО ФІНІШУ --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.3s;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-content {
+  background: white;
+  padding: 40px;
+  border-radius: 24px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  transform: scale(0.8);
+  transition: 0.3s;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modal-overlay.active .modal-content {
+  transform: scale(1);
+}
+
+.score-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 8px solid #4f46e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #4f46e5;
+  margin: 0 auto 20px;
+}
+
+/* --- ЛІЧИЛЬНИК В УРОЦІ --- */
+.lesson-score {
+  background: #eef2ff;
+  color: #4338ca;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* --- LOADER (ЕКРАН ЗАВАНТАЖЕННЯ) --- */
+#loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  z-index: 9999; /* Поверх усього */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+}
+
+#loader-overlay.hidden {
+  opacity: 0;
+  pointer-events: none; /* Щоб можна було клікати крізь нього після зникнення */
+}
+
+.loader-content {
+  text-align: center;
+  width: 300px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #e2e8f0;
+  border-top: 5px solid #4f46e5;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.progress-line {
+  width: 100%;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  margin-top: 15px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #4f46e5;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+#loader-percent {
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 600;
+}

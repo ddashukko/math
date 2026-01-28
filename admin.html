@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Журнал Успішності | D-Space</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      .admin-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 16px;
+        border-bottom: 1px solid #e2e8f0;
+      }
+      th {
+        background: #f8fafc;
+        font-weight: 700;
+        color: #64748b;
+      }
+      tr:hover {
+        background: #f1f5f9;
+      }
+      .score-badge {
+        background: #e0e7ff;
+        color: #4338ca;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div style="display: flex; align-items: center; gap: 15px">
+        <a href="index.html" class="btn-home">← На сайт</a>
+        <div style="font-weight: 900; color: #4f46e5">ADMIN PANEL</div>
+      </div>
+      <div id="admin-user">...</div>
+    </header>
+
+    <div class="container">
+      <div class="admin-container">
+        <h1 style="margin: 0 0 10px 0">📊 Успішність учнів</h1>
+        <p style="color: #64748b">Дані підтягуються з бази в реальному часі.</p>
+
+        <table id="students-table">
+          <thead>
+            <tr>
+              <th>Учень (Email)</th>
+              <th>Вирішено завдань</th>
+              <th>Правильно</th>
+              <th>Остання активність</th>
+              <th>Дії</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <tr>
+              <td colspan="5" style="text-align: center">
+                Завантаження даних...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script type="module" src="js/admin.js"></script>
+  </body>
+</html>

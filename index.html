@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Моя Школа</title>
+    <title>D-Space | Головна</title>
     <link rel="stylesheet" href="css/style.css" />
     <style>
       .lesson-grid {
@@ -21,6 +21,7 @@
         color: inherit;
         transition: 0.3s;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        display: block;
       }
       .lesson-card:hover {
         transform: translateY(-5px);
@@ -80,7 +81,6 @@
         >
           Увійти
         </button>
-
         <button
           id="logout-btn"
           onclick="googleLogout()"
@@ -100,24 +100,25 @@
       </div>
     </header>
 
-    <div class="container">
-      <h1 style="margin-top: 40px">Мої Курси</h1>
+    <div id="courses-root" class="lesson-grid"></div>
 
-      <div class="lesson-grid">
-        <a href="lesson.html?id=math-mult" class="lesson-card">
-          <span class="badge">Математика</span>
-          <h3 style="margin: 10px 0">Множення та Ділення</h3>
-          <p style="color: #64748b; font-size: 0.9rem">Інтенсивний курс</p>
-        </a>
-        <a href="lesson.html?id=math-intensive" class="lesson-card">
-          <span class="badge" style="background: #e0e7ff; color: #4338ca"
-            >Математика</span
-          >
-          <h3 style="margin: 10px 0">Інтенсив: Множення та Ділення</h3>
-          <p style="color: #64748b; font-size: 0.9rem">20 вправ + Шпаргалка</p>
-        </a>
+      <div
+        style="
+          text-align: center;
+          margin-top: 50px;
+          padding: 20px;
+          color: #cbd5e1;
+        "
+      >
+        <a
+          href="admin.html"
+          style="color: inherit; text-decoration: none; font-size: 0.8rem"
+          >🔒 Вхід для викладача</a
+        >
       </div>
     </div>
+
     <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/dashboard.js"></script>
   </body>
 </html>

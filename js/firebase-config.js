@@ -1,6 +1,6 @@
 // js/firebase-config.js
 
-// Імпортуємо функції Firebase прямо з серверів Google (CDN)
+// Імпортуємо всі необхідні функції в одному блоці
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getAuth,
@@ -14,6 +14,8 @@ import {
   doc,
   setDoc,
   getDoc,
+  collection,
+  getDocs,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // Твої ключі D-Space
@@ -32,7 +34,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// Експортуємо інструменти, щоб використовувати їх в інших файлах
+// Експорт
 export {
   auth,
   db,
@@ -43,4 +45,6 @@ export {
   doc,
   setDoc,
   getDoc,
+  collection,
+  getDocs,
 };

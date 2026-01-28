@@ -4,27 +4,37 @@ const boardSection = document.getElementById("board-section");
 let painting = false;
 let tool = "pen"; // 'pen' або 'eraser'
 
-// --- НАЛАШТУВАННЯ РОЗМІРУ ---
+// --- НАЛАШТУВАННЯ РОЗМІРУ (З ЗАХИСТОМ ВІД ПОМИЛОК) ---
 function resizeCanvas() {
-  if (!boardSection || boardSection.style.display === "none") return;
+  // Якщо дошки немає або вона прихована (ширина 0) — нічого не робимо
+  if (
+    !boardSection ||
+    boardSection.clientWidth === 0 ||
+    boardSection.clientHeight === 0
+  )
+    return;
 
   // Зберігаємо малюнок перед зміною розміру
   const tempCanvas = document.createElement("canvas");
   const tempCtx = tempCanvas.getContext("2d");
-  tempCanvas.width = canvas.width;
-  tempCanvas.height = canvas.height;
+
+  // Якщо старий канвас мав нормальний розмір, зберігаємо його
   if (canvas.width > 0 && canvas.height > 0) {
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
     tempCtx.drawImage(canvas, 0, 0);
   }
 
-  // Змінюємо розмір
+  // Змінюємо розмір реального канвасу під розмір блоку
   canvas.width = boardSection.offsetWidth;
   canvas.height = boardSection.offsetHeight;
 
-  // Відновлюємо малюнок
-  ctx.drawImage(tempCanvas, 0, 0);
+  // Відновлюємо малюнок (тільки якщо є що відновлювати)
+  if (tempCanvas.width > 0 && tempCanvas.height > 0) {
+    ctx.drawImage(tempCanvas, 0, 0);
+  }
 
-  // Налаштування ліній
+  // Налаштування ліній (злітають при зміні розміру, тому ставимо заново)
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
 }
@@ -98,7 +108,8 @@ function setTool(t) {
     .forEach((b) => b.classList.remove("active"));
 
   const btnId = t === "pen" ? "btn-pen" : "btn-eraser";
-  document.getElementById(btnId).classList.add("active");
+  const btn = document.getElementById(btnId);
+  if (btn) btn.classList.add("active");
 }
 
 function clearBoard() {
@@ -114,3 +125,8 @@ function toggleBoard() {
   // Оновлюємо розмір canvas після анімації CSS
   setTimeout(resizeCanvas, 350);
 }
+
+// Робимо функції доступними глобально
+window.setTool = setTool;
+window.clearBoard = clearBoard;
+window.toggleBoard = toggleBoard;
