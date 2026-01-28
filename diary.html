@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Мій Щоденник | D-Space</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      .diary-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      }
+      .diary-table th,
+      .diary-table td {
+        padding: 16px;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+      }
+      .diary-table th {
+        background: #f8fafc;
+        font-weight: 700;
+        color: #64748b;
+      }
+      .mark-badge {
+        display: inline-block;
+        width: 36px;
+        height: 36px;
+        line-height: 36px;
+        text-align: center;
+        border-radius: 50%;
+        font-weight: 800;
+        font-size: 1.1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div style="display: flex; align-items: center; gap: 15px">
+        <a href="index.html" class="btn-home">← Назад</a>
+        <div style="font-weight: 900; color: #4f46e5">ЩОДЕННИК</div>
+      </div>
+      <div id="student-name" style="font-weight: 600">...</div>
+    </header>
+
+    <div class="container" style="margin-top: 30px">
+      <div class="diary-container">
+        <h2 style="margin-bottom: 20px">Мої успіхи 🏆</h2>
+
+        <table class="diary-table">
+          <thead>
+            <tr>
+              <th>Предмет / Тема</th>
+              <th>Тип</th>
+              <th>Дата</th>
+              <th>Оцінка</th>
+            </tr>
+          </thead>
+          <tbody id="diary-body">
+            <tr>
+              <td colspan="4" style="text-align: center; padding: 20px">
+                Завантаження...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script type="module" src="js/diary.js"></script>
+  </body>
+</html>

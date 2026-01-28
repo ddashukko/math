@@ -6,11 +6,38 @@
     <title>D-Space | Головна</title>
     <link rel="stylesheet" href="css/style.css" />
     <style>
+      /* Стилі для фільтрів */
+      .filter-container {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+      .filter-btn {
+        padding: 8px 16px;
+        border-radius: 20px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        color: #64748b;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .filter-btn:hover {
+        background: #f1f5f9;
+      }
+      .filter-btn.active {
+        background: #4f46e5 !important;
+        color: white !important;
+        border-color: #4f46e5;
+      }
+
+      /* Сітка уроків */
       .lesson-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         gap: 20px;
-        margin-top: 30px;
+        margin-top: 20px;
       }
       .lesson-card {
         background: white;
@@ -29,8 +56,6 @@
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
       }
       .badge {
-        background: #eef2ff;
-        color: #4f46e5;
         padding: 4px 10px;
         border-radius: 6px;
         font-size: 0.8rem;
@@ -64,7 +89,23 @@
             border: 2px solid #4f46e5;
           "
         />
-        <span id="user-display" style="font-weight: 600; display: none"></span>
+
+        <button
+          id="user-display"
+          onclick="changeNickname()"
+          style="
+            background: none;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            font-size: 1rem;
+            color: #1e293b;
+            padding: 5px 10px;
+            border-radius: 6px;
+            transition: 0.2s;
+          "
+        ></button>
 
         <button
           id="login-btn"
@@ -98,9 +139,61 @@
           Вийти
         </button>
       </div>
+      <a
+        href="admin.html"
+        id="teacher-btn"
+        class="btn-teacher"
+        style="display: none"
+      >
+        Кабінет
+      </a>
     </header>
 
-    <div id="courses-root" class="lesson-grid"></div>
+    <div class="container">
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 40px;
+          margin-bottom: 20px;
+        "
+      >
+        <h1 style="margin: 0">Моє Навчання</h1>
+        <a
+          href="diary.html"
+          style="
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 700;
+            border: 2px solid #e0e7ff;
+            padding: 8px 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          "
+        >
+          📒 Відкрити Щоденник
+        </a>
+      </div>
+
+      <div class="filter-container">
+        <button class="filter-btn active" onclick="filterCourses('all')">
+          Всі
+        </button>
+        <button class="filter-btn" onclick="filterCourses('math')">
+          Уроки
+        </button>
+        <button class="filter-btn" onclick="filterCourses('homework')">
+          Домашки
+        </button>
+        <button class="filter-btn" onclick="filterCourses('test')">
+          Тести
+        </button>
+      </div>
+
+      <div id="courses-root" class="lesson-grid"></div>
 
       <div
         style="
@@ -115,6 +208,44 @@
           style="color: inherit; text-decoration: none; font-size: 0.8rem"
           >🔒 Вхід для викладача</a
         >
+      </div>
+    </div>
+
+    <div id="reg-modal" class="modal-overlay">
+      <div class="modal-content" style="max-width: 400px; text-align: center">
+        <div style="font-size: 3rem; margin-bottom: 10px">👋</div>
+        <h2 style="margin-bottom: 10px">Ласкаво просимо!</h2>
+        <p style="color: #64748b; margin-bottom: 20px">
+          Введи своє ім'я та прізвище (або клас), щоб вчитель знав, чия це
+          робота.
+        </p>
+        <input
+          type="text"
+          id="reg-name-input"
+          placeholder="Наприклад: Оля Петренко, 9-А"
+          style="
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            outline: none;
+          "
+        />
+        <button
+          onclick="submitRegistration()"
+          class="btn-home"
+          style="
+            width: 100%;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            font-size: 1rem;
+          "
+        >
+          Зберегти і Почати 🚀
+        </button>
       </div>
     </div>
 

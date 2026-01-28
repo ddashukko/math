@@ -42,6 +42,22 @@
         font-size: 0.9rem;
       }
     </style>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [
+            ["$", "$"],
+            ["\\(", "\\)"],
+          ],
+        },
+        svg: { fontCache: "global" },
+      };
+    </script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
   </head>
   <body>
     <header>
@@ -60,7 +76,7 @@
         <table id="students-table">
           <thead>
             <tr>
-              <th>Учень (Email)</th>
+              <th>Учень (Ім'я та Клас)</th>
               <th>Вирішено завдань</th>
               <th>Правильно</th>
               <th>Остання активність</th>
@@ -77,7 +93,56 @@
         </table>
       </div>
     </div>
+    <div id="detail-modal" class="modal-overlay">
+      <div class="modal-content" style="max-width: 600px; text-align: left">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+          "
+        >
+          <h2 id="modal-title" style="margin: 0">Деталі</h2>
+          <button
+            onclick="closeModal()"
+            style="
+              background: none;
+              border: none;
+              font-size: 1.5rem;
+              cursor: pointer;
+            "
+          >
+            &times;
+          </button>
+        </div>
 
+        <div id="modal-body" style="max-height: 60vh; overflow-y: auto">
+          Завантаження...
+        </div>
+
+        <div style="margin-top: 20px; text-align: right">
+          <button
+            onclick="closeModal()"
+            class="btn-home"
+            style="
+              background: #e2e8f0;
+              color: #1e293b;
+              padding: 8px 20px;
+              font-size: 0.9rem;
+            "
+          >
+            Закрити
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function closeModal() {
+        document.getElementById("detail-modal").classList.remove("active");
+      }
+    </script>
     <script type="module" src="js/admin.js"></script>
   </body>
 </html>

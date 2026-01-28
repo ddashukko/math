@@ -4,14 +4,19 @@
   "type": "lesson",
   "links": [
     {
-      "title": "🏠 Домашня",
-      "url": "lesson.html?id=math-homework",
+      "title": "🏠 Домашнє завдання",
+      "url": "lesson.html?id=alg-7-topic1-hw",
       "type": "homework"
     },
     {
-      "title": "📝 Тест",
-      "url": "lesson.html?id=math-test",
+      "title": "📝 Контрольний тест",
+      "url": "lesson.html?id=alg-7-topic1-test",
       "type": "test"
+    },
+    {
+      "title": "🔙 На головну",
+      "url": "index.html",
+      "type": "secondary"
     }
   ],
   "exercises": [

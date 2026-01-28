@@ -1,6 +1,3 @@
-// js/firebase-config.js
-
-// Імпортуємо всі необхідні функції в одному блоці
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getAuth,
@@ -14,11 +11,11 @@ import {
   doc,
   setDoc,
   getDoc,
+  deleteDoc,
   collection,
   getDocs,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// Твої ключі D-Space
 const firebaseConfig = {
   apiKey: "AIzaSyCInnrEp06upLWTCxtU8wjGZtn7Ud8Uaxw",
   authDomain: "d-space-b94b1.firebaseapp.com",
@@ -28,13 +25,12 @@ const firebaseConfig = {
   appId: "1:792398965598:web:52e221b29c8f1ae77fbdcf",
 };
 
-// Ініціалізація
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// Експорт
+// 🔥 Я додав сюди deleteDoc
 export {
   auth,
   db,
@@ -45,6 +41,7 @@ export {
   doc,
   setDoc,
   getDoc,
+  deleteDoc,
   collection,
   getDocs,
 };
