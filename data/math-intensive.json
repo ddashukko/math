@@ -4,12 +4,12 @@
   "type": "lesson",
   "links": [
     {
-      "title": "Домашня",
+      "title": "🏠 Домашня",
       "url": "lesson.html?id=math-homework",
       "type": "homework"
     },
     {
-      "title": "Тест",
+      "title": "📝 Тест",
       "url": "lesson.html?id=math-test",
       "type": "test"
     }

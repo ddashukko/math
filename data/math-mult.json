@@ -1,6 +1,18 @@
 {
   "id": "math-mult",
   "title": "Множення та Ділення (Інтенсив)",
+  "links": [
+    {
+      "title": "🏠 Домашня",
+      "url": "lesson.html?id=math-homework",
+      "type": "homework"
+    },
+    {
+      "title": "📝 Тест",
+      "url": "lesson.html?id=math-test",
+      "type": "test"
+    }
+  ],
   "exercises": [
     {
       "id": "1",

@@ -54,3 +54,65 @@ header {
   width: 100%;
   box-sizing: border-box;
 }
+
+/* ... твої старі стилі ... */
+
+/* --- НАВІГАЦІЯ ВНИЗУ (НОВЕ) --- */
+.footer-nav {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 2px dashed #e2e8f0;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding-bottom: 60px; /* Відступ знизу щоб зручно було на телефоні */
+}
+
+.btn-nav-link {
+  text-decoration: none;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.btn-nav-link:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Колір кнопки "Домашка" */
+.btn-nav-link.homework {
+  background-color: #eef2ff;
+  color: #4f46e5;
+  border: 1px solid #c7d2fe;
+}
+.btn-nav-link.homework:hover {
+  background-color: #e0e7ff;
+}
+
+/* Колір кнопки "Тест" */
+.btn-nav-link.test {
+  background-color: #fff7ed;
+  color: #ea580c;
+  border: 1px solid #fed7aa;
+}
+.btn-nav-link.test:hover {
+  background-color: #ffedd5;
+}
+
+/* Колір кнопки "Урок" (наприклад, для повернення назад) */
+.btn-nav-link.lesson {
+  background-color: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+.btn-nav-link.lesson:hover {
+  background-color: #dcfce7;
+}

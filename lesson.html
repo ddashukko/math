@@ -4,20 +4,100 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Завантаження уроку...</title>
+
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/lesson.css" />
+    <link rel="stylesheet" href="css/board.css" />
+
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [
+            ["$", "$"],
+            ["\\(", "\\)"],
+          ],
+        },
+        svg: { fontCache: "global" },
+      };
+    </script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
   </head>
-  <body>
+  <body class="board-hidden">
     <header>
-      <a href="index.html" class="btn-home">← На головну</a>
-      <div id="lesson-title" style="font-weight: 700">Завантаження...</div>
-      <div></div>
+      <div style="display: flex; align-items: center; gap: 15px">
+        <a href="index.html" class="btn-home">← Меню</a>
+        <div id="lesson-title" style="font-weight: 700">...</div>
+      </div>
+
+      <button
+        onclick="toggleBoard()"
+        class="btn-board-toggle"
+        title="Показати/Сховати дошку"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+          <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+          <path d="M2 2l7.586 7.586"></path>
+          <circle cx="11" cy="11" r="2"></circle>
+        </svg>
+        <span>Дошка</span>
+      </button>
     </header>
 
-    <div class="container">
-      <div id="quiz-root"></div>
+    <div id="app-wrapper">
+      <div id="tasks-section">
+        <div class="container" style="margin: 0; width: 100%; max-width: none">
+          <div id="quiz-root"></div>
+
+          <div id="lesson-footer" class="footer-nav"></div>
+        </div>
+      </div>
+
+      <div id="board-section">
+        <div class="tools-panel">
+          <button
+            id="btn-pen"
+            class="tool-btn active"
+            onclick="setTool('pen')"
+            title="Ручка"
+          >
+            🖊️
+          </button>
+          <button
+            id="btn-eraser"
+            class="tool-btn"
+            onclick="setTool('eraser')"
+            title="Гумка"
+          >
+            🧹
+          </button>
+          <button
+            class="tool-btn"
+            onclick="clearBoard()"
+            title="Очистити"
+            style="color: red"
+          >
+            ❌
+          </button>
+        </div>
+        <canvas id="board"></canvas>
+      </div>
     </div>
 
     <script src="js/engine.js"></script>
+    <script src="js/board.js"></script>
   </body>
 </html>

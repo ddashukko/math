@@ -13,19 +13,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function loadLesson(id) {
   try {
+    // 1. Завантажуємо JSON
     const response = await fetch(`data/${id}.json`);
 
     if (!response.ok) throw new Error("Урок не знайдено");
 
     const data = await response.json();
 
+    // 2. Встановлюємо заголовок
     document.title = data.title;
-    document.getElementById("lesson-title").innerText = data.title;
+    const titleEl = document.getElementById("lesson-title");
+    if (titleEl) titleEl.innerText = data.title;
 
+    // 3. Рендеримо вправи
     renderExercises(data.exercises);
+
+    // 4. 🔥 Рендеримо кнопки навігації (НОВЕ)
+    renderFooter(data.links);
+
+    // 5. Запускаємо MathJax (формули)
+    if (window.MathJax && typeof window.MathJax.typesetPromise === "function") {
+      MathJax.typesetPromise().catch((err) =>
+        console.log("MathJax error:", err),
+      );
+    } else {
+      console.log("MathJax ще завантажується...");
+    }
   } catch (error) {
     document.getElementById("quiz-root").innerHTML =
       `<h3>Помилка: ${error.message}</h3>`;
+    console.error(error);
   }
 }
 
@@ -37,11 +54,16 @@ function renderExercises(exercises) {
     const card = document.createElement("div");
     card.className = "exercise-block";
 
+    let visualHtml = ex.visual
+      ? `<div style="padding: 0 24px 20px;">${ex.visual}</div>`
+      : "";
+
     let html = `
       <div class="exercise-header">
         <h3>${ex.title}</h3>
         ${ex.desc ? `<p style="margin:5px 0 0; color:#64748b">${ex.desc}</p>` : ""}
       </div>
+      ${visualHtml}
       <div class="task-list">
     `;
 
@@ -55,14 +77,17 @@ function renderExercises(exercises) {
       if (task.opts) {
         html += `<div class="options-container">`;
         task.opts.forEach((opt) => {
-          html += `<button class="option-btn" onclick="checkOption(this, '${opt}', '${task.a}')">${opt}</button>`;
+          const safeOpt = opt.replace(/"/g, "&quot;");
+          const safeAns = task.a.replace(/"/g, "&quot;");
+          html += `<button class="option-btn" onclick="checkOption(this, '${safeOpt}', '${safeAns}')">${opt}</button>`;
         });
         html += `</div>`;
       } else {
+        const safeAns = task.a.replace(/"/g, "&quot;");
         html += `
           <div class="input-group">
             <input type="text" placeholder="?" onkeydown="if(event.key==='Enter') this.nextElementSibling.click()">
-            <button class="btn-check" onclick="checkInput(this, '${task.a}')">ОК</button>
+            <button class="btn-check" onclick="checkInput(this, '${safeAns}')">ОК</button>
           </div>
         `;
       }
@@ -76,6 +101,29 @@ function renderExercises(exercises) {
   });
 }
 
+// 🔥 НОВА ФУНКЦІЯ: Рендер кнопок внизу
+function renderFooter(links) {
+  const footer = document.getElementById("lesson-footer");
+  if (!footer) return;
+
+  footer.innerHTML = ""; // Очищаємо перед рендером
+
+  // Якщо посилань немає в JSON, просто виходимо
+  if (!links || links.length === 0) return;
+
+  links.forEach((link) => {
+    const a = document.createElement("a");
+    a.href = link.url;
+    // Додаємо класи: базовий + тип (homework/test/lesson)
+    a.className = `btn-nav-link ${link.type || ""}`;
+    a.innerText = link.title;
+
+    // Відкривати в тій самій вкладці (за замовчуванням)
+    footer.appendChild(a);
+  });
+}
+
+// Глобальні функції перевірки
 window.checkInput = function (btn, correctAns) {
   const input = btn.previousElementSibling;
   const userVal = input.value.trim();
