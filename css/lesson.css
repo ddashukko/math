@@ -1,3 +1,8 @@
+/* =========================================
+   🎨 LESSON STYLES (PRO VERSION)
+   ========================================= */
+
+/* --- ЗАГАЛЬНИЙ БЛОК ВПРАВИ --- */
 .exercise-block {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -6,8 +11,15 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   animation: fadeIn 0.5s ease;
+
+  /* 🔥 FIX: Центрування карток, щоб вони не розтягувались безмежно */
+  width: 100%;
+  max-width: 100%; /* Заповнює контейнер, який ми обмежили в board.css */
+  margin-left: auto;
+  margin-right: auto;
 }
 
+/* Заголовок вправи */
 .exercise-header {
   padding: 20px 24px;
   border-bottom: 1px solid var(--border);
@@ -17,14 +29,16 @@
 .exercise-header h3 {
   margin: 0;
   color: var(--primary);
+  font-size: 1.25rem;
 }
 
+/* Рядок завдання */
 .task-row {
-  padding: 20px 24px;
+  padding: 24px; /* Більше повітря */
   border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px; /* Відступ між умовою і полем вводу */
 }
 
 .task-row:last-child {
@@ -33,72 +47,91 @@
 
 .task-content {
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1.15rem; /* Трохи більший шрифт для читабельності */
+  line-height: 1.6;
+  color: #334155;
 }
 
+/* --- ПОЛЯ ВВОДУ (INPUTS) --- */
 .input-group {
   display: flex;
-  gap: 10px;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap; /* Дозволяємо перенос на малих екранах */
 }
 
 input[type="text"] {
-  padding: 10px 14px;
+  padding: 12px 16px;
   border: 2px solid var(--border);
-  border-radius: 8px;
-  font-size: 1rem;
-  width: 120px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  width: 140px;
   outline: none;
-  transition: 0.2s;
+  transition: all 0.2s ease;
+  background: #fff;
 }
 
 input[type="text"]:focus {
   border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
+/* Стани відповіді */
 input.correct {
-  background-color: #dcfce7;
+  background-color: #f0fdf4;
   border-color: var(--success);
-  color: #14532d;
+  color: #15803d;
+  font-weight: 700;
 }
 
 input.wrong {
-  background-color: #fee2e2;
+  background-color: #fef2f2;
   border-color: var(--error);
-  color: #7f1d1d;
+  color: #b91c1c;
 }
 
+/* Кнопка "ОК" */
 .btn-check {
   background: var(--primary);
   color: white;
   border: none;
-  padding: 0 20px;
-  border-radius: 8px;
+  padding: 12px 24px;
+  border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
+  transition: opacity 0.2s;
+  font-size: 1rem;
 }
 
 .btn-check:hover {
   opacity: 0.9;
 }
 
+/* --- КНОПКИ ВИБОРУ (TEST OPTIONS) --- */
 .options-container {
   display: flex;
-  gap: 10px;
+  gap: 12px;
+  flex-wrap: wrap; /* Кнопки переносяться, якщо не влазять */
 }
 
 .option-btn {
-  padding: 10px 20px;
+  padding: 12px 20px;
   border: 2px solid var(--border);
   background: white;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   font-weight: 600;
-  transition: 0.2s;
+  font-size: 1rem;
+  transition: all 0.2s;
+  flex: 1; /* Розтягуються рівномірно */
+  min-width: 60px;
+  text-align: center;
 }
 
 .option-btn:hover {
   border-color: var(--primary);
   color: var(--primary);
+  background: #eef2ff;
 }
 
 .option-btn.correct {
@@ -113,6 +146,7 @@ input.wrong {
   border-color: var(--error);
 }
 
+/* --- АНІМАЦІЯ ПОЯВИ --- */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -129,81 +163,127 @@ input.wrong {
   border-color: #4f46e5;
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
-
-/* Приховуємо кнопку закриття в цьому модальному вікні, бо реєстрація обов'язкова */
 #reg-modal .close-btn {
   display: none;
 }
 
 /* =========================================
-   📱 MOBILE ADAPTATION: LESSON CONTENT
+   📱 MOBILE ADAPTATION (LESSON SPECIFIC)
    ========================================= */
 
 @media (max-width: 768px) {
-  /* 1. Більше повітря в тексті */
-  .exercise-header,
+  /* 1. Менші відступи всередині карток */
+  .exercise-header {
+    padding: 15px 20px;
+  }
+
   .task-row {
-    padding: 15px; /* Менші поля по краях */
+    padding: 20px;
   }
 
+  /* 2. Текст не злипається */
   .task-content {
-    font-size: 1rem; /* Читабельний шрифт */
-    line-height: 1.6; /* Текст не злипається */
-    margin-bottom: 10px;
+    font-size: 1.05rem;
+    line-height: 1.6;
   }
 
-  /* 2. Інпути: Зручні для пальця + Фікс зуму на iPhone */
+  /* 3. Інпути зручні для пальця */
   input[type="text"] {
-    width: 100%; /* На всю ширину */
-    max-width: 150px; /* Але не більше розумного */
-    padding: 12px; /* Легше попасти пальцем */
-    font-size: 16px; /* ВАЖЛИВО: iPhone не зумить сторінку при 16px */
+    width: 100%; /* На всю ширину контейнера */
+    max-width: 100%;
+    font-size: 16px; /* ВАЖЛИВО: Запобігає зуму на iPhone */
+    padding: 14px;
   }
 
-  /* Група інпуту і кнопки "ОК" */
-  .input-group {
-    flex-wrap: wrap; /* Якщо не влазить - перенос */
-    gap: 8px;
-  }
-
+  /* Кнопка ОК стає на весь рядок */
   .btn-check {
-    padding: 12px 20px; /* Більша кнопка */
-    width: auto;
-    flex-grow: 1; /* Кнопка розтягується для зручності */
+    width: 100%;
+    margin-top: 5px;
   }
 
-  /* 3. Варіанти відповідей (кнопки) */
-  .options-container {
-    flex-wrap: wrap;
-    justify-content: center; /* По центру */
-  }
-
-  .option-btn {
-    flex: 1 1 40%; /* Кнопки по 2 в ряд */
-    padding: 12px;
-    font-size: 1rem;
-  }
-
-  /* Шпаргалки і формули */
+  /* 4. Картинки та формули адаптивні */
   .exercise-block img,
   .exercise-block svg {
     max-width: 100%;
     height: auto;
+    display: block;
+    margin: 10px auto;
+  }
+
+  mjx-container {
+    overflow-x: auto; /* Якщо формула довга - з'явиться скрол */
+    max-width: 100%;
   }
 }
 
-@media (max-width: 768px) {
-  /* Адаптація шпаргалки і картинок */
-  .exercise-block img,
-  .exercise-block svg,
-  .exercise-block div {
-    max-width: 100%;
-    height: auto;
-    overflow-x: hidden; /* Щоб формули не розтягували екран */
-  }
+/* =========================================
+   🟣 THEME: TEST MODE (ФІОЛЕТОВИЙ)
+   ========================================= */
 
-  /* Трохи зменшуємо шрифт формул на телефоні */
-  mjx-container {
-    font-size: 110% !important;
-  }
+body.mode-test {
+  background-color: #f3e8ff;
+}
+
+body.mode-test header {
+  background: #fff;
+  border-bottom: 3px solid #9333ea;
+}
+
+body.mode-test .exercise-block {
+  background: white;
+  border: 1px solid #e9d5ff;
+  border-left: 5px solid #9333ea;
+}
+
+body.mode-test .exercise-header h3 {
+  color: #7e22ce;
+}
+
+/* Поля в тесті */
+body.mode-test input {
+  border: 2px solid #d8b4fe;
+}
+body.mode-test input:focus {
+  border-color: #9333ea;
+  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.2);
+}
+body.mode-test input:disabled {
+  background: #faf5ff;
+  color: #6b7280;
+}
+
+/* Варіанти відповідей в тесті */
+body.mode-test .option-btn {
+  border-color: #e9d5ff;
+  color: #581c87;
+}
+body.mode-test .option-btn:hover:not(:disabled) {
+  border-color: #a855f7;
+  background: #faf5ff;
+}
+body.mode-test .option-btn.selected {
+  background: #f3e8ff;
+  color: #6b21a8;
+  border-color: #9333ea;
+  font-weight: 700;
+}
+
+/* Фарбування результатів (Тільки після здачі) */
+body.mode-test input.correct,
+body.mode-test .option-btn.correct {
+  background-color: #dcfce7 !important;
+  border-color: #22c55e !important;
+  color: #14532d !important;
+}
+
+body.mode-test input.wrong,
+body.mode-test .option-btn.wrong {
+  background-color: #fee2e2 !important;
+  border-color: #ef4444 !important;
+  color: #7f1d1d !important;
+}
+
+/* Ховаємо кнопку ОК в тесті */
+body.mode-test .input-group .btn-check {
+  display: none;
 }
