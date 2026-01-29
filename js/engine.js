@@ -8,6 +8,8 @@ import {
   getDocs,
   deleteDoc,
   getDoc,
+  signInWithPopup, // 🔥 Додали імпорт входу
+  provider, // 🔥 Додали провайдер
 } from "./firebase-config.js";
 import { courses } from "./courses-data.js";
 
@@ -17,7 +19,7 @@ let correctCount = 0;
 let wrongCount = 0;
 let currentLessonId = "";
 let isTestFinished = false;
-let currentLinks = []; // Зберігаємо посилання
+let currentLinks = [];
 
 // --- LOADER ---
 function updateLoader(percent, text) {
@@ -51,16 +53,44 @@ document.addEventListener("DOMContentLoaded", () => {
   loadLesson(currentLessonId);
 });
 
-// 2. АВТОРИЗАЦІЯ
+// 2. АВТОРИЗАЦІЯ (ОНОВЛЕНО)
 onAuthStateChanged(auth, (user) => {
-  if (user && currentLessonId) {
-    updateLoader(70, "Вхід в систему...");
-    restoreProgress(user.email);
+  const authModal = document.getElementById("auth-modal");
+
+  if (user) {
+    // ✅ Користувач увійшов
+    if (authModal) authModal.classList.remove("active"); // Ховаємо вікно, якщо було
+
+    if (currentLessonId) {
+      updateLoader(70, "Вхід в систему...");
+      restoreProgress(user.email);
+    }
   } else {
-    updateLoader(100, "Готово!");
-    hideLoader();
+    // ⛔ Користувач НЕ увійшов
+    updateLoader(100, "Очікування входу...");
+    hideLoader(); // Ховаємо лоадер, щоб показати модалку
+
+    // Показуємо вікно входу примусово
+    if (authModal) {
+      authModal.classList.add("active");
+    } else {
+      alert("Будь ласка, увійди в систему, щоб проходити тест.");
+    }
   }
 });
+
+// 🔥 ФУНКЦІЯ ВХОДУ (ПРЯМО В УРОЦІ)
+window.googleLogin = async function () {
+  try {
+    await signInWithPopup(auth, provider);
+    // Після успішного входу спрацює onAuthStateChanged вище і закриє вікно
+  } catch (error) {
+    console.error("Помилка входу:", error);
+    alert("Не вдалося увійти. Спробуйте ще раз.");
+  }
+};
+
+// ... (ДАЛІ ЙДЕ ВЕСЬ ІНШИЙ КОД: loadLesson, restoreProgress і т.д. БЕЗ ЗМІН)
 
 // ЗАВАНТАЖЕННЯ УРОКУ
 async function loadLesson(id) {

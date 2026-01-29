@@ -147,5 +147,34 @@
 
     <script type="module" src="js/engine.js"></script>
     <script src="js/board.js"></script>
+    <div
+      id="auth-modal"
+      class="modal-overlay"
+      style="z-index: 99999; background: rgba(255, 255, 255, 0.95)"
+    >
+      <div class="modal-content" style="text-align: center">
+        <div style="font-size: 3rem; margin-bottom: 10px">🔒</div>
+        <h2 style="margin-top: 0; color: #1e293b">Вхід у систему</h2>
+        <p style="color: #64748b; margin-bottom: 25px">
+          Щоб твій результат зберігся, потрібно увійти.
+        </p>
+
+        <button
+          onclick="googleLogin()"
+          class="btn-home"
+          style="
+            background: #4f46e5;
+            color: white;
+            width: 100%;
+            justify-content: center;
+            padding: 14px;
+            font-size: 1.1rem;
+            cursor: pointer;
+          "
+        >
+          <span style="margin-right: 8px">G</span> Увійти через Google
+        </button>
+      </div>
+    </div>
   </body>
 </html>
