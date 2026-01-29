@@ -17,7 +17,7 @@ let correctCount = 0;
 let wrongCount = 0;
 let currentLessonId = "";
 let isTestFinished = false;
-let currentLinks = []; // Зберігаємо посилання на наступні кроки
+let currentLinks = []; // Зберігаємо посилання
 
 // --- LOADER ---
 function updateLoader(percent, text) {
@@ -72,14 +72,14 @@ async function loadLesson(id) {
 
     if (course) {
       fetchPath = `data/${course.subject}/${course.grade}/${course.type}/${course.filename}.json`;
-      document.body.className = ""; // Очищаємо попередні класи
+      document.body.className = "";
       document.body.classList.add(`mode-${course.type}`);
     } else {
       fetchPath = `data/${id}.json`;
       document.body.classList.add("mode-lesson");
     }
 
-    // 🔥 MOBILE FIX: Якщо це телефон — закриваємо дошку примусово
+    // Мобільна адаптація дошки
     if (window.innerWidth <= 768) {
       document.body.classList.add("board-hidden");
     }
@@ -93,7 +93,6 @@ async function loadLesson(id) {
     const titleEl = document.getElementById("lesson-title");
     if (titleEl) titleEl.innerText = data.title;
 
-    // Зберігаємо посилання для фінального екрану
     currentLinks = data.links || [];
 
     countTotalTasks(data.exercises);
@@ -101,7 +100,7 @@ async function loadLesson(id) {
 
     updateLoader(50, "Малюємо вправи...");
     renderExercises(data.exercises, id);
-    renderFooter(data.links); // Це нижнє меню під час уроку
+    renderFooter(data.links);
 
     if (window.MathJax && typeof window.MathJax.typesetPromise === "function") {
       updateLoader(60, "Налаштування формул...");
@@ -188,7 +187,7 @@ function renderExercises(exercises, lessonId) {
   });
 }
 
-// 🔥 ВІДНОВЛЕННЯ ПРОГРЕСУ
+// ВІДНОВЛЕННЯ ПРОГРЕСУ
 async function restoreProgress(email) {
   updateLoader(80, "Відновлення...");
   try {
@@ -265,7 +264,7 @@ async function restoreProgress(email) {
 
     if (isTestFinished) {
       lockAllInputs();
-      showFinishedState(); // 🔥 Показуємо результат ВНИЗУ
+      showFinishedState(); // 🔥 Показуємо МОДАЛКУ
     }
     updateScoreUI();
   } catch (error) {
@@ -276,7 +275,7 @@ async function restoreProgress(email) {
   }
 }
 
-// ПЕРЕВІРКА INPUT
+// ПЕРЕВІРКА ВІДПОВІДЕЙ
 window.checkInput = function (btn, correctAns, taskId) {
   const input = btn.previousElementSibling || btn;
   const userVal = input.value.trim();
@@ -305,7 +304,6 @@ window.checkInput = function (btn, correctAns, taskId) {
   }
 };
 
-// ПЕРЕВІРКА OPTIONS
 window.checkOption = function (btn, userVal, correctAns, taskId) {
   const parent = btn.parentElement;
   const isTestMode = document.body.classList.contains("mode-test");
@@ -377,7 +375,7 @@ async function saveProgress(taskId, isCorrect, userAnswer) {
   }
 }
 
-// 🔥 ЗАВЕРШЕННЯ ТЕСТУ
+// 🔥 ЗАВЕРШЕННЯ (Виклик модалки)
 window.finishLesson = async function () {
   const user = auth.currentUser;
   if (!user) {
@@ -422,63 +420,65 @@ window.finishLesson = async function () {
 
   lockAllInputs();
   await restoreProgress(user.email);
-  showFinishedState(); // 🔥 Показуємо результат внизу
+  showFinishedState(); // 🔥 ВИКЛИК МОДАЛКИ
 };
 
-// 🔥 ФУНКЦІЯ МАЛЮВАННЯ РЕЗУЛЬТАТУ ВНИЗУ (PRO VERSION)
+// 🔥 НОВА ФУНКЦІЯ МОДАЛЬНОГО ВІКНА (ПОВЕРНУЛИ POPUP)
 function showFinishedState() {
-  const footer = document.getElementById("lesson-footer");
+  // 1. Шукаємо модальне вікно в HTML
+  let modal = document.getElementById("modal-overlay");
+
+  // Якщо модалки немає в HTML (раптом), створимо її
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "modal-overlay";
+    modal.className = "modal-overlay";
+    modal.innerHTML = '<div class="modal-content"></div>';
+    document.body.appendChild(modal);
+  }
+
+  const modalContent = modal.querySelector(".modal-content");
   const percent =
     totalTasksCount > 0
       ? Math.round((correctCount / totalTasksCount) * 100)
       : 0;
 
-  // 1. Генеруємо HTML для додаткових кнопок (Домашка / Тест)
+  // 2. Генеруємо посилання (Домашка / Тест)
   let nextStepsHtml = "";
-
   if (currentLinks && currentLinks.length > 0) {
     currentLinks.forEach((link) => {
-      // Ігноруємо кнопку "На головну", бо вона і так є внизу
       if (link.url.includes("index.html")) return;
-
-      // Визначаємо стиль залежно від типу
-      let btnClass = "btn-next-step";
+      let btnClass = "btn-nav-link";
       if (link.type === "homework") btnClass += " homework";
       if (link.type === "test") btnClass += " test";
-      if (link.type === "lesson") btnClass += " lesson";
 
+      // Стиль кнопок для модалки
       nextStepsHtml += `
-        <a href="${link.url}" class="${btnClass}">
+        <a href="${link.url}" class="${btnClass}" style="width:100%; box-sizing:border-box; justify-content:center; margin-bottom:10px;">
            ${link.title}
         </a>
       `;
     });
   }
 
-  // 2. Вставляємо HTML
-  footer.innerHTML = `
-        <div class="test-result-panel">
-            <h3>Роботу здано! 🎉</h3>
-            <div class="test-score-big">${percent}%</div>
-            <div class="test-feedback">Ти відповів правильно на ${correctCount} з ${totalTasksCount} питань.</div>
-            
-            ${
-              nextStepsHtml
-                ? `<div style="margin-bottom: 20px; border-bottom: 2px dashed #e2e8f0; padding-bottom: 20px;">
-                ${nextStepsHtml}
-            </div>`
-                : ""
-            }
+  // 3. Заповнюємо модалку контентом
+  modalContent.innerHTML = `
+    <div class="score-circle" style="${percent >= 50 ? "" : "border-color: #ef4444; color: #ef4444;"}">${percent}%</div>
+    <h2 style="margin-bottom: 10px">${percent >= 50 ? "Чудова робота! 🎉" : "Треба потренуватись 😕"}</h2>
+    <p style="color: #64748b; margin-bottom: 24px">Ти відповів правильно на ${correctCount} з ${totalTasksCount} питань.</p>
+    
+    <div style="margin-bottom: 20px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 20px;">
+        ${nextStepsHtml}
+    </div>
 
-            <button class="btn-retry" onclick="retryTest()">
-                🔄 Пройти знову
-            </button>
-            
-            <button class="btn-back-lesson" onclick="window.location.href='index.html'">
-                🏠 На головну
-            </button>
-        </div>
-    `;
+    <div style="display: flex; gap: 10px; justify-content: center;">
+        <button onclick="retryTest()" class="btn-home" style="background: #e2e8f0; color: #334155; border:none; cursor:pointer;">🔄 Ще раз</button>
+        <a href="index.html" class="btn-home" style="background: #4f46e5; color: white;">🏠 На головну</a>
+    </div>
+  `;
+
+  // 4. Показуємо
+  modal.classList.add("active");
   updateScoreUI();
 }
 
@@ -513,8 +513,24 @@ window.retryTest = async function () {
 };
 
 function renderFooter(links) {
-  const footer = document.getElementById("lesson-footer");
-  if (!footer) return;
+  // Шукаємо футер
+  let footer = document.getElementById("lesson-footer");
+
+  // 🔥 АВТО-ФІКС: Якщо футера немає в HTML, створюємо його в блоку завдань
+  if (!footer) {
+    const tasksSection = document.getElementById("tasks-section");
+    if (tasksSection) {
+      footer = document.createElement("div");
+      footer.id = "lesson-footer";
+      footer.style.marginTop = "30px";
+      footer.style.padding = "20px";
+      tasksSection.querySelector(".container").appendChild(footer);
+    } else {
+      // Якщо все геть погано, просто виходимо
+      return;
+    }
+  }
+
   if (isTestFinished) return;
 
   footer.innerHTML = "";
@@ -537,14 +553,4 @@ function renderFooter(links) {
 
   finishBtn.onclick = window.finishLesson;
   footer.appendChild(finishBtn);
-
-  if (links) {
-    links.forEach((link) => {
-      const a = document.createElement("a");
-      a.href = link.url;
-      a.className = `btn-nav-link ${link.type || ""}`;
-      a.innerText = link.title;
-      footer.appendChild(a);
-    });
-  }
 }

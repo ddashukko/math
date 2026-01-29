@@ -178,19 +178,61 @@
         </a>
       </div>
 
-      <div class="filter-container">
-        <button class="filter-btn active" onclick="filterCourses('all')">
-          Всі
-        </button>
-        <button class="filter-btn" onclick="filterCourses('math')">
-          Уроки
-        </button>
-        <button class="filter-btn" onclick="filterCourses('homework')">
-          Домашки
-        </button>
-        <button class="filter-btn" onclick="filterCourses('test')">
-          Тести
-        </button>
+      <div class="filter-bar">
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input
+            type="text"
+            id="search-input"
+            class="search-input"
+            placeholder="Знайти урок, клас або тему..."
+            oninput="applyFilters()"
+          />
+        </div>
+
+        <div class="filters-group">
+          <select
+            id="filter-subject"
+            class="filter-select"
+            onchange="applyFilters()"
+          >
+            <option value="all">📚 Всі предмети</option>
+            <option value="algebra">Алгебра</option>
+            <option value="geometry">Геометрія</option>
+            <option value="history">Історія</option>
+          </select>
+
+          <select
+            id="filter-grade"
+            class="filter-select"
+            onchange="applyFilters()"
+          >
+            <option value="all">🎓 Всі класи</option>
+            <option value="all">🎓 Всі класи</option>
+            <option value="1">1 клас</option>
+            <option value="2">2 клас</option>
+            <option value="3">3 клас</option>
+            <option value="4">4 клас</option>
+            <option value="5">5 клас</option>
+            <option value="6">6 клас</option>
+            <option value="7">7 клас</option>
+            <option value="8">8 клас</option>
+            <option value="9">9 клас</option>
+            <option value="10">10 клас</option>
+            <option value="11">11 клас</option>
+          </select>
+
+          <select
+            id="filter-type"
+            class="filter-select"
+            onchange="applyFilters()"
+          >
+            <option value="all">📂 Всі типи</option>
+            <option value="lesson">📘 Урок</option>
+            <option value="homework">🏠 Домашня</option>
+            <option value="test">📝 Тест</option>
+          </select>
+        </div>
       </div>
 
       <div id="courses-root" class="lesson-grid"></div>
@@ -248,7 +290,53 @@
         </button>
       </div>
     </div>
+    <div id="name-modal" class="modal-overlay" style="z-index: 99999">
+      <div class="modal-content" style="text-align: left">
+        <h2 style="margin-top: 0">👋 Привіт!</h2>
+        <p style="color: #64748b; margin-bottom: 20px">
+          Я бачу, що ти тут вперше (або ми не знайомі).<br />
+          Будь ласка, введи своє <b>Ім'я та Прізвище</b>, щоб вчитель знав, чию
+          домашку перевіряти.
+        </p>
 
+        <label
+          style="
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 8px;
+          "
+          >Твоє ім'я та прізвище:</label
+        >
+        <input
+          type="text"
+          id="new-user-name"
+          placeholder="Наприклад: Даша Янчук"
+          style="
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+          "
+        />
+
+        <button
+          onclick="saveUserName()"
+          class="btn-home"
+          style="
+            background: #4f46e5;
+            color: white;
+            width: 100%;
+            justify-content: center;
+          "
+        >
+          💾 Зберегти і продовжити
+        </button>
+      </div>
+    </div>
     <script type="module" src="js/auth.js"></script>
     <script type="module" src="js/dashboard.js"></script>
   </body>

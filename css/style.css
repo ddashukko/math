@@ -1,3 +1,6 @@
+/* =========================================
+   1. БАЗОВІ НАЛАШТУВАННЯ
+   ========================================= */
 :root {
   --bg-app: #f8fafc;
   --surface: #ffffff;
@@ -15,19 +18,15 @@ body {
   color: var(--text-main);
   margin: 0;
   padding: 0;
-  height: 100dvh; /* dvh для мобільних */
-  width: 100vw;
-  overflow: hidden; /* Заборона скролу сторінки */
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
-/* Фікс для Safari */
-html {
-  height: 100dvh;
-  overflow: hidden;
-}
-
+/* =========================================
+   2. ХЕДЕР ТА НАВІГАЦІЯ
+   ========================================= */
 header {
   background: rgba(255, 255, 255, 0.9);
   padding: 1rem 2rem;
@@ -37,7 +36,7 @@ header {
   align-items: center;
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 100;
   backdrop-filter: blur(10px);
 }
 
@@ -49,6 +48,8 @@ header {
   background: #f1f5f9;
   border-radius: 8px;
   transition: 0.2s;
+  cursor: pointer;
+  border: none;
 }
 
 .btn-home:hover {
@@ -56,14 +57,232 @@ header {
 }
 
 .container {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
   width: 100%;
   box-sizing: border-box;
 }
 
-/* --- НАВІГАЦІЯ ВНИЗУ --- */
+/* Кнопка вчителя (Градієнтна) */
+.btn-teacher {
+  text-decoration: none;
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  color: white !important;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-teacher:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.6);
+  background: linear-gradient(135deg, #6d28d9, #4338ca);
+}
+.btn-teacher:active {
+  transform: scale(0.95);
+}
+
+/* =========================================
+   3. ПОШУК ТА ФІЛЬТРИ (DASHBOARD)
+   ========================================= */
+.filter-bar {
+  background: white;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  border: 1px solid var(--border);
+}
+
+.search-wrapper {
+  position: relative;
+  width: 100%;
+}
+.search-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 1.1rem;
+  pointer-events: none;
+}
+.search-input {
+  width: 100%;
+  padding: 14px 14px 14px 45px;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+.search-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+
+.filters-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.filter-select {
+  flex: 1;
+  min-width: 140px;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background-color: #f8fafc;
+  font-size: 0.95rem;
+  color: #334155;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  font-weight: 600;
+}
+.filter-select:hover {
+  background-color: white;
+  border-color: #cbd5e1;
+}
+
+/* =========================================
+   4. КАРТКИ УРОКІВ (DASHBOARD)
+   ========================================= */
+.lesson-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  padding-bottom: 40px;
+}
+
+.lesson-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.lesson-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  border-color: #cbd5e1;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.lesson-grade {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Бейджики */
+.lesson-type {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.badge-lesson {
+  background-color: #eef2ff;
+  color: #4f46e5;
+  border: 1px solid #c7d2fe;
+}
+.badge-homework {
+  background-color: #fff7ed;
+  color: #ea580c;
+  border: 1px solid #fed7aa;
+}
+.badge-test {
+  background-color: #faf5ff;
+  color: #9333ea;
+  border: 1px solid #e9d5ff;
+}
+
+.lesson-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+}
+.desc-text {
+  color: #64748b;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Прогрес бар на картці */
+.progress-container {
+  background-color: #f1f5f9;
+  border-radius: 10px;
+  height: 8px;
+  width: 100%;
+  margin-top: 12px;
+  overflow: hidden;
+  display: flex;
+}
+.progress-bar {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+.progress-correct {
+  background-color: #22c55e;
+}
+.progress-wrong {
+  background-color: #ef4444;
+}
+
+.progress-info {
+  animation: fadeIn 0.3s ease;
+}
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+.stat-correct {
+  color: #16a34a;
+}
+.stat-percent {
+  color: #4f46e5;
+}
+
+/* =========================================
+   5. ЕЛЕМЕНТИ УРОКУ (ЗАГАЛЬНІ)
+   ========================================= */
+/* Футер з навігацією */
 .footer-nav {
   margin-top: 40px;
   padding-top: 20px;
@@ -72,9 +291,8 @@ header {
   gap: 15px;
   justify-content: center;
   flex-wrap: wrap;
-  padding-bottom: 60px; 
+  padding-bottom: 60px;
 }
-
 .btn-nav-link {
   text-decoration: none;
   padding: 14px 24px;
@@ -87,177 +305,405 @@ header {
   gap: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
-
 .btn-nav-link:hover {
   transform: translateY(-3px);
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
-
-.btn-nav-link.homework { background-color: #eef2ff; color: #4f46e5; border: 1px solid #c7d2fe; }
-.btn-nav-link.homework:hover { background-color: #e0e7ff; }
-
-.btn-nav-link.test { background-color: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
-.btn-nav-link.test:hover { background-color: #ffedd5; }
-
-.btn-nav-link.lesson { background-color: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
-.btn-nav-link.lesson:hover { background-color: #dcfce7; }
-
-/* --- ПРОГРЕС --- */
-.progress-container {
-  background-color: #f1f5f9;
-  border-radius: 10px;
-  height: 10px;
-  width: 100%;
-  margin-top: 12px;
-  overflow: hidden;
-  position: relative;
-  display: flex;
+.btn-nav-link.homework {
+  background-color: #eef2ff;
+  color: #4f46e5;
+  border: 1px solid #c7d2fe;
+}
+.btn-nav-link.test {
+  background-color: #fff7ed;
+  color: #ea580c;
+  border: 1px solid #fed7aa;
+}
+.btn-nav-link.lesson {
+  background-color: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
 }
 
-.progress-bar { height: 100%; transition: width 0.5s ease; }
-.progress-correct { background-color: #22c55e; }
-.progress-wrong { background-color: #ef4444; }
-
-.stats-text {
-  font-size: 0.8rem;
-  color: #64748b;
-  margin-top: 5px;
-  display: flex;
-  justify-content: space-between;
-}
-
-/* --- МОДАЛЬНЕ ВІКНО --- */
+/* =========================================
+   6. МОДАЛЬНІ ВІКНА ТА ЛОАДЕР
+   ========================================= */
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 1000;
-  opacity: 0; pointer-events: none; transition: 0.3s;
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.3s;
 }
-
-.modal-overlay.active { opacity: 1; pointer-events: all; }
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
 
 .modal-content {
-  background: white; padding: 40px; border-radius: 24px; text-align: center;
-  max-width: 400px; width: 90%; transform: scale(0.8); transition: 0.3s;
+  background: white;
+  padding: 40px;
+  border-radius: 24px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  transform: scale(0.8);
+  transition: 0.3s;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
-
-.modal-overlay.active .modal-content { transform: scale(1); }
+.modal-overlay.active .modal-content {
+  transform: scale(1);
+}
 
 .score-circle {
-  width: 120px; height: 120px; border-radius: 50%; border: 8px solid #4f46e5;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 2.5rem; font-weight: 900; color: #4f46e5; margin: 0 auto 20px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 8px solid #4f46e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #4f46e5;
+  margin: 0 auto 20px;
 }
 
 .lesson-score {
-  background: #eef2ff; color: #4338ca; padding: 6px 14px;
-  border-radius: 20px; font-weight: 700; font-size: 0.95rem;
-  display: flex; gap: 6px; align-items: center;
+  background: #eef2ff;
+  color: #4338ca;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: flex;
+  gap: 6px;
+  align-items: center;
 }
 
-/* --- LOADER --- */
+/* Loader */
 #loader-overlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: #ffffff; z-index: 9999;
-  display: flex; align-items: center; justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: opacity 0.5s ease;
 }
-
-#loader-overlay.hidden { opacity: 0; pointer-events: none; }
-
-.loader-content { text-align: center; width: 300px; }
+#loader-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
 .spinner {
-  width: 50px; height: 50px; border: 5px solid #e2e8f0;
-  border-top: 5px solid #4f46e5; border-radius: 50%;
-  margin: 0 auto 20px; animation: spin 1s linear infinite;
+  width: 50px;
+  height: 50px;
+  border: 5px solid #e2e8f0;
+  border-top: 5px solid #4f46e5;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  animation: spin 1s linear infinite;
 }
-
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 .progress-line {
-  width: 100%; height: 6px; background: #e2e8f0;
-  border-radius: 3px; margin-top: 15px; overflow: hidden;
+  width: 100%;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: #4f46e5;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+#loader-percent {
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
-.progress-fill { height: 100%; background: #4f46e5; width: 0%; transition: width 0.3s ease; }
-#loader-percent { margin-top: 8px; color: #64748b; font-size: 0.9rem; font-weight: 600; }
-
-/* --- ADMIN --- */
-.log-item { margin-bottom: 10px; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; }
+/* =========================================
+   7. АДМІН ПАНЕЛЬ
+   ========================================= */
+.log-item {
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
 .log-summary {
-  padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between;
-  align-items: center; transition: background 0.2s;
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.2s;
 }
-.log-summary:hover { filter: brightness(0.95); }
+.log-summary:hover {
+  filter: brightness(0.95);
+}
 .log-details-hidden {
-  display: none; background: #ffffff; padding: 15px;
-  border-top: 1px solid #e2e8f0; color: #334155; font-size: 1rem; line-height: 1.6;
+  display: none;
+  background: #ffffff;
+  padding: 15px;
+  border-top: 1px solid #e2e8f0;
+  color: #334155;
+  font-size: 1rem;
+  line-height: 1.6;
 }
-.log-details-hidden.open { display: block; animation: fadeIn 0.3s ease; }
+.log-details-hidden.open {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-
-/* --- ПАНЕЛЬ РЕЗУЛЬТАТІВ --- */
+/* ПАНЕЛЬ РЕЗУЛЬТАТІВ (Вбудована) */
 .test-result-panel {
-  background: white; padding: 30px; border-radius: 16px; text-align: center;
-  border: 1px solid #e2e8f0; margin-top: 30px; animation: slideUp 0.5s ease;
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  text-align: center;
+  border: 1px solid #e2e8f0;
+  margin-top: 30px;
+  animation: slideUp 0.5s ease;
 }
 
-/* --- THEME: TEST MODE --- */
-body.mode-test .test-result-panel { border: 2px solid #e9d5ff; box-shadow: 0 10px 25px -5px rgba(147, 51, 234, 0.1); }
-body.mode-test .test-score-big { font-size: 3.5rem; font-weight: 900; color: #9333ea; margin: 15px 0; }
-body.mode-test .test-feedback { color: #64748b; margin-bottom: 25px; font-size: 1.1rem; }
+/* =========================================
+   8. ТЕМИ (GLOBAL OVERRIDES)
+   ========================================= */
+
+/* --- TEST MODE (ФІОЛЕТОВИЙ) --- */
+body.mode-test {
+  background-color: #f3e8ff;
+}
+body.mode-test header {
+  background: #fff;
+  border-bottom: 3px solid #9333ea;
+}
+body.mode-test .test-result-panel {
+  border: 2px solid #e9d5ff;
+  box-shadow: 0 10px 25px -5px rgba(147, 51, 234, 0.1);
+}
+body.mode-test .test-score-big {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: #9333ea;
+  margin: 15px 0;
+}
+body.mode-test .test-feedback {
+  color: #64748b;
+  margin-bottom: 25px;
+  font-size: 1.1rem;
+}
 body.mode-test .btn-retry {
-  background: #9333ea; color: white; font-weight: 600; padding: 14px 24px;
-  border-radius: 10px; border: none; cursor: pointer; width: 100%; margin-bottom: 12px;
-  font-size: 1rem; display: inline-flex; justify-content: center; align-items: center; gap: 8px;
+  background: #9333ea;
+  color: white;
+  font-weight: 600;
+  padding: 14px 24px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 12px;
+  font-size: 1rem;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
 }
-body.mode-test .btn-retry:hover { background: #7e22ce; }
+body.mode-test .btn-retry:hover {
+  background: #7e22ce;
+}
 body.mode-test .btn-back-lesson {
-  background: white; color: #475569; font-weight: 600; padding: 14px 24px;
-  border-radius: 10px; border: 2px solid #e2e8f0; cursor: pointer; width: 100%;
-  font-size: 1rem; display: inline-flex; justify-content: center; align-items: center; gap: 8px;
+  background: white;
+  color: #475569;
+  font-weight: 600;
+  padding: 14px 24px;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1rem;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
 }
-body.mode-test .btn-back-lesson:hover { background: #faf5ff; border-color: #d8b4fe; color: #6b21a8; }
+body.mode-test .btn-back-lesson:hover {
+  background: #faf5ff;
+  border-color: #d8b4fe;
+  color: #6b21a8;
+}
 
-/* --- THEME: HOMEWORK MODE --- */
-body.mode-homework { background-color: #fff7ed; }
-body.mode-homework header { background: #fff; border-bottom: 3px solid #f97316; }
-body.mode-homework .btn-home { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
-body.mode-homework .btn-home:hover { background: #ffedd5; }
-body.mode-homework .test-result-panel { border: 2px solid #fed7aa; background: white; }
+/* Стилі для уроку всередині Test Mode (якщо lesson.css не перекриває) */
+body.mode-test .exercise-block {
+  background: white;
+  border: 1px solid #e9d5ff;
+  border-left: 5px solid #9333ea;
+}
+body.mode-test .exercise-header h3 {
+  color: #7e22ce;
+}
+body.mode-test input {
+  border: 2px solid #d8b4fe;
+}
+body.mode-test input:focus {
+  border-color: #9333ea;
+  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.2);
+}
+body.mode-test .option-btn {
+  border-color: #e9d5ff;
+  color: #581c87;
+}
+body.mode-test .option-btn.selected {
+  background: #f3e8ff;
+  color: #6b21a8;
+  border-color: #9333ea;
+}
+
+/* --- HOMEWORK MODE (ОРАНЖЕВИЙ) --- */
+body.mode-homework {
+  background-color: #fff7ed;
+}
+body.mode-homework header {
+  background: #fff;
+  border-bottom: 3px solid #f97316;
+}
+body.mode-homework .btn-home {
+  background: #fff7ed;
+  color: #ea580c;
+  border: 1px solid #fed7aa;
+}
+body.mode-homework .btn-home:hover {
+  background: #ffedd5;
+}
+body.mode-homework .test-result-panel {
+  border: 2px solid #fed7aa;
+  background: white;
+}
 body.mode-homework .test-score-big {
-  color: #ea580c; background: linear-gradient(135deg, #f97316, #ea580c);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  color: #ea580c;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
 }
-body.mode-homework .btn-retry { background: #f97316; color: white; box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.3); }
-body.mode-homework .btn-retry:hover { background: #ea580c; }
-body.mode-homework .btn-back-lesson { border-color: #ffedd5 !important; color: #c2410c; }
-body.mode-homework .score-circle { border-color: #f97316; color: #ea580c; background: #fff7ed; }
-body.mode-homework .modal-content button { background: #f97316; }
-body.mode-homework .modal-content button:hover { background: #ea580c; }
+body.mode-homework .btn-retry {
+  background: #f97316;
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.3);
+}
+body.mode-homework .btn-retry:hover {
+  background: #ea580c;
+}
+body.mode-homework .btn-back-lesson {
+  border-color: #ffedd5 !important;
+  color: #c2410c;
+}
+body.mode-homework .score-circle {
+  border-color: #f97316;
+  color: #ea580c;
+  background: #fff7ed;
+}
+body.mode-homework .modal-content button {
+  background: #f97316;
+}
+body.mode-homework .modal-content button:hover {
+  background: #ea580c;
+}
 
-/* --- MOBILE & GLOBAL --- */
+/* Стилі для уроку всередині Homework Mode */
+body.mode-homework .exercise-block {
+  border-left: 5px solid #f97316;
+}
+body.mode-homework .exercise-header h3 {
+  color: #c2410c;
+}
+body.mode-homework input[type="text"]:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+}
+body.mode-homework .btn-check {
+  background: #f97316;
+}
+body.mode-homework .btn-check:hover {
+  background: #ea580c;
+}
+body.mode-homework .option-btn:hover {
+  border-color: #f97316;
+  color: #c2410c;
+  background: #fff7ed;
+}
+body.mode-homework .option-btn.selected {
+  background: #fff7ed;
+  border-color: #f97316;
+  color: #c2410c;
+}
+
+/* =========================================
+   9. МОБІЛЬНА АДАПТАЦІЯ (GLOBAL)
+   ========================================= */
 @media (max-width: 768px) {
-  header { padding: 10px 15px; flex-wrap: nowrap; gap: 10px; }
-  header div:first-child { font-size: 1.2rem !important; white-space: nowrap; flex-shrink: 0; }
-  .btn-home, #login-btn, #logout-btn { padding: 6px 12px; font-size: 0.85rem; }
-  #user-display { display: none !important; }
-  #user-avatar { margin-right: 0; }
-  .container { padding: 15px; max-width: 100%; }
-}
+  header {
+    padding: 10px 15px;
+    gap: 10px;
+  }
+  header div:first-child {
+    font-size: 1.2rem !important;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .btn-home,
+  #login-btn,
+  #logout-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+  #user-display {
+    display: none !important;
+  }
+  #user-avatar {
+    margin-right: 0;
+  }
+  .container {
+    padding: 15px;
+    max-width: 100%;
+  }
 
-.btn-teacher {
-  text-decoration: none; background: linear-gradient(135deg, #7c3aed, #4f46e5);
-  color: white !important; font-weight: 700; padding: 8px 16px; border-radius: 20px;
-  font-size: 0.95rem; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
-  border: 2px solid transparent; transition: all 0.3s ease; display: flex; align-items: center; gap: 6px;
+  .filters-group {
+    flex-direction: column;
+  }
+  .lesson-grid {
+    grid-template-columns: 1fr;
+  }
 }
-.btn-teacher:hover {
-  transform: translateY(-2px); box-shadow: 0 6px 20px rgba(124, 58, 237, 0.6);
-  background: linear-gradient(135deg, #6d28d9, #4338ca);
-}
-.btn-teacher:active { transform: scale(0.95); }

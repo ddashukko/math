@@ -7,231 +7,296 @@ import {
 } from "./firebase-config.js";
 import { courses } from "./courses-data.js";
 
-// 🛑 ТВОЯ ПОШТА ТУТ (Заміни на свою!)
-const TEACHER_EMAILS = ["dasha.kerroll@gmail.com"];
+// 🔒 Тільки для тебе
+const ADMIN_EMAIL = "dasha.kerroll@gmail.com";
 
+// Перевірка прав доступу
 onAuthStateChanged(auth, (user) => {
-  if (user) {
-    if (!TEACHER_EMAILS.includes(user.email)) {
-      alert("Немає доступу до журналу!");
-      window.location.href = "index.html";
-      return;
-    }
-    document.getElementById("admin-user").innerText = user.email;
-    loadAdminData();
+  if (user && user.email === ADMIN_EMAIL) {
+    initAdminPanel();
   } else {
-    window.location.href = "index.html";
+    document.body.innerHTML =
+      "<div style='display:flex; justify-content:center; align-items:center; height:100vh; flex-direction:column;'><h1>⛔ Доступ заборонено</h1><a href='index.html'>На головну</a></div>";
   }
 });
 
-async function loadAdminData() {
-  const tableBody = document.getElementById("table-body");
-  tableBody.innerHTML =
-    "<tr><td colspan='5' style='text-align:center; padding:20px;'>🔄 Завантаження...</td></tr>";
+// 🚀 ЗАПУСК АДМІНКИ
+async function initAdminPanel() {
+  const listContainer = document.getElementById("students-container");
+  listContainer.innerHTML = "<div class='spinner'></div>";
 
   try {
-    const usersSnapshot = await getDocs(collection(db, "users"));
-    if (usersSnapshot.empty) {
-      tableBody.innerHTML =
-        "<tr><td colspan='5' style='text-align:center'>Список порожній</td></tr>";
+    const usersRef = collection(db, "users");
+    const snapshot = await getDocs(usersRef);
+
+    listContainer.innerHTML = "";
+
+    if (snapshot.empty) {
+      listContainer.innerHTML =
+        "<p style='text-align:center; color:#94a3b8;'>Поки немає учнів.</p>";
       return;
     }
 
-    tableBody.innerHTML = "";
+    let students = [];
+    snapshot.forEach((doc) => students.push(doc.data()));
 
-    for (const userDoc of usersSnapshot.docs) {
-      const userEmail = userDoc.id;
-      const userData = userDoc.data();
-      const studentName =
-        userData.nickname || userData.displayName || "Без імені";
+    // Сортуємо за іменем
+    students.sort((a, b) =>
+      (a.displayName || "").localeCompare(b.displayName || ""),
+    );
 
-      const nameHTML = `
-                <div style="font-weight: 700; color: #1e293b; font-size: 1rem;">${studentName}</div>
-                <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;">${userEmail}</div>
-            `;
-      const pureName = studentName;
-      const lastActive = userData.lastActive
-        ? userData.lastActive.toDate().toLocaleString("uk-UA")
-        : "—";
+    students.forEach((data) => {
+      if (data.email === ADMIN_EMAIL) return;
 
-      const progressRef = collection(db, "users", userEmail, "progress");
-      const progressSnapshot = await getDocs(progressRef);
+      const div = document.createElement("div");
+      div.className = "student-item";
+      const lastSeen = data.lastActive
+        ? new Date(data.lastActive.seconds * 1000).toLocaleDateString("uk-UA")
+        : "-";
 
-      if (progressSnapshot.empty) {
-        renderRow(
-          tableBody,
-          userEmail,
-          nameHTML,
-          "—",
-          "—",
-          lastActive,
-          "—",
-          null,
-        );
-        continue;
-      }
+      div.innerHTML = `
+          <div class="st-name">${data.displayName || "Без імені 🤷‍♂️"}</div>
+          <div class="st-email">${data.email}</div>
+          <div class="st-last">Був(ла): ${lastSeen}</div>
+      `;
 
-      progressSnapshot.forEach((progDoc) => {
-        const prog = progDoc.data();
-        const courseInfo = courses.find((c) => c.id === prog.lessonId);
-        const lessonTitle = courseInfo ? courseInfo.title : prog.lessonId;
-        renderRow(
-          tableBody,
-          userEmail,
-          nameHTML,
-          lessonTitle,
-          `${prog.percent}%`,
-          lastActive,
-          `${prog.correct}/${prog.totalTasks}`,
-          prog.lessonId,
-          pureName,
-        );
-      });
-    }
-  } catch (error) {
-    console.error("Помилка:", error);
-    tableBody.innerHTML = `<tr><td colspan='5' style="color:red; text-align:center;">Помилка: ${error.message}</td></tr>`;
+      div.onclick = () => loadStudentDetails(data, div);
+      listContainer.appendChild(div);
+    });
+
+    document.getElementById("loader-panel").style.display = "none";
+    document.getElementById("admin-layout").style.display = "flex";
+  } catch (e) {
+    console.error(e);
+    alert("Помилка завантаження списку: " + e.message);
   }
 }
 
-function renderRow(
-  container,
-  email,
-  nameHTML,
-  lesson,
-  percent,
-  time,
-  score,
-  lessonId,
-  pureName,
-) {
-  const row = document.createElement("tr");
-  let percentColor = "#94a3b8";
-  if (percent !== "—") {
-    const pVal = parseInt(percent);
-    percentColor = "#ef4444";
-    if (pVal >= 50) percentColor = "#eab308";
-    if (pVal >= 80) percentColor = "#22c55e";
-  }
+// 📋 ЗАВАНТАЖЕННЯ ЖУРНАЛУ УЧНЯ
+async function loadStudentDetails(userData, element) {
+  document
+    .querySelectorAll(".student-item")
+    .forEach((el) => el.classList.remove("active"));
+  element.classList.add("active");
 
-  row.style.cursor = lessonId ? "pointer" : "default";
-  row.innerHTML = `
-        <td style="padding: 12px 16px;">${nameHTML}</td>
-        <td style="font-weight: 500; color: #475569;">${lesson}</td>
-        <td>${percent !== "—" ? `<span class="score-badge" style="background:${percentColor}20; color:${percentColor}">${percent}</span>` : "—"}</td>
-        <td style="font-size:0.9rem;">${score}</td>
-        <td style="color:#64748b; font-size:0.85rem;">${time}</td>
-    `;
+  document.getElementById("placeholder-msg").style.display = "none";
+  document.getElementById("student-content").style.display = "block";
+  document.getElementById("st-profile-name").innerText =
+    userData.displayName || "Учень";
+  document.getElementById("st-profile-email").innerText = userData.email;
 
-  if (lessonId) {
-    row.onclick = () => openStudentDetails(email, lessonId, lesson, pureName);
-  }
-  container.appendChild(row);
-}
-
-window.openStudentDetails = async function (
-  email,
-  lessonId,
-  lessonTitle,
-  studentName,
-) {
-  const modal = document.getElementById("detail-modal");
-  const title = document.getElementById("modal-title");
-  const body = document.getElementById("modal-body");
-
-  modal.classList.add("active");
-  title.innerText = `${studentName} — ${lessonTitle}`;
-  body.innerHTML =
-    "<div style='text-align:center; padding:30px; color:#64748b;'>🔍 Завантажуємо...</div>";
+  const worksContainer = document.getElementById("works-container");
+  worksContainer.innerHTML = "<div class='spinner'></div>";
 
   try {
-    // 🔥 ВИЗНАЧЕННЯ ШЛЯХУ (НОВА ЛОГІКА)
-    const course = courses.find((c) => c.id === lessonId);
-    let fetchPath = "";
-    if (course) {
-      fetchPath = `data/${course.subject}/${course.grade}/${course.type}/${course.filename}.json`;
-    } else {
-      fetchPath = `data/${lessonId}.json`;
+    const progressRef = collection(db, "users", userData.email, "progress");
+    const progressSnap = await getDocs(progressRef);
+
+    document.getElementById("st-total-score").innerText = progressSnap.size;
+    worksContainer.innerHTML = "";
+
+    if (progressSnap.empty) {
+      worksContainer.innerHTML =
+        "<p style='text-align:center; color:#94a3b8; margin-top:20px;'>Цей учень ще не здав жодної роботи.</p>";
+      return;
     }
 
-    const lessonResponse = await fetch(fetchPath);
-    if (!lessonResponse.ok) throw new Error("Файл не знайдено");
-    const lessonData = await lessonResponse.json();
+    let records = [];
+    progressSnap.forEach((doc) => records.push(doc.data()));
+    records.sort((a, b) => b.lastUpdate.seconds - a.lastUpdate.seconds);
+
+    const table = document.createElement("table");
+    table.className = "results-table";
+    table.innerHTML = `
+        <thead>
+            <tr>
+                <th>Робота</th>
+                <th>Оцінка</th>
+                <th>Дата</th>
+                <th>Перевірка</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    `;
+    const tbody = table.querySelector("tbody");
+
+    records.forEach((prog) => {
+      const courseInfo = courses.find((c) => c.id === prog.lessonId);
+      const title = courseInfo
+        ? `${courseInfo.title} <span style="color:#94a3b8; font-weight:400; font-size:0.8em">(${courseInfo.grade} кл)</span>`
+        : prog.lessonId;
+      const type = courseInfo ? courseInfo.type : "lesson";
+
+      const markHTML = calculate12Scale(prog.percent);
+      const date = new Date(prog.lastUpdate.seconds * 1000).toLocaleDateString(
+        "uk-UA",
+      );
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+          <td>
+              <div style="font-weight:600; color:#334155;">${title}</div>
+              <div style="font-size:0.75rem; color:#64748b; text-transform:uppercase; font-weight:700;">
+                ${type === "test" ? "📝 Тест" : type === "homework" ? "🏠 ДЗ" : "📘 Урок"}
+              </div>
+          </td>
+          <td>
+              ${markHTML}
+              <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">${prog.percent}% (${prog.correct}/${prog.totalTasks})</div>
+          </td>
+          <td style="color:#64748b; font-size:0.9rem;">${date}</td>
+          <td>
+              <button class="btn-home" style="padding:6px 12px; font-size:0.8rem; background:#f1f5f9; color:#334155;" 
+                  onclick="toggleDetails('${userData.email}', '${prog.lessonId}', this)">
+                  👁️ Деталі
+              </button>
+          </td>
+      `;
+      tbody.appendChild(row);
+
+      const detailRow = document.createElement("tr");
+      detailRow.innerHTML = `<td colspan="4" style="padding:0; border:none;"><div id="det-${prog.lessonId}" class="answers-detail">Завантаження...</div></td>`;
+      tbody.appendChild(detailRow);
+    });
+
+    worksContainer.appendChild(table);
+  } catch (e) {
+    console.error(e);
+    worksContainer.innerHTML = `<p style="color:red">Помилка: ${e.message}</p>`;
+  }
+}
+
+// 🕵️‍♀️ ДЕТАЛЬНИЙ РОЗБІР ПОЛЬОТІВ (З MATHJAX 🔥)
+window.toggleDetails = async function (email, lessonId, btn) {
+  const container = document.getElementById(`det-${lessonId}`);
+
+  if (container.style.display === "block") {
+    container.style.display = "none";
+    btn.innerText = "👁️ Деталі";
+    btn.style.background = "#f1f5f9";
+    btn.style.color = "#334155";
+    return;
+  }
+
+  container.style.display = "block";
+  btn.innerText = "❌ Закрити";
+  btn.style.background = "#eef2ff";
+  btn.style.color = "#4f46e5";
+
+  if (container.getAttribute("data-loaded") === "true") return;
+
+  try {
+    const course = courses.find((c) => c.id === lessonId);
+    let exercisesData = [];
+
+    if (course) {
+      const fetchPath = `data/${course.subject}/${course.grade}/${course.type}/${course.filename}.json`;
+      const resp = await fetch(fetchPath);
+      if (!resp.ok) throw new Error("Файл уроку не знайдено");
+      const json = await resp.json();
+      exercisesData = json.exercises;
+    } else {
+      container.innerHTML = "Урок видалено або переміщено.";
+      return;
+    }
 
     const solutionsRef = collection(db, "users", email, "solutions");
-    const snapshot = await getDocs(solutionsRef);
+    const solSnap = await getDocs(solutionsRef);
 
-    let solutions = [];
-    snapshot.forEach((doc) => {
-      if (doc.data().taskId.startsWith(lessonId)) {
-        solutions.push(doc.data());
+    let userAnswers = {};
+    solSnap.forEach((doc) => {
+      const d = doc.data();
+      if (d.taskId && d.taskId.startsWith(lessonId)) {
+        userAnswers[d.taskId] = d;
       }
     });
 
-    if (solutions.length === 0) {
-      body.innerHTML =
-        "<p style='text-align:center'>Немає детальних відповідей.</p>";
-      return;
-    }
+    let html = "";
 
-    solutions.sort((a, b) => a.taskId.localeCompare(b.taskId));
+    exercisesData.forEach((ex) => {
+      ex.tasks.forEach((task) => {
+        const uniqueId = `${lessonId}_${ex.id}_${task.id}`;
+        const userAns = userAnswers[uniqueId];
 
-    let html = `<div style="margin-bottom:15px; font-weight:bold; color:#4f46e5; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">Детальний звіт</div>`;
-
-    solutions.forEach((sol) => {
-      const parts = sol.taskId.split("_");
-      let niceName = "Завдання";
-      let questionText = "Умова не знайдена.";
-
-      if (parts.length >= 3) {
-        const exNum = parts[1].replace(/\D/g, "");
-        const taskNum = parts[2].replace(/\D/g, "");
-        niceName = `Вправа ${exNum}, Завдання ${taskNum}`;
-        const exercise = lessonData.exercises.find((e) => e.id === parts[1]);
-        if (exercise) {
-          const task = exercise.tasks.find((t) => t.id === parts[2]);
-          if (task) questionText = task.q;
-        }
-      } else {
-        niceName = parts[parts.length - 1];
-      }
-
-      const isCorrect = sol.correct;
-      const statusColor = isCorrect ? "#16a34a" : "#dc2626";
-      const statusIcon = isCorrect ? "✅ Правильно" : "❌ Помилка";
-      const bgSummary = isCorrect ? "#f0fdf4" : "#fef2f2";
-      const borderSummary = isCorrect ? "#bbf7d0" : "#fecaca";
-
-      html += `
-            <div class="log-item">
-                <div class="log-summary" style="background: ${bgSummary}; border-bottom: 1px solid ${borderSummary};" onclick="toggleDetails(this)">
-                    <div style="font-weight: 700; color: #334155;">${niceName}</div>
-                    <div style="font-weight: 600; color: ${statusColor}; font-size: 0.9rem;">${statusIcon}</div>
-                </div>
-                <div class="log-details-hidden">
-                    <div style="margin-bottom: 10px;">
-                        <strong style="color:#4f46e5; font-size:0.85rem;">УМОВА:</strong>
-                        <div style="margin-top:4px; font-family:serif; font-size:1.1rem; padding-left:10px; border-left:3px solid #e2e8f0;">${questionText}</div>
-                    </div>
-                    <div>
-                        <strong style="color:#4f46e5; font-size:0.85rem;">ВІДПОВІДЬ:</strong>
-                        <div style="margin-top:4px; font-weight:bold; font-size:1rem; padding:6px 10px; background:#f8fafc; border-radius:6px; display:inline-block; border:1px solid #cbd5e1;">${sol.answer}</div>
-                    </div>
-                </div>
+        if (!userAns) {
+          html += `
+            <div class="q-item" style="border-left: 3px solid #cbd5e1;">
+                <div class="q-text">❓ Питання ${task.id}: ${task.q}</div>
+                <div class="q-ans" style="color:#94a3b8;">(Немає відповіді)</div>
             </div>`;
+          return;
+        }
+
+        const isCorrect = userAns.correct;
+        const borderColor = isCorrect ? "#22c55e" : "#ef4444";
+        const icon = isCorrect ? "✅" : "❌";
+
+        const studentText = userAns.answer.toString().replace(/"/g, "");
+        const correctText = task.a.toString().replace(/"/g, "");
+
+        html += `
+            <div class="q-item" style="border-left: 3px solid ${borderColor}; padding-left:12px;">
+                <div class="q-text" style="font-size:0.9rem; margin-bottom:4px; color:#475569;">
+                   ${task.id}) ${task.q}
+                </div>
+                <div class="q-ans" style="font-size:1rem;">
+                    <span style="font-weight:700; color:${isCorrect ? "#15803d" : "#b91c1c"}">
+                        ${studentText}
+                    </span> ${icon}
+                    
+                    ${
+                      !isCorrect
+                        ? `<div class="ans-real" style="margin-top:4px; color:#64748b; font-size:0.85rem;">
+                             💡 Правильно: <b>${correctText}</b>
+                           </div>`
+                        : ""
+                    }
+                </div>
+            </div>
+        `;
+      });
     });
 
-    body.innerHTML = html;
+    if (html === "") html = "<p>Немає даних для відображення.</p>";
+    container.innerHTML = html;
+    container.setAttribute("data-loaded", "true");
+
+    // 🔥 АКТИВАЦІЯ MATHJAX ДЛЯ ЦЬОГО БЛОКУ 🔥
     if (window.MathJax && window.MathJax.typesetPromise) {
-      await MathJax.typesetPromise([body]);
+      window.MathJax.typesetPromise([container])
+        .then(() => {
+          console.log("Формули відмальовано!");
+        })
+        .catch((err) => console.log("MathJax помилка:", err));
     }
   } catch (e) {
     console.error(e);
-    body.innerHTML = `<p style="color:red">Помилка: ${e.message}</p>`;
+    container.innerHTML = `<span style="color:red">Помилка: ${e.message}</span>`;
   }
 };
 
-window.toggleDetails = function (element) {
-  const details = element.nextElementSibling;
-  details.classList.toggle("open");
-};
+function calculate12Scale(percent) {
+  let mark = 1;
+  if (percent >= 95) mark = 12;
+  else if (percent >= 90) mark = 11;
+  else if (percent >= 85) mark = 10;
+  else if (percent >= 75) mark = 9;
+  else if (percent >= 65) mark = 8;
+  else if (percent >= 55) mark = 7;
+  else if (percent >= 45) mark = 6;
+  else if (percent >= 35) mark = 5;
+  else if (percent >= 25) mark = 4;
+  else if (percent >= 15) mark = 3;
+  else if (percent >= 5) mark = 2;
+  else mark = 1;
+
+  let color = "#ef4444";
+  if (mark >= 4) color = "#f97316";
+  if (mark >= 7) color = "#eab308";
+  if (mark >= 10) color = "#16a34a";
+
+  return `<span class="res-badge" style="background:${color}20; color:${color}; border:1px solid ${color}">${mark}</span>`;
+}
+
+window.loadStudentDetails = loadStudentDetails;
+window.toggleDetails = toggleDetails;

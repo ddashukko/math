@@ -7,106 +7,192 @@ import {
 } from "./firebase-config.js";
 import { courses } from "./courses-data.js";
 
+// 💾 КЕШ ПРОГРЕСУ (Щоб не дьоргалось при пошуку)
+let userProgressCache = {};
+
 document.addEventListener("DOMContentLoaded", () => {
-  window.applyFilters = applyFilters;
-  renderCourseCards(courses);
+  renderCourseCards(courses); // Спочатку малюємо пусті
 });
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (user) {
-    if (ADMIN_EMAILS.includes(user.email)) {
+    if (["dasha.kerroll@gmail.com"].includes(user.email)) {
       const btn = document.getElementById("teacher-btn");
-      if (btn) btn.style.display = "flex"; // ПОКАЗУЄМО КНОПКУ
+      if (btn) btn.style.display = "flex";
     }
-    updateUserProgress(user.email);
+    if (!user.displayName || user.displayName === user.email) {
+      document.getElementById("name-modal").classList.add("active");
+    }
+
+    await loadUserProgress(user.email);
+    applyFilters();
   }
 });
 
-function applyFilters() {
-  const subject = document.getElementById("filter-subject").value;
-  const grade = document.getElementById("filter-grade").value;
-  const type = document.getElementById("filter-type").value;
+// 🔥 ФУНКЦІЯ ЗБЕРЕЖЕННЯ ІМЕНІ (Викликається кнопкою з модалки)
+window.saveUserName = async function () {
+  const input = document.getElementById("new-user-name");
+  const name = input.value.trim();
+
+  if (name.length < 3) {
+    alert("Будь ласка, введи повне ім'я.");
+    return;
+  }
+
+  const user = auth.currentUser;
+  if (user) {
+    try {
+      // 1. Оновлюємо профіль Auth
+      // Примітка: updateProfile треба імпортувати з firebase-config, але для спрощення зробимо запис в БД
+
+      // 2. Пишемо в базу даних (Головне джерело для Адмінки)
+      await setDoc(
+        doc(db, "users", user.email),
+        {
+          email: user.email,
+          displayName: name, // 🔥 Ось це ми будемо показувати в журналі
+          lastActive: new Date(),
+        },
+        { merge: true },
+      );
+
+      // Ховаємо модалку
+      document.getElementById("name-modal").classList.remove("active");
+      location.reload(); // Перезавантажуємо, щоб ім'я підтягнулось всюди
+    } catch (e) {
+      console.error("Error saving name:", e);
+      alert("Помилка збереження. Спробуй ще раз.");
+    }
+  }
+};
+
+// 🔥 ФУНКЦІЯ ЗАВАНТАЖЕННЯ ДАНИХ (Один раз при вході)
+async function loadUserProgress(email) {
+  try {
+    const querySnapshot = await getDocs(
+      collection(db, "users", email, "progress"),
+    );
+    userProgressCache = {}; // Очищаємо кеш
+
+    querySnapshot.forEach((doc) => {
+      userProgressCache[doc.data().lessonId] = doc.data();
+    });
+    console.log("Прогрес завантажено:", userProgressCache);
+  } catch (error) {
+    console.error("Помилка завантаження прогресу:", error);
+  }
+}
+
+// 🔥 ФУНКЦІЯ ФІЛЬТРАЦІЇ (Працює з кешем)
+window.applyFilters = function () {
+  const subjectEl = document.getElementById("filter-subject");
+  const gradeEl = document.getElementById("filter-grade");
+  const typeEl = document.getElementById("filter-type");
+  const searchInput = document.getElementById("search-input");
+
+  const subject = subjectEl ? subjectEl.value : "all";
+  const grade = gradeEl ? gradeEl.value : "all";
+  const type = typeEl ? typeEl.value : "all";
+  const searchText = searchInput ? searchInput.value.toLowerCase().trim() : "";
 
   const filtered = courses.filter((course) => {
     const matchSubject = subject === "all" || course.subject === subject;
     const matchGrade =
       grade === "all" || String(course.grade) === String(grade);
     const matchType = type === "all" || course.type === type;
-    return matchSubject && matchGrade && matchType;
+
+    let matchSearch = true;
+    if (searchText) {
+      matchSearch =
+        course.title.toLowerCase().includes(searchText) ||
+        (course.desc && course.desc.toLowerCase().includes(searchText)) ||
+        (course.badgeText &&
+          course.badgeText.toLowerCase().includes(searchText)) ||
+        String(course.grade).includes(searchText);
+    }
+
+    return matchSubject && matchGrade && matchType && matchSearch;
   });
 
   renderCourseCards(filtered);
-  if (auth.currentUser) {
-    updateUserProgress(auth.currentUser.email);
-  }
-}
+};
 
-function renderCourseCards(dataList) {
-  const grid = document.getElementById("courses-root");
+// 🔥 РЕНДЕР КАРТОК (Бере дані з userProgressCache)
+function renderCourseCards(coursesList) {
+  const grid = document.querySelector(".lesson-grid");
   if (!grid) return;
-  grid.innerHTML = "";
 
-  if (dataList.length === 0) {
-    grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:#94a3b8; padding:40px;">Нічого не знайдено 🍃</div>`;
+  grid.innerHTML = ""; // Очищаємо
+
+  if (coursesList.length === 0) {
+    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #94a3b8;">
+      🤷‍♂️ Нічого не знайдено...
+    </div>`;
     return;
   }
 
-  dataList.forEach((course) => {
-    let badgeStyle = "background:#e0e7ff; color:#4338ca";
-    if (course.type === "homework")
-      badgeStyle = "background:#fef3c7; color:#d97706";
-    if (course.type === "test")
-      badgeStyle = "background:#fee2e2; color:#b91c1c";
+  coursesList.forEach((course) => {
+    // Отримуємо дані з кешу (якщо є)
+    const progress = userProgressCache[course.id];
+
+    let progressHTML = "";
+    let descStyle = "display: block;";
+
+    // ЛОГІКА СМУЖКИ ПРОГРЕСУ
+    if (progress) {
+      const total =
+        progress.totalTasks || progress.correct + progress.wrong || 1;
+      const correctPct = (progress.correct / total) * 100;
+      const wrongPct = (progress.wrong / total) * 100;
+      // Решта (сіре) заповниться автоматично, бо контейнер має сірий фон
+
+      descStyle = "display: none;"; // Ховаємо опис, якщо є прогрес
+
+      progressHTML = `
+        <div class="progress-info" style="display: block;">
+            <div class="progress-stats">
+                <span class="stat-correct">${progress.correct} прав.</span>
+                <span class="stat-percent">${progress.percent}%</span>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar progress-correct" style="width: ${correctPct}%"></div>
+                <div class="progress-bar progress-wrong" style="width: ${wrongPct}%"></div>
+            </div>
+        </div>
+      `;
+    } else {
+      // Якщо прогресу немає - пуста заглушка (прихована)
+      progressHTML = `
+        <div class="progress-info" style="display: none;">
+            <div class="progress-stats">
+                <span class="stat-correct">0 прав.</span>
+                <span class="stat-percent">0%</span>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar progress-correct" style="width: 0%"></div>
+                <div class="progress-bar progress-wrong" style="width: 0%"></div>
+            </div>
+        </div>
+      `;
+    }
+
+    // Вставляємо бейджик
+    let badgeClass = "badge-lesson";
+    if (course.type === "homework") badgeClass = "badge-homework";
+    if (course.type === "test") badgeClass = "badge-test";
 
     const html = `
         <a href="lesson.html?id=${course.id}" class="lesson-card" data-id="${course.id}">
-            <div style="display:flex; justify-content:space-between; align-items:start;">
-                <span class="badge" style="${badgeStyle}">${course.badgeText}</span>
-                <span style="font-size:0.75rem; color:#94a3b8; font-weight:600; border:1px solid #e2e8f0; padding:2px 6px; border-radius:4px;">${course.grade} клас</span>
+            <div class="card-header">
+                <span class="lesson-grade">${course.grade} клас</span>
+                <span class="lesson-type ${badgeClass}">${course.badgeText || "Урок"}</span>
             </div>
-            <h3 style="margin: 10px 0;">${course.title}</h3>
-            <div class="progress-info" style="display:none; margin-top:15px;">
-                <div class="progress-container">
-                    <div class="progress-bar progress-correct" style="width: 0%"></div>
-                    <div class="progress-bar progress-wrong" style="width: 0%"></div>
-                </div>
-                <div class="stats-text"><span class="stat-correct">0 прав.</span><span class="stat-percent">0%</span></div>
-            </div>
-            <p class="desc-text" style="color: #64748b; font-size: 0.9rem; margin-top:10px;">${course.desc}</p>
+            <h3 class="lesson-title">${course.title}</h3>
+            
+            ${progressHTML}
+            
+            <p class="desc-text" style="color: #64748b; font-size: 0.9rem; margin-top:10px; ${descStyle}">${course.desc}</p>
         </a>`;
     grid.innerHTML += html;
   });
-}
-
-async function updateUserProgress(email) {
-  try {
-    const querySnapshot = await getDocs(
-      collection(db, "users", email, "progress"),
-    );
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      const card = document.querySelector(
-        `.lesson-card[data-id="${data.lessonId}"]`,
-      );
-      if (card) {
-        const progressBlock = card.querySelector(".progress-info");
-        const descText = card.querySelector(".desc-text");
-        if (progressBlock) progressBlock.style.display = "block";
-        if (descText) descText.style.display = "none";
-        const total = data.totalTasks || data.correct + data.wrong;
-        if (total === 0) return;
-        const correctPercent = (data.correct / total) * 100;
-        const wrongPercent = (data.wrong / total) * 100;
-        card.querySelector(".progress-correct").style.width =
-          `${correctPercent}%`;
-        card.querySelector(".progress-wrong").style.width = `${wrongPercent}%`;
-        card.querySelector(".stat-correct").innerText =
-          `✅ ${data.correct} прав.`;
-        card.querySelector(".stat-percent").innerText =
-          `${Math.round(correctPercent)}%`;
-      }
-    });
-  } catch (error) {
-    console.error("Помилка:", error);
-  }
 }
