@@ -5,7 +5,7 @@
   "links": [
     {
       "title": "🔙 До уроку",
-      "url": "../lessons/multiplication-division.html",
+      "url": "lesson.html?id=alg-7-topic1-lesson",
       "type": "lesson"
     }
   ],
