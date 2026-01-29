@@ -689,3 +689,128 @@ body.mode-test .btn-back-lesson:hover {
 .btn-teacher:active {
   transform: scale(0.95);
 }
+
+/* =========================================
+   🏆 PRO STYLES: ПАНЕЛЬ РЕЗУЛЬТАТІВ
+   ========================================= */
+
+/* Контейнер для результату (центрування та анімація) */
+.test-result-panel {
+  background: #ffffff;
+  max-width: 480px;
+  margin: 40px auto; /* Центруємо по горизонталі */
+  padding: 40px 30px;
+  border-radius: 24px;
+  text-align: center;
+  position: relative;
+
+  /* Тінь для ефекту глибини ("левітація") */
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+  /* Рамка: за замовчуванням нейтральна, але в режимі тесту буде кольоровою */
+  border: 2px solid #e2e8f0;
+
+  /* Плавна поява */
+  animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Специфіка для режиму ТЕСТУ (Фіолетова тема) */
+body.mode-test .test-result-panel {
+  border-color: #e9d5ff;
+  box-shadow:
+    0 20px 25px -5px rgba(147, 51, 234, 0.15),
+    0 8px 10px -6px rgba(147, 51, 234, 0.1);
+}
+
+/* Заголовок "Роботу здано!" */
+.test-result-panel h3 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.5px;
+}
+
+/* Великі цифри відсотків */
+.test-score-big {
+  font-size: 5rem;
+  font-weight: 900;
+  line-height: 1;
+  margin: 20px 0;
+
+  /* Градієнтний текст (виглядає дуже сучасно) */
+  background: linear-gradient(135deg, #4f46e5, #9333ea);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Текст підсумку */
+.test-feedback {
+  font-size: 1.1rem;
+  color: #64748b;
+  margin-bottom: 30px;
+  line-height: 1.5;
+}
+
+/* --- КНОПКИ (PRO UI) --- */
+.test-result-panel button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  margin-bottom: 12px;
+}
+
+/* Кнопка "Пройти знову" (Акцентна) */
+.btn-retry {
+  background: #4f46e5;
+  color: #ffffff;
+  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+}
+
+body.mode-test .btn-retry {
+  background: #9333ea; /* Фіолетова для тесту */
+  box-shadow: 0 4px 6px -1px rgba(147, 51, 234, 0.3);
+}
+
+.btn-retry:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
+}
+
+/* Кнопка "На головну" (Вторинна) */
+.btn-back-lesson {
+  background: #f8fafc;
+  color: #475569;
+  border: 2px solid #e2e8f0 !important; /* !important щоб перебити дефолт */
+}
+
+.btn-back-lesson:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1 !important;
+  color: #334155;
+}
+
+/* Анімація появи */
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
