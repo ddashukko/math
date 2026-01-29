@@ -927,3 +927,73 @@ body.mode-test .btn-retry {
     font-size: 1.5rem;
   }
 }
+
+/* =========================================
+   🟠 THEME: HOMEWORK MODE (ОРАНЖЕВИЙ)
+   ========================================= */
+
+body.mode-homework {
+  background-color: #fff7ed; /* Дуже світлий персиковий фон */
+}
+
+/* Хедер */
+body.mode-homework header {
+  background: #fff;
+  border-bottom: 3px solid #f97316; /* Оранжева лінія */
+}
+
+/* Кнопка "Меню" в хедері */
+body.mode-homework .btn-home {
+  background: #fff7ed;
+  color: #ea580c;
+  border: 1px solid #fed7aa;
+}
+body.mode-homework .btn-home:hover {
+  background: #ffedd5;
+}
+
+/* --- ПАНЕЛЬ РЕЗУЛЬТАТІВ (ВНИЗУ) --- */
+body.mode-homework .test-result-panel {
+  border: 2px solid #fed7aa;
+  background: white;
+}
+
+body.mode-homework .test-score-big {
+  color: #ea580c; /* Оранжеві цифри */
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Кнопка "Пройти знову" */
+body.mode-homework .btn-retry {
+  background: #f97316;
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.3);
+}
+body.mode-homework .btn-retry:hover {
+  background: #ea580c;
+}
+
+/* Кнопка "На головну" */
+body.mode-homework .btn-back-lesson {
+  border-color: #ffedd5 !important;
+  color: #c2410c;
+}
+
+/* --- МОДАЛЬНЕ ВІКНО (POPUP) --- */
+/* Круг з оцінкою */
+body.mode-homework .score-circle {
+  border-color: #f97316;
+  color: #ea580c;
+  background: #fff7ed;
+}
+
+/* Кнопки в модалці */
+body.mode-homework .modal-content button {
+  background: #f97316;
+}
+body.mode-homework .modal-content button:hover {
+  background: #ea580c;
+}
+
