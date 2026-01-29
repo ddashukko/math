@@ -2,7 +2,6 @@
    🎨 LESSON STYLES (PRO VERSION)
    ========================================= */
 
-/* --- ЗАГАЛЬНИЙ БЛОК ВПРАВИ --- */
 .exercise-block {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -11,15 +10,14 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   animation: fadeIn 0.5s ease;
-
-  /* 🔥 FIX: Центрування карток, щоб вони не розтягувались безмежно */
+  
+  /* 🔥 FIX: Ширина заповнює контейнер */
   width: 100%;
-  max-width: 100%; /* Заповнює контейнер, який ми обмежили в board.css */
+  max-width: 100%; 
   margin-left: auto;
   margin-right: auto;
 }
 
-/* Заголовок вправи */
 .exercise-header {
   padding: 20px 24px;
   border-bottom: 1px solid var(--border);
@@ -32,13 +30,12 @@
   font-size: 1.25rem;
 }
 
-/* Рядок завдання */
 .task-row {
-  padding: 24px; /* Більше повітря */
+  padding: 24px;
   border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: 16px; /* Відступ між умовою і полем вводу */
+  gap: 16px;
 }
 
 .task-row:last-child {
@@ -47,17 +44,17 @@
 
 .task-content {
   font-weight: 600;
-  font-size: 1.15rem; /* Трохи більший шрифт для читабельності */
+  font-size: 1.15rem;
   line-height: 1.6;
   color: #334155;
 }
 
-/* --- ПОЛЯ ВВОДУ (INPUTS) --- */
+/* --- ПОЛЯ ВВОДУ --- */
 .input-group {
   display: flex;
   gap: 12px;
   align-items: center;
-  flex-wrap: wrap; /* Дозволяємо перенос на малих екранах */
+  flex-wrap: wrap;
 }
 
 input[type="text"] {
@@ -76,7 +73,6 @@ input[type="text"]:focus {
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
-/* Стани відповіді */
 input.correct {
   background-color: #f0fdf4;
   border-color: var(--success);
@@ -90,7 +86,6 @@ input.wrong {
   color: #b91c1c;
 }
 
-/* Кнопка "ОК" */
 .btn-check {
   background: var(--primary);
   color: white;
@@ -107,11 +102,11 @@ input.wrong {
   opacity: 0.9;
 }
 
-/* --- КНОПКИ ВИБОРУ (TEST OPTIONS) --- */
+/* --- КНОПКИ ВИБОРУ --- */
 .options-container {
   display: flex;
   gap: 12px;
-  flex-wrap: wrap; /* Кнопки переносяться, якщо не влазять */
+  flex-wrap: wrap;
 }
 
 .option-btn {
@@ -123,7 +118,7 @@ input.wrong {
   font-weight: 600;
   font-size: 1rem;
   transition: all 0.2s;
-  flex: 1; /* Розтягуються рівномірно */
+  flex: 1; 
   min-width: 60px;
   text-align: center;
 }
@@ -146,16 +141,9 @@ input.wrong {
   border-color: var(--error);
 }
 
-/* --- АНІМАЦІЯ ПОЯВИ --- */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* --- СТИЛІ РЕЄСТРАЦІЇ --- */
@@ -163,186 +151,84 @@ input.wrong {
   border-color: #4f46e5;
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
-#reg-modal .close-btn {
-  display: none;
-}
+#reg-modal .close-btn { display: none; }
 
 /* =========================================
-   📱 MOBILE ADAPTATION (LESSON SPECIFIC)
+   📱 MOBILE ADAPTATION
    ========================================= */
-
 @media (max-width: 768px) {
-  /* 1. Менші відступи всередині карток */
-  .exercise-header {
-    padding: 15px 20px;
-  }
-
-  .task-row {
-    padding: 20px;
-  }
-
-  /* 2. Текст не злипається */
-  .task-content {
-    font-size: 1.05rem;
-    line-height: 1.6;
-  }
-
-  /* 3. Інпути зручні для пальця */
+  .exercise-header { padding: 15px 20px; }
+  .task-row { padding: 20px; }
+  .task-content { font-size: 1.05rem; line-height: 1.6; }
+  
   input[type="text"] {
-    width: 100%; /* На всю ширину контейнера */
+    width: 100%;
     max-width: 100%;
-    font-size: 16px; /* ВАЖЛИВО: Запобігає зуму на iPhone */
+    font-size: 16px;
     padding: 14px;
   }
 
-  /* Кнопка ОК стає на весь рядок */
-  .btn-check {
-    width: 100%;
-    margin-top: 5px;
-  }
+  .btn-check { width: 100%; margin-top: 5px; }
 
-  /* 4. Картинки та формули адаптивні */
-  .exercise-block img,
+  .exercise-block img, 
   .exercise-block svg {
     max-width: 100%;
     height: auto;
     display: block;
     margin: 10px auto;
   }
-
-  mjx-container {
-    overflow-x: auto; /* Якщо формула довга - з'явиться скрол */
-    max-width: 100%;
-  }
+  
+  mjx-container { overflow-x: auto; max-width: 100%; }
 }
 
 /* =========================================
    🟣 THEME: TEST MODE (ФІОЛЕТОВИЙ)
    ========================================= */
-
-body.mode-test {
-  background-color: #f3e8ff;
-}
-
-body.mode-test header {
-  background: #fff;
-  border-bottom: 3px solid #9333ea;
-}
-
+body.mode-test { background-color: #f3e8ff; }
+body.mode-test header { background: #fff; border-bottom: 3px solid #9333ea; }
 body.mode-test .exercise-block {
   background: white;
   border: 1px solid #e9d5ff;
   border-left: 5px solid #9333ea;
 }
-
-body.mode-test .exercise-header h3 {
-  color: #7e22ce;
-}
-
-/* Поля в тесті */
-body.mode-test input {
-  border: 2px solid #d8b4fe;
-}
+body.mode-test .exercise-header h3 { color: #7e22ce; }
+body.mode-test input { border: 2px solid #d8b4fe; }
 body.mode-test input:focus {
   border-color: #9333ea;
   box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.2);
 }
-body.mode-test input:disabled {
-  background: #faf5ff;
-  color: #6b7280;
-}
-
-/* Варіанти відповідей в тесті */
-body.mode-test .option-btn {
-  border-color: #e9d5ff;
-  color: #581c87;
-}
-body.mode-test .option-btn:hover:not(:disabled) {
-  border-color: #a855f7;
-  background: #faf5ff;
-}
+body.mode-test input:disabled { background: #faf5ff; color: #6b7280; }
+body.mode-test .option-btn { border-color: #e9d5ff; color: #581c87; }
+body.mode-test .option-btn:hover:not(:disabled) { border-color: #a855f7; background: #faf5ff; }
 body.mode-test .option-btn.selected {
-  background: #f3e8ff;
-  color: #6b21a8;
-  border-color: #9333ea;
-  font-weight: 700;
+  background: #f3e8ff; color: #6b21a8; border-color: #9333ea; font-weight: 700;
 }
-
-/* Фарбування результатів (Тільки після здачі) */
-body.mode-test input.correct,
-body.mode-test .option-btn.correct {
-  background-color: #dcfce7 !important;
-  border-color: #22c55e !important;
-  color: #14532d !important;
+body.mode-test input.correct, body.mode-test .option-btn.correct {
+  background-color: #dcfce7 !important; border-color: #22c55e !important; color: #14532d !important;
 }
-
-body.mode-test input.wrong,
-body.mode-test .option-btn.wrong {
-  background-color: #fee2e2 !important;
-  border-color: #ef4444 !important;
-  color: #7f1d1d !important;
+body.mode-test input.wrong, body.mode-test .option-btn.wrong {
+  background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #7f1d1d !important;
 }
-
-/* Ховаємо кнопку ОК в тесті */
-body.mode-test .input-group .btn-check {
-  display: none;
-}
+body.mode-test .input-group .btn-check { display: none; }
 
 /* =========================================
-   🟠 THEME: HOMEWORK MODE (КАРТКИ)
+   🟠 THEME: HOMEWORK MODE (ОРАНЖЕВИЙ)
    ========================================= */
-
-/* Картка завдання */
-body.mode-homework .exercise-block {
-  border-left: 5px solid #f97316; /* Оранжевий акцент зліва */
-}
-
-body.mode-homework .exercise-header h3 {
-  color: #c2410c; /* Темно-оранжевий заголовок */
-}
-
-/* Поля вводу */
+body.mode-homework .exercise-block { border-left: 5px solid #f97316; }
+body.mode-homework .exercise-header h3 { color: #c2410c; }
 body.mode-homework input[type="text"]:focus {
-  border-color: #f97316;
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+  border-color: #f97316; box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
 }
-
-/* Кнопка "ОК" */
-body.mode-homework .btn-check {
-  background: #f97316;
-}
-body.mode-homework .btn-check:hover {
-  background: #ea580c;
-}
-
-/* Варіанти відповідей (кнопки) */
-body.mode-homework .option-btn:hover {
-  border-color: #f97316;
-  color: #c2410c;
-  background: #fff7ed;
-}
-
-/* Активна кнопка (якщо натиснули, але ще не перевірили - хоча в домашці перевірка миттєва) */
+body.mode-homework .btn-check { background: #f97316; }
+body.mode-homework .btn-check:hover { background: #ea580c; }
+body.mode-homework .option-btn:hover { border-color: #f97316; color: #c2410c; background: #fff7ed; }
 body.mode-homework .option-btn.selected {
-  background: #fff7ed;
-  border-color: #f97316;
-  color: #c2410c;
+  background: #fff7ed; border-color: #f97316; color: #c2410c;
 }
-
-/* --- ВАЖЛИВО: Зелений і Червоний мають лишитися! --- */
-/* Правильна відповідь все одно зелена */
-body.mode-homework input.correct,
-body.mode-homework .option-btn.correct {
-  background-color: #dcfce7 !important;
-  border-color: #22c55e !important;
-  color: #14532d !important;
+/* Зелений/Червоний для домашки лишаються стандартними */
+body.mode-homework input.correct, body.mode-homework .option-btn.correct {
+  background-color: #dcfce7 !important; border-color: #22c55e !important; color: #14532d !important;
 }
-
-/* Неправильна - червона */
-body.mode-homework input.wrong,
-body.mode-homework .option-btn.wrong {
-  background-color: #fee2e2 !important;
-  border-color: #ef4444 !important;
-  color: #7f1d1d !important;
+body.mode-homework input.wrong, body.mode-homework .option-btn.wrong {
+  background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #7f1d1d !important;
 }
-
