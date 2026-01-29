@@ -287,3 +287,62 @@ body.mode-test .option-btn.wrong {
 body.mode-test .input-group .btn-check {
   display: none;
 }
+
+/* =========================================
+   🟠 THEME: HOMEWORK MODE (КАРТКИ)
+   ========================================= */
+
+/* Картка завдання */
+body.mode-homework .exercise-block {
+  border-left: 5px solid #f97316; /* Оранжевий акцент зліва */
+}
+
+body.mode-homework .exercise-header h3 {
+  color: #c2410c; /* Темно-оранжевий заголовок */
+}
+
+/* Поля вводу */
+body.mode-homework input[type="text"]:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+}
+
+/* Кнопка "ОК" */
+body.mode-homework .btn-check {
+  background: #f97316;
+}
+body.mode-homework .btn-check:hover {
+  background: #ea580c;
+}
+
+/* Варіанти відповідей (кнопки) */
+body.mode-homework .option-btn:hover {
+  border-color: #f97316;
+  color: #c2410c;
+  background: #fff7ed;
+}
+
+/* Активна кнопка (якщо натиснули, але ще не перевірили - хоча в домашці перевірка миттєва) */
+body.mode-homework .option-btn.selected {
+  background: #fff7ed;
+  border-color: #f97316;
+  color: #c2410c;
+}
+
+/* --- ВАЖЛИВО: Зелений і Червоний мають лишитися! --- */
+/* Правильна відповідь все одно зелена */
+body.mode-homework input.correct,
+body.mode-homework .option-btn.correct {
+  background-color: #dcfce7 !important;
+  border-color: #22c55e !important;
+  color: #14532d !important;
+}
+
+/* Неправильна - червона */
+body.mode-homework input.wrong,
+body.mode-homework .option-btn.wrong {
+  background-color: #fee2e2 !important;
+  border-color: #ef4444 !important;
+  color: #7f1d1d !important;
+}
+
