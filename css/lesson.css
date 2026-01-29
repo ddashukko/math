@@ -191,3 +191,19 @@ input.wrong {
     height: auto;
   }
 }
+
+@media (max-width: 768px) {
+  /* Адаптація шпаргалки і картинок */
+  .exercise-block img,
+  .exercise-block svg,
+  .exercise-block div {
+    max-width: 100%;
+    height: auto;
+    overflow-x: hidden; /* Щоб формули не розтягували екран */
+  }
+
+  /* Трохи зменшуємо шрифт формул на телефоні */
+  mjx-container {
+    font-size: 110% !important;
+  }
+}
