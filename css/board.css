@@ -123,9 +123,8 @@ canvas {
   width: 100%;
   height: 100%;
 }
-
 /* =========================================
-   📱 MOBILE ADAPTATION (ВИПРАВЛЕНО)
+   📱 MOBILE ADAPTATION (FIXED & CENTERED)
    ========================================= */
 
 @media (max-width: 768px) {
@@ -141,23 +140,37 @@ canvas {
     flex: 1;
     border-right: none;
     border-bottom: 2px solid #e2e8f0;
-    padding: 15px;
+    padding: 0; /* Прибираємо паддінги тут, вони будуть в контейнері */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+
+    /* 🔥 FIX CENTERING: Робимо цей блок флексом, щоб центрувати вміст */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* 🔥 ПРИМУСОВЕ ЦЕНТРУВАННЯ КОНТЕЙНЕРА */
+  #tasks-section > .container {
+    margin: 0 auto !important; /* !important перебиває inline-стилі з HTML */
+    width: 100% !important;
+    max-width: 500px !important; /* Обмеження ширини для краси */
+    padding: 20px !important; /* Відступи від країв екрану */
+    box-sizing: border-box;
   }
 
   /* Секція дошки (ВІДКРИТА) */
   #board-section {
     width: 100%;
-    height: 35dvh; /* Фіксована висота */
+    height: 35dvh;
     min-height: 200px;
     flex: none;
     border-top: 4px solid #cbd5e1;
     z-index: 20;
-    display: block; /* Важливо */
+    display: block;
   }
 
-  /* 🔥 Секція дошки (ЗАКРИТА) - Цього не вистачало! */
+  /* Секція дошки (ЗАКРИТА) */
   body.board-hidden #board-section {
     height: 0;
     min-height: 0;
@@ -165,13 +178,12 @@ canvas {
     border: none;
   }
 
-  /* Коли дошка закрита, завдання на весь екран */
   body.board-hidden #tasks-section {
     height: 100%;
     flex: 1;
   }
 
-  /* Панель інструментів (олівці) */
+  /* Панель інструментів */
   .tools-panel {
     top: auto;
     bottom: 15px;
