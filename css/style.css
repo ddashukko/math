@@ -814,3 +814,55 @@ body.mode-test .btn-retry {
     transform: translateY(0) scale(1);
   }
 }
+
+/* --- КНОПКИ НАСТУПНИХ КРОКІВ (В РЕЗУЛЬТАТАХ) --- */
+
+.btn-next-step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-decoration: none;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  box-sizing: border-box; /* Важливо для відступів */
+}
+
+.btn-next-step:hover {
+  transform: translateY(-3px);
+  filter: brightness(0.95);
+}
+
+/* Стиль для ДОМАШКИ (Оранжевий) */
+.btn-next-step.homework {
+  background-color: #fff7ed;
+  color: #ea580c;
+  border-color: #fed7aa;
+}
+.btn-next-step.homework:hover {
+  background-color: #ffedd5;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.2);
+}
+
+/* Стиль для ТЕСТУ (Червоний/Рожевий) */
+.btn-next-step.test {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+.btn-next-step.test:hover {
+  background-color: #fee2e2;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+}
+
+/* Стиль для УРОКУ (Зелений - якщо треба повернутись назад) */
+.btn-next-step.lesson {
+  background-color: #f0fdf4;
+  color: #16a34a;
+  border-color: #bbf7d0;
+}

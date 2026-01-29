@@ -17,6 +17,7 @@ let correctCount = 0;
 let wrongCount = 0;
 let currentLessonId = "";
 let isTestFinished = false;
+let currentLinks = []; // 🆕 Зберігаємо посилання на наступні кроки
 
 // --- LOADER ---
 function updateLoader(percent, text) {
@@ -87,12 +88,15 @@ async function loadLesson(id) {
     const titleEl = document.getElementById("lesson-title");
     if (titleEl) titleEl.innerText = data.title;
 
+    // 🆕 Зберігаємо посилання для фінального екрану
+    currentLinks = data.links || [];
+
     countTotalTasks(data.exercises);
     updateScoreUI();
 
     updateLoader(50, "Малюємо вправи...");
     renderExercises(data.exercises, id);
-    renderFooter(data.links);
+    renderFooter(data.links); // Це нижнє меню під час уроку
 
     if (window.MathJax && typeof window.MathJax.typesetPromise === "function") {
       updateLoader(60, "Налаштування формул...");
@@ -416,7 +420,7 @@ window.finishLesson = async function () {
   showFinishedState(); // 🔥 Показуємо результат внизу
 };
 
-// 🔥 ФУНКЦІЯ МАЛЮВАННЯ РЕЗУЛЬТАТУ ВНИЗУ
+// 🔥 ФУНКЦІЯ МАЛЮВАННЯ РЕЗУЛЬТАТУ ВНИЗУ (PRO VERSION)
 function showFinishedState() {
   const footer = document.getElementById("lesson-footer");
   const percent =
@@ -424,13 +428,43 @@ function showFinishedState() {
       ? Math.round((correctCount / totalTasksCount) * 100)
       : 0;
 
-  // Вставляємо HTML прямо в футер (ФІОЛЕТОВИЙ СТИЛЬ)
+  // 1. Генеруємо HTML для додаткових кнопок (Домашка / Тест)
+  let nextStepsHtml = "";
+
+  if (currentLinks && currentLinks.length > 0) {
+    currentLinks.forEach((link) => {
+      // Ігноруємо кнопку "На головну", бо вона і так є внизу
+      if (link.url.includes("index.html")) return;
+
+      // Визначаємо стиль залежно від типу
+      let btnClass = "btn-next-step";
+      if (link.type === "homework") btnClass += " homework";
+      if (link.type === "test") btnClass += " test";
+      if (link.type === "lesson") btnClass += " lesson";
+
+      nextStepsHtml += `
+        <a href="${link.url}" class="${btnClass}">
+           ${link.title}
+        </a>
+      `;
+    });
+  }
+
+  // 2. Вставляємо HTML
   footer.innerHTML = `
         <div class="test-result-panel">
             <h3>Роботу здано! 🎉</h3>
             <div class="test-score-big">${percent}%</div>
             <div class="test-feedback">Ти відповів правильно на ${correctCount} з ${totalTasksCount} питань.</div>
             
+            ${
+              nextStepsHtml
+                ? `<div style="margin-bottom: 20px; border-bottom: 2px dashed #e2e8f0; padding-bottom: 20px;">
+                ${nextStepsHtml}
+            </div>`
+                : ""
+            }
+
             <button class="btn-retry" onclick="retryTest()">
                 🔄 Пройти знову
             </button>
