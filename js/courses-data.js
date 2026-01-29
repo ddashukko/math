@@ -39,7 +39,7 @@ export const courses = [
     type: "lesson", 
     subject: "algebra",
     grade: 8,
-    filename: "17-arythmetic-root-properties", // Назва JSON файлу
+    filename: "17-arithmetic-roots-properties", // Назва JSON файлу
     badgeText: "Урок",
   },
   {
@@ -49,7 +49,7 @@ export const courses = [
     type: "homework",
     subject: "algebra",
     grade: 8,
-    filename: "17-arythmetic-root-properties",
+    filename: "17-arithmetic-roots-properties",
     badgeText: "ДЗ",
   },
   {
@@ -59,7 +59,7 @@ export const courses = [
     type: "test",
     subject: "algebra",
     grade: 8,
-    filename: "17-arythmetic-root-properties",
+    filename: "17-arithmetic-roots-properties",
     badgeText: "Тест",
   },
 ];
