@@ -4,10 +4,10 @@ export const courses = [
     id: "alg-7-topic1-lesson",
     title: "Інтенсив: Урок",
     desc: "Теорія і практика",
-    type: "lesson", // Папка
-    subject: "algebra", // Папка
-    grade: 7, // Папка
-    filename: "math-intensive", // Файл .json
+    type: "lesson",
+    subject: "algebra",
+    grade: 7,
+    filename: "math-intensive",
     badgeText: "Урок",
   },
   {
@@ -17,7 +17,7 @@ export const courses = [
     type: "homework",
     subject: "algebra",
     grade: 7,
-    filename: "math-intensive", // Той самий файл, але в папці homework
+    filename: "math-intensive",
     badgeText: "ДЗ",
   },
   {
@@ -31,17 +31,35 @@ export const courses = [
     badgeText: "Тест",
   },
 
-  // --- ПРИКЛАД: ГЕОМЕТРІЯ 8 КЛАС ---
-  /*
-    {
-        id: "geom-8-q1",
-        title: "Чотирикутники",
-        desc: "Базові поняття",
-        type: "lesson",
-        subject: "geometria",
-        grade: 8,
-        filename: "quadrilaterals",
-        badgeText: "Геометрія"
-    }
-    */
+  // --- АЛГЕБРА 8 КЛАС (Властивості кореня) ---
+  {
+    id: "alg-8-17-lesson",
+    title: "Властивості кореня: Урок",
+    desc: "Теорія та практика",
+    type: "lesson", 
+    subject: "algebra",
+    grade: 8,
+    filename: "17-arithmetic-square-root-properties", // Назва JSON файлу
+    badgeText: "Урок",
+  },
+  {
+    id: "alg-8-17-hw",
+    title: "Властивості кореня: Домашка",
+    desc: "Самостійне опрацювання",
+    type: "homework",
+    subject: "algebra",
+    grade: 8,
+    filename: "17-arithmetic-square-root-properties",
+    badgeText: "ДЗ",
+  },
+  {
+    id: "alg-8-17-test",
+    title: "Властивості кореня: Тест",
+    desc: "Перевірка знань",
+    type: "test",
+    subject: "algebra",
+    grade: 8,
+    filename: "17-arithmetic-square-root-properties",
+    badgeText: "Тест",
+  },
 ];
