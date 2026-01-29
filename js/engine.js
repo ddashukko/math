@@ -17,7 +17,7 @@ let correctCount = 0;
 let wrongCount = 0;
 let currentLessonId = "";
 let isTestFinished = false;
-let currentLinks = []; // 🆕 Зберігаємо посилання на наступні кроки
+let currentLinks = []; // Зберігаємо посилання на наступні кроки
 
 // --- LOADER ---
 function updateLoader(percent, text) {
@@ -72,11 +72,16 @@ async function loadLesson(id) {
 
     if (course) {
       fetchPath = `data/${course.subject}/${course.grade}/${course.type}/${course.filename}.json`;
-      document.body.className = "";
+      document.body.className = ""; // Очищаємо попередні класи
       document.body.classList.add(`mode-${course.type}`);
     } else {
       fetchPath = `data/${id}.json`;
       document.body.classList.add("mode-lesson");
+    }
+
+    // 🔥 MOBILE FIX: Якщо це телефон — закриваємо дошку примусово
+    if (window.innerWidth <= 768) {
+      document.body.classList.add("board-hidden");
     }
 
     const response = await fetch(fetchPath);
@@ -88,7 +93,7 @@ async function loadLesson(id) {
     const titleEl = document.getElementById("lesson-title");
     if (titleEl) titleEl.innerText = data.title;
 
-    // 🆕 Зберігаємо посилання для фінального екрану
+    // Зберігаємо посилання для фінального екрану
     currentLinks = data.links || [];
 
     countTotalTasks(data.exercises);
