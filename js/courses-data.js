@@ -34,6 +34,37 @@ export const courses = [
   // --- АЛГЕБРА 8 КЛАС (Властивості кореня) ---
 
   {
+    id: "algebra-8-14-lesson",
+    title: "§ 14. Арифметичний квадратний корінь",
+    desc: "Теорія та класна робота: означення арифметичного квадратного кореня, добування кореня та розв'язування рівнянь виду √x = m.",
+    type: "lesson",
+    subject: "algebra",
+    grade: 8,
+    filename: "algebra-8-14",
+    badgeText: "Урок",
+  },
+  {
+    id: "algebra-8-14-hw",
+    title: "Домашня робота: § 14",
+    desc: "Практичні вправи на обчислення значень квадратних коренів та знаходження допустимих значень змінної.",
+    type: "homework",
+    subject: "algebra",
+    grade: 8,
+    filename: "algebra-8-14",
+    badgeText: "ДЗ",
+  },
+  {
+    id: "algebra-8-14-test",
+    title: "Тест: § 14",
+    desc: "Перевірка знань: обчислення коренів, властивості підкореневого виразу та розв'язування базових рівнянь.",
+    type: "test",
+    subject: "algebra",
+    grade: 8,
+    filename: "algebra-8-14",
+    badgeText: "Тест",
+  },
+
+  {
     id: "algebra-8-16-lesson",
     title: "§ 16. Тотожність (√a)² = a. Рівняння x² = a",
     desc: "Теорія та класна робота: розв'язування квадратних рівнянь, властивості арифметичного квадратного кореня.",
@@ -92,6 +123,38 @@ export const courses = [
     subject: "algebra",
     grade: 8,
     filename: "17-arithmetic-roots-properties",
+    badgeText: "Тест",
+  },
+  // --- ГЕОМЕТРІЯ 8 КЛАС (Середні пропорційні відрізки) ---
+
+  {
+    id: "geometry-8-14-lesson",
+    title: "§ 14. Середні пропорційні відрізки у прямокутному трикутнику",
+    desc: "Теорія та класна робота: метричні співвідношення в прямокутному трикутнику, проекції катетів.",
+    type: "lesson",
+    subject: "geometry",
+    grade: 8,
+    filename: "geometry-8-14",
+    badgeText: "Урок",
+  },
+  {
+    id: "geometry-8-14-hw",
+    title: "Домашня робота: § 14",
+    desc: "Практичні вправи на застосування середніх пропорційних відрізків та висоти трикутника.",
+    type: "homework",
+    subject: "geometry",
+    grade: 8,
+    filename: "geometry-8-14",
+    badgeText: "ДЗ",
+  },
+  {
+    id: "geometry-8-14-test",
+    title: "Тест: § 14",
+    desc: "Контроль знань: властивості висоти та катетів як середніх пропорційних.",
+    type: "test",
+    subject: "geometry",
+    grade: 8,
+    filename: "geometry-8-14",
     badgeText: "Тест",
   },
 ];

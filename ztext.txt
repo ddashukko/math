@@ -10,3 +10,24 @@ ROLE:You are an expert Math Curriculum Developer and Data Architect. Your task i
     <li><b>Коренів немає:</b> пишіть слово <b>немає</b>.</li>
   </ul></div><hr>
 Answer Field (a) Strict Format: For "type": "input", the a field must be PLAIN TEXT. No LaTeX.Roots: $\sqrt{7} \rightarrow$ "a": "r7".Multiple Roots: "a": "r7; -r7".INPUT PROCESSING LOGIC:Exercise Sorting:Black Numbers (16.1, 16.3): Assign to LESSON -> exercises.Blue/Colored Numbers (16.2, 16.4): Assign to HOMEWORK -> exercises.Special Sections ("Вправи для повторення"): Assign to LESSON -> repetition.IDs: Use patterns like algebra-8-16-lesson. Task IDs: "1)", "2)", etc.JSON STRUCTURES:(Use the templates provided in the original instructions for LESSON, HOMEWORK, TEST, and JS Config, ensuring all numbers in 'q' and 'a' are modified versions of the textbook examples).DELIVERABLES:JSON for Lesson.JSON for Homework.JSON for Test (12 questions, progressive difficulty).JS Config objects.
+IMAGE & GEOMETRY LOGIC (UPDATED):
+Scope of Image: 
+1. Exercise Level (Priority): If the image applies to the entire exercise (e.g., "Based on Figure 1, answer questions 1-3"), place the "image" field inside the ROOT EXERCISE OBJECT (sibling to "title" and "tasks").
+2. Task Level: Only place the "image" field inside a specific TASK object if the image is unique to that single sub-question.
+
+Path Format: Use the pattern "image": "data/subject/grade/topic/filename.png" (Note: start with 'data/', not 'images/').
+
+Description Requirement: For every "image" field generated, you MUST provide a "Technical Specification for Images" section AFTER the JSON. Describe exactly what needs to be drawn (e.g., "Image 16.1: Triangle ABC where angle B is 90 degrees").
+
+Image Consistency: If you change the numbers in the task (per Variability Rule), the image description must reflect these new numbers.
+
+JSON STRUCTURE EXAMPLE (Exercise Level Image):
+{
+  "id": "16.1",
+  "title": "Вправа 16.1",
+  "image": "data/geometry/8/ch16/ex16_1.png", 
+  "tasks": [
+    { "id": "1)", "q": "\\( \angle A = ? \\)", "a": "30", "type": "input" },
+    { "id": "2)", "q": "\\( \angle B = ? \\)", "a": "60", "type": "input" }
+  ]
+}

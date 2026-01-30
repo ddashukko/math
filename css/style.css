@@ -943,3 +943,26 @@ body.mode-homework .btn-finish-gradient:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* Стилі для картинок у завданнях */
+.task-image-container {
+  margin: 15px 0;
+  display: flex;
+  justify-content: flex-start; /* Для академічного стилю краще зліва або по центру */
+}
+
+.task-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background: white;
+}
+
+/* На мобільних пристроях центруємо */
+@media (max-width: 768px) {
+  .task-image-container {
+    justify-content: center;
+  }
+}

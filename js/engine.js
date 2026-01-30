@@ -166,15 +166,25 @@ function renderExercises(exercises, lessonId, container) {
     const card = document.createElement("div");
     card.className = "exercise-block";
 
+    // 1. Перевіряємо, чи є ЗАГАЛЬНА картинка для всієї вправи (ex.image)
+    let exerciseImageHtml = ex.image
+      ? `<div style="padding: 0 24px 20px; display:flex; justify-content:center;">
+           <img src="${ex.image}" alt="Рисунок до вправи" style="max-width: 100%; max-height: 400px; height: auto; border-radius: 8px; border: 1px solid #e2e8f0;">
+         </div>`
+      : "";
+
+    // 2. Блок для HTML-вставок (якщо є)
     let visualHtml = ex.visual
       ? `<div style="padding: 0 24px 20px; display:flex; justify-content:center;">${ex.visual}</div>`
       : "";
 
+    // 3. Формуємо шапку картки: Заголовок -> Опис -> Картинка -> Завдання
     let html = `
       <div class="exercise-header">
         <h3>${ex.title}</h3>
         ${ex.desc ? `<p>${ex.desc}</p>` : ""}
       </div>
+      ${exerciseImageHtml} 
       ${visualHtml}
       <div class="task-list">`;
 
@@ -182,10 +192,16 @@ function renderExercises(exercises, lessonId, container) {
       const uniqueTaskId = `${lessonId}_${ex.id}_${task.id}`;
       const safeAns = task.a.toString().replace(/"/g, "&quot;");
 
+      // (Опціонально) Картинка для конкретного завдання, якщо колись знадобиться
+      let taskImageHtml = task.image
+        ? `<div class="task-image-container"><img src="${task.image}" class="task-img"></div>`
+        : "";
+
       html += `<div class="task-row">
         <div class="task-content">
            <span style="font-weight:bold; margin-right:8px; color:#3b82f6;">${task.id}</span> 
            ${task.q}
+           ${taskImageHtml}
         </div>
         <div class="interactive-area" id="area-${uniqueTaskId}">`;
 
