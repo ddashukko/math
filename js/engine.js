@@ -203,11 +203,11 @@ function renderExercises(exercises, lessonId) {
         html += `</div>`;
       } else {
         html += `<div class="input-group">
-            <input type="text" id="input-${uniqueTaskId}" placeholder="..." 
-                   onkeydown="if(event.key==='Enter') this.nextElementSibling.click()"
-                   onchange="if(document.body.classList.contains('mode-test')) checkInput(this, '${safeAns}', '${uniqueTaskId}')">
-            <button class="btn-check" onclick="checkInput(this, '${safeAns}', '${uniqueTaskId}')">ОК</button>
-          </div>`;
+    <input type="text" id="input-${uniqueTaskId}" placeholder="..." autocomplete="off"
+           onkeydown="if(event.key==='Enter') this.nextElementSibling.click()"
+           onchange="if(document.body.classList.contains('mode-test')) checkInput(this, '${safeAns}', '${uniqueTaskId}')">
+    <button class="btn-check" onclick="checkInput(this, '${safeAns}', '${uniqueTaskId}')">ОК</button>
+  </div>`;
       }
       html += `</div></div>`;
     });
@@ -363,6 +363,10 @@ window.checkOption = function (btn, userVal, correctAns, taskId) {
 };
 
 async function saveProgress(taskId, isCorrect, userAnswer) {
+  if (!navigator.onLine) {
+    console.warn("Немає інтернету. Прогрес не збережено.");
+    return;
+  }
   const user = auth.currentUser;
   if (!user) return;
   try {
@@ -406,59 +410,73 @@ async function saveProgress(taskId, isCorrect, userAnswer) {
 }
 
 // 🔥 ЗАВЕРШЕННЯ (Виклик модалки)
-window.finishLesson = async function () {
-  const user = auth.currentUser;
-  if (!user) {
-    alert("Увійдіть в систему!");
+// 🔥 НОВА ФУНКЦІЯ ЗАВЕРШЕННЯ (Через красиву модалку)
+window.finishLesson = function () {
+  // 1. Перевірка інтернету
+  if (!navigator.onLine) {
+    alert("🛑 Немає інтернету! Перевір з'єднання.");
     return;
   }
-  if (!confirm("Завершити тест і здати роботу?")) return;
 
-  updateLoader(50, "Перевірка результатів...");
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Спочатку увійди в систему!");
+    return;
+  }
 
-  const solutionsRef = collection(db, "users", user.email, "solutions");
-  const snapshot = await getDocs(solutionsRef);
+  // 2. Замість confirm() викликаємо наше вікно
+  showConfirm(
+    "Завершити роботу?",
+    "Після цього ти побачиш свою оцінку, а вчитель отримає результат.",
+    async () => {
+      // 👇 Цей код запуститься ТІЛЬКИ якщо натиснуть "ТАК"
+      updateLoader(50, "Перевірка результатів...");
 
-  let finalCorrect = 0;
-  snapshot.forEach((doc) => {
-    if (doc.data().taskId.startsWith(currentLessonId)) {
-      if (doc.data().correct) finalCorrect++;
-    }
-  });
+      // ... (Тут твоя стара логіка підрахунку) ...
+      const solutionsRef = collection(db, "users", user.email, "solutions");
+      const snapshot = await getDocs(solutionsRef);
 
-  correctCount = finalCorrect;
-  const percent =
-    totalTasksCount > 0
-      ? Math.round((finalCorrect / totalTasksCount) * 100)
-      : 0;
+      let finalCorrect = 0;
+      snapshot.forEach((doc) => {
+        if (doc.data().taskId.startsWith(currentLessonId)) {
+          if (doc.data().correct) finalCorrect++;
+        }
+      });
 
-  await setDoc(
-    doc(db, "users", user.email, "progress", currentLessonId),
-    {
-      lessonId: currentLessonId,
-      totalTasks: totalTasksCount,
-      correct: finalCorrect,
-      wrong: totalTasksCount - finalCorrect,
-      percent: percent,
-      lastUpdate: new Date(),
+      correctCount = finalCorrect;
+      const percent =
+        totalTasksCount > 0
+          ? Math.round((finalCorrect / totalTasksCount) * 100)
+          : 0;
+
+      await setDoc(
+        doc(db, "users", user.email, "progress", currentLessonId),
+        {
+          lessonId: currentLessonId,
+          totalTasks: totalTasksCount,
+          correct: finalCorrect,
+          wrong: totalTasksCount - finalCorrect,
+          percent: percent,
+          lastUpdate: new Date(),
+        },
+        { merge: true },
+      );
+
+      isTestFinished = true;
+      hideLoader();
+      closeConfirmModal(); // Закриваємо питання
+
+      lockAllInputs();
+      await restoreProgress(user.email);
+      showFinishedState(); // Показуємо результат
     },
-    { merge: true },
   );
-
-  isTestFinished = true;
-  hideLoader();
-
-  lockAllInputs();
-  await restoreProgress(user.email);
-  showFinishedState(); // 🔥 ВИКЛИК МОДАЛКИ
 };
 
-// 🔥 НОВА ФУНКЦІЯ МОДАЛЬНОГО ВІКНА (ПОВЕРНУЛИ POPUP)
+// 🔥 ОНОВЛЕНА ФУНКЦІЯ МОДАЛКИ (Clean Style)
 function showFinishedState() {
-  // 1. Шукаємо модальне вікно в HTML
   let modal = document.getElementById("modal-overlay");
 
-  // Якщо модалки немає в HTML (раптом), створимо її
   if (!modal) {
     modal = document.createElement("div");
     modal.id = "modal-overlay";
@@ -473,43 +491,50 @@ function showFinishedState() {
       ? Math.round((correctCount / totalTasksCount) * 100)
       : 0;
 
-  // 2. Генеруємо посилання (Домашка / Тест)
+  // 1. Генеруємо кнопку "Наступний крок" (До уроку / Домашка)
   let nextStepsHtml = "";
   if (currentLinks && currentLinks.length > 0) {
     currentLinks.forEach((link) => {
       if (link.url.includes("index.html")) return;
-      let btnClass = "btn-nav-link";
-      if (link.type === "homework") btnClass += " homework";
-      if (link.type === "test") btnClass += " test";
 
-      // Стиль кнопок для модалки
+      // Використовуємо .btn-modal замість .btn-nav-link для єдиного стилю
       nextStepsHtml += `
-        <a href="${link.url}" class="${btnClass}" style="width:100%; box-sizing:border-box; justify-content:center; margin-bottom:10px;">
-           ${link.title}
+        <a href="${link.url}" class="btn-modal" style="margin-bottom: 10px;">
+           👉 ${link.title}
         </a>
       `;
     });
   }
 
-  // 3. Заповнюємо модалку контентом
+  // 2. Генеруємо кнопку "Помилки" (з новим класом .warning)
+  let reviewBtnHtml = "";
+  if (percent < 100) {
+    reviewBtnHtml = `
+        <button onclick="reviewMistakes()" class="btn-modal warning">
+           👀 Переглянути помилки
+        </button>
+     `;
+  }
+
   modalContent.innerHTML = `
     <div class="score-circle" style="${percent >= 50 ? "" : "border-color: #ef4444; color: #ef4444;"}">${percent}%</div>
-    <h2 style="margin-bottom: 10px">${percent >= 50 ? "Чудова робота! 🎉" : "Треба потренуватись 😕"}</h2>
-    <p style="color: #64748b; margin-bottom: 24px">Ти відповів правильно на ${correctCount} з ${totalTasksCount} питань.</p>
+    <h2 class="modal-title">${percent >= 50 ? "Чудово! 🎉" : "Спробуй ще раз 😕"}</h2>
+    <p class="modal-desc">Правильних відповідей: <b>${correctCount}</b> з <b>${totalTasksCount}</b></p>
     
-    <div style="margin-bottom: 20px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 20px;">
+    <div style="margin-bottom: 20px;">
         ${nextStepsHtml}
     </div>
 
-    <div style="display: flex; gap: 10px; justify-content: center;">
-        <button onclick="retryTest()" class="btn-home" style="background: #e2e8f0; color: #334155; border:none; cursor:pointer;">🔄 Ще раз</button>
-        <a href="index.html" class="btn-home" style="background: #4f46e5; color: white;">🏠 На головну</a>
-    </div>
+    ${reviewBtnHtml}
+    
+    <button onclick="retryTest()" class="btn-modal secondary">🔄 Перездати</button>
+    <a href="index.html" class="btn-modal secondary">🏠 На головну</a>
   `;
 
-  // 4. Показуємо
   modal.classList.add("active");
-  updateScoreUI();
+
+  // Якщо є функція оновлення UI (наприклад, прибрати лоадер), викликаємо
+  if (typeof updateScoreUI === "function") updateScoreUI();
 }
 
 function lockAllInputs() {
@@ -520,26 +545,59 @@ function lockAllInputs() {
   buttons.forEach((btn) => (btn.disabled = true));
 }
 
-window.retryTest = async function () {
-  if (!confirm("Перездати? Старі відповіді зникнуть.")) return;
-  updateLoader(30, "Очищення...");
-  const user = auth.currentUser;
-  if (!user) return;
-  try {
-    const solutionsRef = collection(db, "users", user.email, "solutions");
-    const snapshot = await getDocs(solutionsRef);
-    const deletePromises = [];
-    snapshot.forEach((docSnap) => {
-      if (docSnap.data().taskId.startsWith(currentLessonId))
-        deletePromises.push(deleteDoc(docSnap.ref));
-    });
-    await Promise.all(deletePromises);
-    await deleteDoc(doc(db, "users", user.email, "progress", currentLessonId));
-    window.location.reload();
-  } catch (e) {
-    console.error(e);
-    hideLoader();
-  }
+// 🔥 НОВА ФУНКЦІЯ ПЕРЕЗДАЧІ
+window.retryTest = function () {
+  showConfirm(
+    "Перездати тест?",
+    "Всі твої попередні відповіді в цьому уроці будуть видалені. Ти впевнена?",
+    async () => {
+      // 👇 Код для "ТАК"
+      updateLoader(30, "Очищення...");
+      const user = auth.currentUser;
+      if (!user) return;
+      try {
+        const solutionsRef = collection(db, "users", user.email, "solutions");
+        const snapshot = await getDocs(solutionsRef);
+        const deletePromises = [];
+        snapshot.forEach((docSnap) => {
+          if (docSnap.data().taskId.startsWith(currentLessonId))
+            deletePromises.push(deleteDoc(docSnap.ref));
+        });
+        await Promise.all(deletePromises);
+        await deleteDoc(
+          doc(db, "users", user.email, "progress", currentLessonId),
+        );
+        window.location.reload();
+      } catch (e) {
+        console.error(e);
+        hideLoader();
+      }
+    },
+  );
+};
+
+// 🔍 ФУНКЦІЯ ПЕРЕГЛЯДУ ПОМИЛОК
+window.reviewMistakes = function () {
+  // 1. Закриваємо модалку
+  const modal = document.getElementById("modal-overlay");
+  if (modal) modal.classList.remove("active");
+
+  // 2. Шукаємо першу помилку (input або button з класом .wrong)
+  // Чекаємо трохи, поки модалка зникне
+  setTimeout(() => {
+    const firstError = document.querySelector(".wrong");
+    if (firstError) {
+      // Скролимо до помилки по центру екрана
+      firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+
+      // Можна додати легке підсвічування (миготіння)
+      firstError.style.transition = "transform 0.3s";
+      firstError.style.transform = "scale(1.1)";
+      setTimeout(() => (firstError.style.transform = "scale(1)"), 500);
+    } else {
+      alert("Помилок не знайдено! Ти геній? 🤔");
+    }
+  }, 300);
 };
 
 function renderFooter(links) {
@@ -566,21 +624,52 @@ function renderFooter(links) {
   footer.innerHTML = "";
 
   const finishBtn = document.createElement("button");
-  finishBtn.className = "btn-home";
-  finishBtn.style.width = "100%";
-  finishBtn.style.marginBottom = "20px";
-  finishBtn.style.fontSize = "1.1rem";
+  finishBtn.className = "btn-finish-gradient";
 
   if (document.body.classList.contains("mode-test")) {
-    finishBtn.innerHTML = "📤 Здати тест";
-    finishBtn.style.background = "#9333ea";
-    finishBtn.style.color = "white";
+    finishBtn.innerHTML = "Здати тест";
   } else {
-    finishBtn.innerHTML = "🏁 Завершити урок";
-    finishBtn.style.background = "#4f46e5";
-    finishBtn.style.color = "white";
+    finishBtn.innerHTML = "Завершити урок";
   }
 
   finishBtn.onclick = window.finishLesson;
   footer.appendChild(finishBtn);
 }
+
+// =========================================
+// 🛠️ УПРАВЛІННЯ МОДАЛКОЮ ПІДТВЕРДЖЕННЯ
+// =========================================
+
+function showConfirm(title, text, onYesCallback) {
+  const modal = document.getElementById("confirm-modal");
+  const titleEl = document.getElementById("confirm-title");
+  const textEl = document.getElementById("confirm-text");
+  const yesBtn = document.getElementById("confirm-yes-btn");
+
+  if (!modal) {
+    // Якщо забула додати HTML, спрацює по-старому
+    if (confirm(title + "\n" + text)) onYesCallback();
+    return;
+  }
+
+  // Заповнюємо текст
+  titleEl.innerText = title;
+  textEl.innerText = text;
+
+  // Очищаємо старі події кнопки (щоб не натискалось двічі)
+  const newBtn = yesBtn.cloneNode(true);
+  yesBtn.parentNode.replaceChild(newBtn, yesBtn);
+
+  // Вішаємо нову дію на кнопку "ТАК"
+  newBtn.onclick = () => {
+    onYesCallback(); // Виконуємо дію (здати або перездати)
+  };
+
+  // Показуємо вікно
+  modal.classList.add("active");
+}
+
+window.closeConfirmModal = function () {
+  const modal = document.getElementById("confirm-modal");
+  if (modal) modal.classList.remove("active");
+};

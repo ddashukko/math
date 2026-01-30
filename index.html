@@ -236,21 +236,6 @@
       </div>
 
       <div id="courses-root" class="lesson-grid"></div>
-
-      <div
-        style="
-          text-align: center;
-          margin-top: 50px;
-          padding: 20px;
-          color: #cbd5e1;
-        "
-      >
-        <a
-          href="admin.html"
-          style="color: inherit; text-decoration: none; font-size: 0.8rem"
-          >🔒 Вхід для викладача</a
-        >
-      </div>
     </div>
 
     <div id="reg-modal" class="modal-overlay">
@@ -290,53 +275,42 @@
         </button>
       </div>
     </div>
-    <div id="name-modal" class="modal-overlay" style="z-index: 99999">
-      <div class="modal-content" style="text-align: left">
-        <h2 style="margin-top: 0">👋 Привіт!</h2>
-        <p style="color: #64748b; margin-bottom: 20px">
-          Я бачу, що ти тут вперше (або ми не знайомі).<br />
-          Будь ласка, введи своє <b>Ім'я та Прізвище</b>, щоб вчитель знав, чию
-          домашку перевіряти.
+
+    <div id="name-modal" class="modal-overlay gatekeeper">
+      <div class="modal-content">
+        <span class="modal-icon">👋</span>
+        <h2 class="modal-title">Давай знайомитись!</h2>
+        <p class="modal-desc">
+          Я бачу, що ти тут вперше.<br />
+          Введи своє <b>Ім'я та Прізвище</b>, щоб вчитель знав, чию домашку
+          перевіряти.
         </p>
 
         <label
           style="
-            font-weight: 600;
-            font-size: 0.9rem;
             display: block;
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #64748b;
             margin-bottom: 8px;
+            margin-left: 4px;
           "
-          >Твоє ім'я та прізвище:</label
+          >Твоє ім'я:</label
         >
         <input
           type="text"
           id="new-user-name"
+          class="modal-input"
           placeholder="Наприклад: Даша Янчук"
-          style="
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 1rem;
-            box-sizing: border-box;
-            margin-bottom: 20px;
-          "
         />
 
-        <button
-          onclick="saveUserName()"
-          class="btn-home"
-          style="
-            background: #4f46e5;
-            color: white;
-            width: 100%;
-            justify-content: center;
-          "
-        >
-          💾 Зберегти і продовжити
+        <button onclick="saveUserName()" class="btn-modal">
+          💾 Зберегти і почати
         </button>
       </div>
     </div>
+
     <script type="module" src="js/auth.js"></script>
     <script type="module" src="js/dashboard.js"></script>
   </body>

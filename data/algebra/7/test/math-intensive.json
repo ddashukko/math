@@ -4,7 +4,7 @@
   "type": "test",
   "links": [
     {
-      "title": "🔙 До уроку",
+      "title": "До уроку",
       "url": "lesson.html?id=alg-7-topic1-lesson",
       "type": "lesson"
     }
