@@ -64,7 +64,6 @@ header {
   box-sizing: border-box;
 }
 
-/* Кнопка вчителя (Градієнтна) */
 .btn-teacher {
   text-decoration: none;
   background: linear-gradient(135deg, #7c3aed, #4f46e5);
@@ -133,29 +132,51 @@ header {
   box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
 }
 
+/* Контейнер фільтрів */
 .filters-group {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
 }
+
+/* 🔥 ОНОВЛЕНО: СТИЛЬ ФІЛЬТРІВ (MODERN CAPSULES) */
 .filter-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background-color: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 50px; /* Овальні */
+  padding: 12px 40px 12px 20px; /* Місце під стрілку */
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+  font-family: inherit;
   flex: 1;
   min-width: 140px;
-  padding: 12px 16px;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
-  background-color: #f8fafc;
-  font-size: 0.95rem;
-  color: #334155;
-  outline: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: inherit;
-  font-weight: 600;
+
+  /* Кастомна стрілочка */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 16px;
 }
+
 .filter-select:hover {
-  background-color: white;
   border-color: #cbd5e1;
+  background-color: #f8fafc;
+  transform: translateY(-2px);
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+  color: #1e293b;
 }
 
 /* =========================================
@@ -202,7 +223,6 @@ header {
   letter-spacing: 0.5px;
 }
 
-/* Бейджики */
 .lesson-type {
   font-size: 0.8rem;
   font-weight: 700;
@@ -229,7 +249,7 @@ header {
 
 .lesson-title {
   font-size: 1.25rem;
-  font-weight: 800;
+  font-weight: 500;
   color: var(--text-main);
   margin: 0 0 10px 0;
   line-height: 1.4;
@@ -240,9 +260,9 @@ header {
   line-height: 1.5;
 }
 
-/* Прогрес бар на картці */
+/* 🔥 ОНОВЛЕНО: ПРОГРЕС БАР */
 .progress-container {
-  background-color: #f1f5f9;
+  background-color: #e2e8f0; /* Сірий для непройденого */
   border-radius: 10px;
   height: 8px;
   width: 100%;
@@ -250,13 +270,16 @@ header {
   overflow: hidden;
   display: flex;
 }
+
 .progress-bar {
   height: 100%;
   transition: width 0.3s ease;
 }
+
 .progress-correct {
   background-color: #22c55e;
 }
+
 .progress-wrong {
   background-color: #ef4444;
 }
@@ -280,9 +303,8 @@ header {
 }
 
 /* =========================================
-   5. ЕЛЕМЕНТИ УРОКУ (ЗАГАЛЬНІ)
+   5. ЕЛЕМЕНТИ УРОКУ
    ========================================= */
-/* Футер з навігацією */
 .footer-nav {
   margin-top: 40px;
   padding-top: 20px;
@@ -326,20 +348,16 @@ header {
 }
 
 /* =========================================
-   🪟 ЄДИНА СИСТЕМА МОДАЛЬНИХ ВІКОН (PRO)
+   6. МОДАЛЬНІ ВІКНА (ПОВЕРНУТО СТАРИЙ СТИЛЬ)
    ========================================= */
-
-/* 1. Базовий фон (Тінь на весь екран) */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(15, 23, 42, 0.6); /* Темно-синій, приємний для очей */
-  backdrop-filter: blur(
-    8px
-  ); /* Ефект розмиття заднього плану (Glassmorphism) */
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -349,44 +367,53 @@ header {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Показати вікно */
 .modal-overlay.active {
   opacity: 1;
   pointer-events: all;
 }
 
-/* 🔥 Рівень "Gatekeeper" (Для важливих вікон: Вхід / Ім'я) */
-/* Це вікно перекриє все, навіть інші модалки */
 .modal-overlay.gatekeeper {
   z-index: 99999 !important;
-  background: rgba(255, 255, 255, 0.95); /* Майже білий фон */
+  background: rgba(255, 255, 255, 0.95);
 }
 
-/* 2. Сама картка вікна */
+/* Картка вікна - як було в завантаженому файлі */
 .modal-content {
-  background: white;
-  padding: 40px;
-  border-radius: 24px;
+  background: #ffffff;
+  padding: 40px 30px;
+  border-radius: 32px;
   text-align: center;
   max-width: 420px;
   width: 90%;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* Глибока тінь */
-  transform: scale(0.9) translateY(20px);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Ефект пружини */
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 20px 60px -10px rgba(15, 23, 42, 0.2),
+    0 0 0 1px rgba(0, 0, 0, 0.03);
+  border: none;
+  transform: scale(0.95) translateY(10px);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
 }
 
-/* Анімація появи картки */
+.modal-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+}
+
 .modal-overlay.active .modal-content {
   transform: scale(1) translateY(0);
 }
 
-/* 3. Елементи всередині (Заголовки, Іконки) */
 .modal-icon {
   font-size: 3.5rem;
   margin-bottom: 20px;
   display: block;
-  animation: float 3s ease-in-out infinite; /* Іконка плаває */
+  animation: float 3s ease-in-out infinite;
 }
 
 @keyframes float {
@@ -402,22 +429,21 @@ header {
 }
 
 .modal-title {
-  margin-top: 0;
-  margin-bottom: 12px;
-  font-size: 1.75rem;
+  font-size: 1.8rem;
+  margin: 0 0 8px 0;
+  color: #0f172a;
+  letter-spacing: -0.02em;
   font-weight: 800;
-  color: var(--text-main);
-  letter-spacing: -0.5px;
 }
 
 .modal-desc {
+  font-size: 1.05rem;
   color: #64748b;
-  margin-bottom: 30px;
+  margin-bottom: 32px;
   line-height: 1.6;
-  font-size: 1rem;
 }
 
-/* 4. Поля вводу (Красиві) */
+/* Поля вводу в модалці */
 .modal-input {
   width: 100%;
   padding: 16px;
@@ -439,44 +465,97 @@ header {
   background: #fff;
 }
 
-/* 5. Кнопки (Великі і зручні) */
+/* Кнопки модальні */
 .btn-modal {
-  background: var(--primary);
-  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   padding: 16px;
-  border-radius: 16px;
-  font-size: 1.1rem;
+  border-radius: 18px;
+  font-size: 1rem;
   font-weight: 700;
   border: none;
   cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+  position: relative;
   gap: 10px;
-  transition: all 0.2s;
-  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
 }
 
-.btn-modal:hover {
-  background: #4338ca;
+.btn-modal:active {
+  transform: scale(0.96);
+}
+
+.btn-modal.action {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  box-shadow:
+    0 4px 0 #5b21b6,
+    0 10px 20px -5px rgba(124, 58, 237, 0.4);
+  margin-bottom: 16px;
+}
+
+.btn-modal.action:hover {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
   transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+  box-shadow:
+    0 6px 0 #5b21b6,
+    0 15px 25px -5px rgba(124, 58, 237, 0.5);
 }
 
-/* 6. Кружечок з оцінкою (Для результату тесту) */
+.btn-modal.action:active {
+  box-shadow: 0 0 0 #5b21b6;
+  transform: translateY(4px);
+}
+
+.btn-modal.warning {
+  background: #fff7ed;
+  color: #ea580c;
+  border: 2px solid transparent;
+}
+.btn-modal.warning:hover {
+  background: #ffedd5;
+  color: #c2410c;
+  transform: translateY(-2px);
+}
+
+.btn-modal.secondary {
+  background: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+.btn-modal.secondary:hover {
+  background: #f1f5f9;
+  color: #334155;
+  border-color: #cbd5e1;
+}
+
+/* Коло з оцінкою */
 .score-circle {
-  width: 120px;
-  height: 120px;
+  width: 110px;
+  height: 110px;
   border-radius: 50%;
-  border: 8px solid #4f46e5;
+  border: 10px solid #eef2ff;
+  border-top-color: #4f46e5;
+  border-left-color: #4f46e5;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.5rem;
-  font-weight: 900;
-  color: #4f46e5;
-  margin: 0 auto 20px;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 auto 24px;
+  box-shadow: inset 0 0 20px rgba(79, 70, 229, 0.05);
+  position: relative;
+}
+
+.score-circle.bad {
+  border-top-color: #ef4444;
+  border-left-color: #ef4444;
+  color: #ef4444;
 }
 
 .lesson-score {
@@ -492,7 +571,7 @@ header {
 }
 
 /* =========================================
-   🔄 LOADER (ЕКРАН ЗАВАНТАЖЕННЯ)
+   7. LOADER
    ========================================= */
 #loader-overlay {
   position: fixed;
@@ -555,7 +634,7 @@ header {
 }
 
 /* =========================================
-   7. АДМІН ПАНЕЛЬ
+   8. АДМІН ПАНЕЛЬ
    ========================================= */
 .log-item {
   margin-bottom: 10px;
@@ -598,7 +677,6 @@ header {
   }
 }
 
-/* ПАНЕЛЬ РЕЗУЛЬТАТІВ (Вбудована) */
 .test-result-panel {
   background: white;
   padding: 30px;
@@ -610,10 +688,45 @@ header {
 }
 
 /* =========================================
-   8. ТЕМИ (GLOBAL OVERRIDES)
+   9. КНОПКА ЗАВЕРШЕННЯ
+   ========================================= */
+.btn-finish-gradient {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white !important;
+  border: none;
+  padding: 16px 32px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  border-radius: 20px;
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-finish-gradient:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 30px -10px rgba(124, 58, 237, 0.5);
+  background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+}
+
+.btn-finish-gradient:active {
+  transform: scale(0.96);
+}
+
+/* =========================================
+   10. ТЕМИ (GLOBAL OVERRIDES)
    ========================================= */
 
-/* --- TEST MODE (ФІОЛЕТОВИЙ) --- */
+/* --- TEST MODE --- */
 body.mode-test {
   background-color: #f3e8ff;
 }
@@ -676,7 +789,6 @@ body.mode-test .btn-back-lesson:hover {
   color: #6b21a8;
 }
 
-/* Стилі для уроку всередині Test Mode (якщо lesson.css не перекриває) */
 body.mode-test .exercise-block {
   background: white;
   border: 1px solid #e9d5ff;
@@ -702,7 +814,15 @@ body.mode-test .option-btn.selected {
   border-color: #9333ea;
 }
 
-/* --- HOMEWORK MODE (ОРАНЖЕВИЙ) --- */
+body.mode-test .btn-finish-gradient {
+  background: linear-gradient(135deg, #9333ea 0%, #c026d3 100%);
+  box-shadow: 0 10px 25px -5px rgba(147, 51, 234, 0.4);
+}
+body.mode-test .btn-finish-gradient:hover {
+  box-shadow: 0 20px 30px -10px rgba(192, 38, 211, 0.5);
+}
+
+/* --- HOMEWORK MODE --- */
 body.mode-homework {
   background-color: #fff7ed;
 }
@@ -752,7 +872,6 @@ body.mode-homework .modal-content button:hover {
   background: #ea580c;
 }
 
-/* Стилі для уроку всередині Homework Mode */
 body.mode-homework .exercise-block {
   border-left: 5px solid #f97316;
 }
@@ -780,8 +899,16 @@ body.mode-homework .option-btn.selected {
   color: #c2410c;
 }
 
+body.mode-homework .btn-finish-gradient {
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+  box-shadow: 0 10px 25px -5px rgba(234, 88, 12, 0.4);
+}
+body.mode-homework .btn-finish-gradient:hover {
+  box-shadow: 0 20px 30px -10px rgba(249, 115, 22, 0.5);
+}
+
 /* =========================================
-   9. МОБІЛЬНА АДАПТАЦІЯ (GLOBAL)
+   11. МОБІЛЬНА АДАПТАЦІЯ (GLOBAL)
    ========================================= */
 @media (max-width: 768px) {
   header {
@@ -809,382 +936,10 @@ body.mode-homework .option-btn.selected {
     padding: 15px;
     max-width: 100%;
   }
-
   .filters-group {
     flex-direction: column;
   }
   .lesson-grid {
     grid-template-columns: 1fr;
   }
-}
-
-/* =========================================
-   6. МОДАЛЬНІ ВІКНА (ЄДИНА СИСТЕМА PRO)
-   ========================================= */
-
-/* 1. Базовий фон (Тінь на весь екран) */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(15, 23, 42, 0.6); /* Темно-синій, приємний для очей */
-  backdrop-filter: blur(5px); /* Легке розмиття фону */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Показати вікно */
-.modal-overlay.active {
-  opacity: 1;
-  pointer-events: all;
-}
-
-/* 🔥 Рівень "Gatekeeper" (Для Входу / Імені - поверх усього) */
-.modal-overlay.gatekeeper {
-  z-index: 99999 !important;
-  background: rgba(255, 255, 255, 0.95);
-}
-
-/* 2. Сама картка вікна */
-.modal-content {
-  background: white;
-  padding: 40px;
-  border-radius: 24px;
-  text-align: center;
-  max-width: 420px;
-  width: 90%;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  transform: scale(0.9) translateY(20px);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Ефект пружини */
-  border: 1px solid rgba(255, 255, 255, 0.5);
-}
-
-/* Анімація появи картки */
-.modal-overlay.active .modal-content {
-  transform: scale(1) translateY(0);
-}
-
-/* 3. Елементи всередині (Заголовки, Іконки) */
-.modal-icon {
-  font-size: 3.5rem;
-  margin-bottom: 20px;
-  display: block;
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
-}
-
-.modal-title {
-  margin-top: 0;
-  margin-bottom: 12px;
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: var(--text-main);
-  letter-spacing: -0.5px;
-}
-
-.modal-desc {
-  color: #64748b;
-  margin-bottom: 30px;
-  line-height: 1.6;
-  font-size: 1rem;
-}
-
-/* 4. Поля вводу (Красиві) */
-.modal-input {
-  width: 100%;
-  padding: 16px;
-  border: 2px solid #e2e8f0;
-  border-radius: 16px;
-  font-size: 1.1rem;
-  box-sizing: border-box;
-  margin-bottom: 24px;
-  outline: none;
-  transition: 0.2s;
-  text-align: center;
-  font-weight: 600;
-  color: #334155;
-}
-
-.modal-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-  background: #fff;
-}
-
-/* 5. Кнопки (Великі і зручні) */
-.btn-modal {
-  background: var(--primary);
-  color: white;
-  width: 100%;
-  padding: 16px;
-  border-radius: 16px;
-  font-size: 1.1rem;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  transition: all 0.2s;
-  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
-  margin-bottom: 10px; /* Відступ між кнопками */
-}
-
-.btn-modal:hover {
-  background: #4338ca;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
-}
-
-/* Сіра кнопка (Наприклад "Назад") */
-.btn-modal.secondary {
-  background: #f1f5f9;
-  color: #475569;
-  box-shadow: none;
-}
-
-.btn-modal.secondary:hover {
-  background: #e2e8f0;
-  color: #334155;
-}
-
-/* Кнопка "Увага" (Оранжева - для помилок) */
-.btn-modal.warning {
-  background: #fff7ed;
-  color: #c2410c;
-  border: 2px solid #ffedd5;
-  box-shadow: none;
-}
-
-.btn-modal.warning:hover {
-  background: #ffedd5;
-  border-color: #fed7aa;
-  color: #ea580c;
-  transform: translateY(-2px);
-}
-
-/* Стиль для посилань у модалці (щоб виглядали як кнопки) */
-a.btn-modal {
-  text-decoration: none; /* Прибираємо підкреслення */
-  display: flex; /* Повертаємо flex, бо <a> це inline */
-  box-sizing: border-box;
-}
-
-/* 6. Кружечок з оцінкою (Для результату тесту) */
-.score-circle {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  border: 8px solid #4f46e5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.5rem;
-  font-weight: 900;
-  color: #4f46e5;
-  margin: 0 auto 20px;
-}
-
-.lesson-score {
-  background: #eef2ff;
-  color: #4338ca;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-weight: 700;
-  font-size: 0.95rem;
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-
-/* =========================================
-   🔄 LOADER (ЕКРАН ЗАВАНТАЖЕННЯ)
-   ========================================= */
-#loader-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #ffffff;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.5s ease;
-}
-
-#loader-overlay.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid #e2e8f0;
-  border-top: 5px solid #4f46e5;
-  border-radius: 50%;
-  margin: 0 auto 20px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.progress-line {
-  width: 100%;
-  height: 6px;
-  background: #e2e8f0;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: #4f46e5;
-  width: 0%;
-  transition: width 0.3s ease;
-}
-
-#loader-percent {
-  margin-top: 8px;
-  color: #64748b;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-/* =========================================
-   🎓 ФІЛЬТРИ (MODERN CAPSULES)
-   ========================================= */
-
-/* Контейнер фільтрів */
-.filters-group {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-/* Самі випадаючі списки */
-.filter-select {
-  appearance: none; /* Прибираємо стандартний вигляд браузера */
-  -webkit-appearance: none;
-
-  background-color: white;
-  border: 2px solid #e2e8f0;
-  border-radius: 50px; /* Робимо їх овальними */
-  padding: 12px 40px 12px 20px; /* Більше місця справа для стрілки */
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #475569;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
-
-  /* Кастомна стрілочка */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 15px center;
-  background-size: 16px;
-  min-width: 140px;
-}
-
-/* Ефект при наведенні */
-.filter-select:hover {
-  border-color: #cbd5e1;
-  background-color: #f8fafc;
-  transform: translateY(-2px); /* Легкий підйом */
-}
-
-/* Ефект фокусу (коли натиснули) */
-.filter-select:focus {
-  outline: none;
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-  color: #1e293b;
-}
-
-/* =========================================
-   🚀 КНОПКА ЗАВЕРШЕННЯ (EPIC BUTTON)
-   ========================================= */
-
-.btn-finish-gradient {
-  background: linear-gradient(
-    135deg,
-    #4f46e5 0%,
-    #7c3aed 100%
-  ); /* Гарний градієнт */
-  color: white !important;
-  border: none;
-  padding: 16px 32px; /* Велика і зручна */
-  font-size: 1.1rem;
-  font-weight: 800;
-  border-radius: 20px;
-  cursor: pointer;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4); /* Світіння тіні */
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Ефект пружини */
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Ефект при наведенні */
-.btn-finish-gradient:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 20px 30px -10px rgba(124, 58, 237, 0.5);
-  background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
-}
-
-/* Ефект натискання */
-.btn-finish-gradient:active {
-  transform: scale(0.96);
-}
-
-/* Для тест-режиму (Фіолетова) */
-body.mode-test .btn-finish-gradient {
-  background: linear-gradient(135deg, #9333ea 0%, #c026d3 100%);
-  box-shadow: 0 10px 25px -5px rgba(147, 51, 234, 0.4);
-}
-body.mode-test .btn-finish-gradient:hover {
-  box-shadow: 0 20px 30px -10px rgba(192, 38, 211, 0.5);
-}
-
-/* Для домашки (Оранжева) */
-body.mode-homework .btn-finish-gradient {
-  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
-  box-shadow: 0 10px 25px -5px rgba(234, 88, 12, 0.4);
-}
-body.mode-homework .btn-finish-gradient:hover {
-  box-shadow: 0 20px 30px -10px rgba(249, 115, 22, 0.5);
 }

@@ -32,11 +32,43 @@ export const courses = [
   },
 
   // --- АЛГЕБРА 8 КЛАС (Властивості кореня) ---
+
+  {
+    id: "algebra-8-16-lesson",
+    title: "§ 16. Тотожність (√a)² = a. Рівняння x² = a",
+    desc: "Теорія та класна робота: розв'язування квадратних рівнянь, властивості арифметичного квадратного кореня.",
+    type: "lesson",
+    subject: "algebra",
+    grade: 8,
+    filename: "algebra-8-16", // Назва однакова
+    badgeText: "Урок",
+  },
+  {
+    id: "algebra-8-16-hw",
+    title: "Домашня робота: § 16",
+    desc: "Самостійне виконання вправ на закріплення теми рівняння x² = a.",
+    type: "homework",
+    subject: "algebra",
+    grade: 8,
+    filename: "algebra-8-16", // Назва однакова
+    badgeText: "ДЗ",
+  },
+  {
+    id: "algebra-8-16-test",
+    title: "Тест: § 16",
+    desc: "Перевірка знань з теми тотожність кореня та рівняння x² = a.",
+    type: "test",
+    subject: "algebra",
+    grade: 8,
+    filename: "algebra-8-16", // Назва однакова
+    badgeText: "Тест",
+  },
+
   {
     id: "alg-8-17-lesson",
     title: "Властивості кореня: Урок",
     desc: "Теорія та практика",
-    type: "lesson", 
+    type: "lesson",
     subject: "algebra",
     grade: 8,
     filename: "17-arithmetic-roots-properties", // Назва JSON файлу

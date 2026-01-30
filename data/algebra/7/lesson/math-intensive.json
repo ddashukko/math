@@ -4,17 +4,17 @@
   "type": "lesson",
   "links": [
     {
-      "title": "🏠 Домашнє завдання",
+      "title": "Домашнє завдання",
       "url": "lesson.html?id=alg-7-topic1-hw",
       "type": "homework"
     },
     {
-      "title": "📝 Контрольний тест",
+      "title": "Контрольний тест",
       "url": "lesson.html?id=alg-7-topic1-test",
       "type": "test"
     },
     {
-      "title": "🔙 На головну",
+      "title": "На головну",
       "url": "index.html",
       "type": "secondary"
     }

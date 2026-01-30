@@ -2,6 +2,7 @@
    🎨 LESSON STYLES (PRO VERSION)
    ========================================= */
 
+/* --- 1. ОСНОВНІ БЛОКИ --- */
 .exercise-block {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -10,10 +11,8 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   animation: fadeIn 0.5s ease;
-  
-  /* 🔥 FIX: Ширина заповнює контейнер */
   width: 100%;
-  max-width: 100%; 
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -30,6 +29,14 @@
   font-size: 1.25rem;
 }
 
+/* Опис під заголовком (Times New Roman) */
+.exercise-header p {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 1.1rem;
+  color: #64748b;
+  margin: 5px 0 0;
+}
+
 .task-row {
   padding: 24px;
   border-bottom: 1px solid var(--border);
@@ -42,14 +49,27 @@
   border-bottom: none;
 }
 
+/* Текст завдання (Times New Roman) */
 .task-content {
-  font-weight: 600;
-  font-size: 1.15rem;
-  line-height: 1.6;
+  font-family: "Times New Roman", Times, serif;
+  font-weight: 500;
+  font-size: 1.25rem;
+  line-height: 1.5;
   color: #334155;
 }
 
-/* --- ПОЛЯ ВВОДУ --- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- 2. ПОЛЯ ВВОДУ (INPUTS) --- */
 .input-group {
   display: flex;
   gap: 12px;
@@ -58,10 +78,11 @@
 }
 
 input[type="text"] {
-  padding: 12px 16px;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 1.25rem;
+  padding: 10px 16px;
   border: 2px solid var(--border);
   border-radius: 10px;
-  font-size: 1.1rem;
   width: 140px;
   outline: none;
   transition: all 0.2s ease;
@@ -73,16 +94,17 @@ input[type="text"]:focus {
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
+/* Стани валідації */
 input.correct {
   background-color: #f0fdf4;
-  border-color: var(--success);
+  border-color: #16a34a; /* --success hex fallback */
   color: #15803d;
   font-weight: 700;
 }
 
 input.wrong {
   background-color: #fef2f2;
-  border-color: var(--error);
+  border-color: #ef4444; /* --error hex fallback */
   color: #b91c1c;
 }
 
@@ -102,7 +124,7 @@ input.wrong {
   opacity: 0.9;
 }
 
-/* --- КНОПКИ ВИБОРУ --- */
+/* --- 3. КНОПКИ ВИБОРУ (OPTIONS) --- */
 .options-container {
   display: flex;
   gap: 12px;
@@ -110,125 +132,291 @@ input.wrong {
 }
 
 .option-btn {
-  padding: 12px 20px;
+  /* Типографіка */
+  font-family: "Times New Roman", Times, serif;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #1e293b;
+
+  /* Розміри та рамка */
+  padding: 10px 20px;
+  min-width: 80px;
   border: 2px solid var(--border);
   background: white;
   border-radius: 10px;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 1rem;
-  transition: all 0.2s;
-  flex: 1; 
-  min-width: 60px;
+  transition: all 0.15s ease-in-out;
+  flex: 1; /* Рівномірне розтягування */
+
+  /* Центрування контенту (Flexbox) */
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
 }
 
+/* Ефекти наведення та вибору */
 .option-btn:hover {
   border-color: var(--primary);
   color: var(--primary);
   background: #eef2ff;
+  transform: translateY(-1px);
 }
 
+.option-btn.selected {
+  background: #eef2ff;
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+/* Стани валідації для кнопок */
 .option-btn.correct {
-  background: var(--success);
+  background: #16a34a; /* --success */
   color: white;
-  border-color: var(--success);
+  border-color: #16a34a;
 }
 
 .option-btn.wrong {
-  background: var(--error);
+  background: #ef4444; /* --error */
   color: white;
-  border-color: var(--error);
+  border-color: #ef4444;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Фікс для MathJax всередині кнопок */
+.option-btn mjx-container {
+  margin: 0 !important;
+  font-size: 110% !important;
 }
 
-/* --- СТИЛІ РЕЄСТРАЦІЇ --- */
+/* --- 4. СПЕЦІАЛЬНІ СЕКЦІЇ --- */
+
+/* Шпаргалка (Cheat Sheet) */
+.cheat-sheet {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  background: #f0fdfa;
+  border: 1px solid #ccfbf1;
+  border-left: 5px solid #14b8a6;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+  color: #0f172a;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.cheat-sheet h3 {
+  font-family:
+    "Inter", system-ui, sans-serif; /* Заголовок залишаємо системним */
+  margin-top: 0;
+  color: #0d9488;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cheat-sheet h3::before {
+  content: "💡";
+}
+
+/* Інструкція вводу (Input Instruction) */
+.input-instruction {
+  background-color: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-left: 5px solid #f59e0b;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+  font-family:
+    "Inter", system-ui, sans-serif; /* Тут системний шрифт, не Times */
+}
+
+.input-instruction h4 {
+  margin: 0 0 10px 0;
+  color: #92400e;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.input-instruction ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #78350f;
+}
+.input-instruction li {
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.input-instruction b {
+  color: #b45309;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+/* Секція повторення (Repetition) */
+.section-repetition {
+  margin-top: 50px;
+  padding-top: 20px;
+  border-top: 2px dashed #e2e8f0;
+}
+
+.section-repetition h3 {
+  background: #f1f5f9;
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color: #64748b;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 20px;
+}
+
+/* --- 5. ТЕМИ (THEMES) --- */
+
+/* 🟣 TEST MODE */
+body.mode-test {
+  background-color: #f3e8ff;
+}
+body.mode-test header {
+  background: #fff;
+  border-bottom: 3px solid #9333ea;
+}
+body.mode-test .exercise-block {
+  background: white;
+  border: 1px solid #e9d5ff;
+  border-left: 5px solid #9333ea;
+}
+body.mode-test .exercise-header h3 {
+  color: #7e22ce;
+}
+body.mode-test input {
+  border: 2px solid #d8b4fe;
+}
+body.mode-test input:focus {
+  border-color: #9333ea;
+  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.2);
+}
+body.mode-test input:disabled {
+  background: #faf5ff;
+  color: #6b7280;
+}
+body.mode-test .option-btn {
+  border-color: #e9d5ff;
+  color: #581c87;
+}
+body.mode-test .option-btn:hover:not(:disabled) {
+  border-color: #a855f7;
+  background: #faf5ff;
+}
+body.mode-test .option-btn.selected {
+  background: #f3e8ff;
+  color: #6b21a8;
+  border-color: #9333ea;
+  font-weight: 700;
+}
+body.mode-test input.correct,
+body.mode-test .option-btn.correct {
+  background-color: #dcfce7 !important;
+  border-color: #22c55e !important;
+  color: #14532d !important;
+}
+body.mode-test input.wrong,
+body.mode-test .option-btn.wrong {
+  background-color: #fee2e2 !important;
+  border-color: #ef4444 !important;
+  color: #7f1d1d !important;
+}
+body.mode-test .input-group .btn-check {
+  display: none;
+}
+
+/* 🟠 HOMEWORK MODE */
+body.mode-homework .exercise-block {
+  border-left: 5px solid #f97316;
+}
+body.mode-homework .exercise-header h3 {
+  color: #c2410c;
+}
+body.mode-homework input[type="text"]:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+}
+body.mode-homework .btn-check {
+  background: #f97316;
+}
+body.mode-homework .btn-check:hover {
+  background: #ea580c;
+}
+body.mode-homework .option-btn:hover {
+  border-color: #f97316;
+  color: #c2410c;
+  background: #fff7ed;
+}
+body.mode-homework .option-btn.selected {
+  background: #fff7ed;
+  border-color: #f97316;
+  color: #c2410c;
+}
+/* Зелений/Червоний для домашки лишаються стандартними */
+body.mode-homework input.correct,
+body.mode-homework .option-btn.correct {
+  background-color: #dcfce7 !important;
+  border-color: #22c55e !important;
+  color: #14532d !important;
+}
+body.mode-homework input.wrong,
+body.mode-homework .option-btn.wrong {
+  background-color: #fee2e2 !important;
+  border-color: #ef4444 !important;
+  color: #7f1d1d !important;
+}
+
+/* --- 6. МОДАЛКА РЕЄСТРАЦІЇ --- */
 #reg-name-input:focus {
   border-color: #4f46e5;
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
-#reg-modal .close-btn { display: none; }
+#reg-modal .close-btn {
+  display: none;
+}
 
-/* =========================================
-   📱 MOBILE ADAPTATION
-   ========================================= */
+/* --- 7. АДАПТИВНІСТЬ (MOBILE) --- */
 @media (max-width: 768px) {
-  .exercise-header { padding: 15px 20px; }
-  .task-row { padding: 20px; }
-  .task-content { font-size: 1.05rem; line-height: 1.6; }
-  
+  .exercise-header {
+    padding: 15px 20px;
+  }
+  .task-row {
+    padding: 20px;
+  }
+  .task-content {
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
   input[type="text"] {
     width: 100%;
     max-width: 100%;
     font-size: 16px;
     padding: 14px;
   }
-
-  .btn-check { width: 100%; margin-top: 5px; }
-
-  .exercise-block img, 
+  .btn-check {
+    width: 100%;
+    margin-top: 5px;
+  }
+  .exercise-block img,
   .exercise-block svg {
     max-width: 100%;
     height: auto;
     display: block;
     margin: 10px auto;
   }
-  
-  mjx-container { overflow-x: auto; max-width: 100%; }
-}
-
-/* =========================================
-   🟣 THEME: TEST MODE (ФІОЛЕТОВИЙ)
-   ========================================= */
-body.mode-test { background-color: #f3e8ff; }
-body.mode-test header { background: #fff; border-bottom: 3px solid #9333ea; }
-body.mode-test .exercise-block {
-  background: white;
-  border: 1px solid #e9d5ff;
-  border-left: 5px solid #9333ea;
-}
-body.mode-test .exercise-header h3 { color: #7e22ce; }
-body.mode-test input { border: 2px solid #d8b4fe; }
-body.mode-test input:focus {
-  border-color: #9333ea;
-  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.2);
-}
-body.mode-test input:disabled { background: #faf5ff; color: #6b7280; }
-body.mode-test .option-btn { border-color: #e9d5ff; color: #581c87; }
-body.mode-test .option-btn:hover:not(:disabled) { border-color: #a855f7; background: #faf5ff; }
-body.mode-test .option-btn.selected {
-  background: #f3e8ff; color: #6b21a8; border-color: #9333ea; font-weight: 700;
-}
-body.mode-test input.correct, body.mode-test .option-btn.correct {
-  background-color: #dcfce7 !important; border-color: #22c55e !important; color: #14532d !important;
-}
-body.mode-test input.wrong, body.mode-test .option-btn.wrong {
-  background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #7f1d1d !important;
-}
-body.mode-test .input-group .btn-check { display: none; }
-
-/* =========================================
-   🟠 THEME: HOMEWORK MODE (ОРАНЖЕВИЙ)
-   ========================================= */
-body.mode-homework .exercise-block { border-left: 5px solid #f97316; }
-body.mode-homework .exercise-header h3 { color: #c2410c; }
-body.mode-homework input[type="text"]:focus {
-  border-color: #f97316; box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
-}
-body.mode-homework .btn-check { background: #f97316; }
-body.mode-homework .btn-check:hover { background: #ea580c; }
-body.mode-homework .option-btn:hover { border-color: #f97316; color: #c2410c; background: #fff7ed; }
-body.mode-homework .option-btn.selected {
-  background: #fff7ed; border-color: #f97316; color: #c2410c;
-}
-/* Зелений/Червоний для домашки лишаються стандартними */
-body.mode-homework input.correct, body.mode-homework .option-btn.correct {
-  background-color: #dcfce7 !important; border-color: #22c55e !important; color: #14532d !important;
-}
-body.mode-homework input.wrong, body.mode-homework .option-btn.wrong {
-  background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #7f1d1d !important;
+  mjx-container {
+    overflow-x: auto;
+    max-width: 100%;
+  }
 }
