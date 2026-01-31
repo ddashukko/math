@@ -14,11 +14,14 @@ const loginBtn = document.getElementById("login-btn");
 const logoutBtn = document.getElementById("logout-btn");
 const userDisplay = document.getElementById("user-display");
 const userAvatar = document.getElementById("user-avatar");
-const regModal = document.getElementById("reg-modal");
+// Два модальні вікна:
+const regModal = document.getElementById("reg-modal"); // Для введення імені
+const welcomeModal = document.getElementById("welcome-modal"); // Для входу/гостя
 
 let currentUserEmail = "";
+let isGuestMode = false; // Прапорець, щоб не мучити гостя повторно
 
-// 1. ВХІД
+// 1. ВХІД (Викликається з кнопки Google)
 async function googleLogin() {
   try {
     await signInWithPopup(auth, provider);
@@ -30,7 +33,13 @@ async function googleLogin() {
   }
 }
 
-// 2. ВИХІД
+// 2. ВХІД ЯК ГІСТЬ
+window.enterAsGuest = function () {
+  isGuestMode = true; // Запам'ятовуємо, що користувач свідомо вибрав гостя
+  if (welcomeModal) welcomeModal.classList.remove("active");
+};
+
+// 3. ВИХІД
 async function googleLogout() {
   try {
     await signOut(auth);
@@ -40,7 +49,7 @@ async function googleLogout() {
   }
 }
 
-// 3. ФУНКЦІЯ: ЗБЕРЕГТИ ІМ'Я (Кнопка "Зберегти" у модалці)
+// 4. ЗБЕРЕЖЕННЯ ІМЕНІ (Реєстрація)
 window.submitRegistration = async function () {
   const input = document.getElementById("reg-name-input");
   const newName = input.value.trim();
@@ -54,7 +63,6 @@ window.submitRegistration = async function () {
   if (!user) return;
 
   try {
-    // Зберігаємо ім'я в базу
     await setDoc(
       doc(db, "users", currentUserEmail),
       {
@@ -74,7 +82,7 @@ window.submitRegistration = async function () {
   }
 };
 
-// 4. ОНОВЛЕННЯ ІНТЕРФЕЙСУ
+// 5. ОНОВЛЕННЯ ІНТЕРФЕЙСУ
 function updateUI(displayName, photoURL) {
   if (userAvatar && photoURL) {
     userAvatar.src = photoURL;
@@ -92,7 +100,7 @@ function updateUI(displayName, photoURL) {
   }
 }
 
-// 5. ЗМІНА ІМЕНІ ВРУЧНУ
+// 6. ЗМІНА ІМЕНІ ВРУЧНУ
 window.changeNickname = async function () {
   const user = auth.currentUser;
   if (!user) return;
@@ -110,42 +118,46 @@ window.changeNickname = async function () {
   }
 };
 
-// 6. 🔥 ГОЛОВНИЙ МОЗОК (ЛОГІКА ВХОДУ)
+// 7. 🔥 ГОЛОВНИЙ МОЗОК (ЛОГІКА ВХОДУ)
 onAuthStateChanged(auth, async (user) => {
   if (user) {
+    // === КОРИСТУВАЧ УВІЙШОВ ===
     currentUserEmail = user.email;
 
-    // Ховаємо кнопку входу, показуємо вихід
+    // Закриваємо вітальне вікно, бо він вже увійшов
+    if (welcomeModal) welcomeModal.classList.remove("active");
+
     if (loginBtn) loginBtn.style.display = "none";
     if (logoutBtn) logoutBtn.style.display = "block";
 
-    // Перевіряємо базу даних
+    // Перевіряємо базу даних на наявність імені
     const userDocRef = doc(db, "users", user.email);
     const userSnapshot = await getDoc(userDocRef);
 
     if (userSnapshot.exists() && userSnapshot.data().nickname) {
-      // ✅ ВАРІАНТ А: Учень вже був тут -> Пускаємо
+      // Все ок, учень відомий
       updateUI(userSnapshot.data().nickname, user.photoURL);
     } else {
-      // 🛑 ВАРІАНТ Б: Новий учень (або запису немає)
-      // Ми НЕ зберігаємо автоматично. Ми показуємо вікно.
-
+      // Новий учень -> Показуємо вікно реєстрації (Ім'я)
       const input = document.getElementById("reg-name-input");
       if (input && user.displayName) {
-        // Для зручності вставляємо ім'я з Google, але даємо можливість виправити
         input.value = user.displayName;
       }
-
-      // Відкриваємо модалку ПРИМУСОВО
       if (regModal) regModal.classList.add("active");
     }
   } else {
-    // ГІСТЬ
+    // === КОРИСТУВАЧ НЕ УВІЙШОВ (ГІСТЬ) ===
     if (loginBtn) loginBtn.style.display = "block";
     if (logoutBtn) logoutBtn.style.display = "none";
     if (userDisplay) userDisplay.style.display = "none";
     if (userAvatar) userAvatar.style.display = "none";
+
     if (regModal) regModal.classList.remove("active");
+
+    // 🔥 Показуємо ВІТАЛЬНЕ ВІКНО, якщо він ще не натиснув "Я гість"
+    if (!isGuestMode && welcomeModal) {
+      welcomeModal.classList.add("active");
+    }
   }
 });
 
