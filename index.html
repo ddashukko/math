@@ -180,18 +180,16 @@
       <div id="courses-root" class="lesson-grid"></div>
     </div>
 
-    <div id="name-modal" class="modal-overlay gatekeeper">
+    <div id="reg-modal" class="modal-overlay gatekeeper">
       <div class="modal-content">
         <span class="modal-icon">👋</span>
         <h2 class="modal-title">Давай знайомитись!</h2>
         <p class="modal-desc">
           Я бачу, що ти тут вперше.<br />
-          Введи своє <b>Ім'я та Прізвище</b>, щоб вчитель знав, чию домашку
-          перевіряти.
+          Як тебе підписати для вчителя?
         </p>
 
         <label
-          for="new-user-name"
           style="
             display: block;
             text-align: left;
@@ -201,17 +199,18 @@
             margin-bottom: 8px;
             margin-left: 4px;
           "
-          >Твоє ім'я:</label
+          >Твоє ім'я та прізвище:</label
         >
+
         <input
           type="text"
-          id="new-user-name"
+          id="reg-name-input"
           class="modal-input"
           placeholder="Наприклад: Даша Янчук"
         />
 
-        <button onclick="saveUserName()" class="btn-modal">
-          💾 Зберегти і почати
+        <button onclick="submitRegistration()" class="btn-modal">
+          💾 Зберегти
         </button>
       </div>
     </div>
