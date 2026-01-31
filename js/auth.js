@@ -22,10 +22,8 @@ let currentUserEmail = "";
 async function googleLogin() {
   try {
     await signInWithPopup(auth, provider);
-    // Далі спрацює onAuthStateChanged
   } catch (error) {
     console.error("Помилка входу:", error);
-    // Не показуємо alert, якщо користувач просто закрив вікно
     if (error.code !== "auth/popup-closed-by-user") {
       alert("Не вдалося увійти");
     }
@@ -42,7 +40,7 @@ async function googleLogout() {
   }
 }
 
-// 3. ФУНКЦІЯ: ЗБЕРЕГТИ ІМ'Я (Якщо все ж таки вилізла модалка)
+// 3. ФУНКЦІЯ: ЗБЕРЕГТИ ІМ'Я (Кнопка "Зберегти" у модалці)
 window.submitRegistration = async function () {
   const input = document.getElementById("reg-name-input");
   const newName = input.value.trim();
@@ -52,26 +50,31 @@ window.submitRegistration = async function () {
     return;
   }
 
+  const user = auth.currentUser;
+  if (!user) return;
+
   try {
+    // Зберігаємо ім'я в базу
     await setDoc(
       doc(db, "users", currentUserEmail),
       {
         nickname: newName,
         email: currentUserEmail,
         lastActive: new Date(),
+        photoURL: user.photoURL,
       },
       { merge: true },
     );
 
     regModal.classList.remove("active");
-    updateUI(newName);
+    updateUI(newName, user.photoURL);
   } catch (e) {
     console.error("Помилка реєстрації:", e);
     alert("Помилка збереження. Спробуй ще раз.");
   }
 };
 
-// 4. ОНОВЛЕННЯ ІНТЕРФЕЙСУ (Аватар + Ім'я)
+// 4. ОНОВЛЕННЯ ІНТЕРФЕЙСУ
 function updateUI(displayName, photoURL) {
   if (userAvatar && photoURL) {
     userAvatar.src = photoURL;
@@ -79,7 +82,6 @@ function updateUI(displayName, photoURL) {
   }
 
   if (userDisplay) {
-    // Якщо ім'я занадто довге, обрізаємо для краси
     const shortName =
       displayName.length > 15
         ? displayName.substring(0, 12) + "..."
@@ -90,12 +92,11 @@ function updateUI(displayName, photoURL) {
   }
 }
 
-// 5. ЗМІНА ІМЕНІ ВРУЧНУ (Олівчик)
+// 5. ЗМІНА ІМЕНІ ВРУЧНУ
 window.changeNickname = async function () {
   const user = auth.currentUser;
   if (!user) return;
 
-  // Беремо чисте ім'я без олівця
   const currentName = userDisplay.innerText.replace(" ✏️", "");
   const newName = prompt("Як тебе підписати?", currentName);
 
@@ -109,54 +110,41 @@ window.changeNickname = async function () {
   }
 };
 
-// 6. 🔥 ГОЛОВНИЙ МОЗОК (ВИПРАВЛЕНО)
+// 6. 🔥 ГОЛОВНИЙ МОЗОК (ЛОГІКА ВХОДУ)
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     currentUserEmail = user.email;
 
-    // ✅ 1. МИТТЄВО перемикаємо кнопки (не чекаємо бази)
+    // Ховаємо кнопку входу, показуємо вихід
     if (loginBtn) loginBtn.style.display = "none";
     if (logoutBtn) logoutBtn.style.display = "block";
 
-    // ✅ 2. Перевіряємо, чи є користувач в базі
+    // Перевіряємо базу даних
     const userDocRef = doc(db, "users", user.email);
     const userSnapshot = await getDoc(userDocRef);
 
     if (userSnapshot.exists() && userSnapshot.data().nickname) {
-      // ВАРІАНТ А: Користувач вже є в базі -> беремо ім'я з бази
+      // ✅ ВАРІАНТ А: Учень вже був тут -> Пускаємо
       updateUI(userSnapshot.data().nickname, user.photoURL);
     } else {
-      // ВАРІАНТ Б: В базі немає. Дивимось, що дає Google.
-      const googleName = user.displayName;
+      // 🛑 ВАРІАНТ Б: Новий учень (або запису немає)
+      // Ми НЕ зберігаємо автоматично. Ми показуємо вікно.
 
-      if (googleName) {
-        // 🔥 АВТО-РЕЄСТРАЦІЯ: Якщо Google дав ім'я, використовуємо його!
-        // Жодної модалки, просто зберігаємо і працюємо далі.
-        await setDoc(
-          doc(db, "users", user.email),
-          {
-            nickname: googleName,
-            email: user.email,
-            lastActive: new Date(),
-            photoURL: user.photoURL, // Збережемо і фото на майбутнє
-          },
-          { merge: true },
-        );
-
-        updateUI(googleName, user.photoURL);
-      } else {
-        // ВАРІАНТ В: Google не дав імені (рідкісний випадок) -> Тільки тоді модалка
-        regModal.classList.add("active");
+      const input = document.getElementById("reg-name-input");
+      if (input && user.displayName) {
+        // Для зручності вставляємо ім'я з Google, але даємо можливість виправити
+        input.value = user.displayName;
       }
+
+      // Відкриваємо модалку ПРИМУСОВО
+      if (regModal) regModal.classList.add("active");
     }
   } else {
-    // 🚪 ГІСТЬ (ВИХІД)
+    // ГІСТЬ
     if (loginBtn) loginBtn.style.display = "block";
     if (logoutBtn) logoutBtn.style.display = "none";
     if (userDisplay) userDisplay.style.display = "none";
     if (userAvatar) userAvatar.style.display = "none";
-
-    // Ховаємо модалку, якщо вона раптом висіла
     if (regModal) regModal.classList.remove("active");
   }
 });
