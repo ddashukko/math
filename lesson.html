@@ -13,11 +13,20 @@
       window.MathJax = {
         tex: {
           inlineMath: [
-            ["$", "$"],
-            ["\\(", "\\)"],
+            ["$", "$"], // Дозволяє формули через $...$
+            ["\\(", "\\)"], // Дозволяє формули через \(...\)
+          ],
+          displayMath: [
+            ["$$", "$$"],
+            ["\\[", "\\]"],
           ],
         },
-        svg: { fontCache: "global" },
+        svg: {
+          fontCache: "global",
+        },
+        startup: {
+          typeset: false, // Важливо! Ми будемо запускати вручну
+        },
       };
     </script>
     <script

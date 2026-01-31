@@ -13,7 +13,7 @@ import {
 } from "./firebase-config.js";
 import { courses } from "./courses-data.js";
 
-// --- ЗМІННІ СТАТИСТИКИ ---
+// --- ЗМІННІ ---
 let totalTasksCount = 0;
 let correctCount = 0;
 let wrongCount = 0;
@@ -56,7 +56,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // 2. АВТОРИЗАЦІЯ
 onAuthStateChanged(auth, (user) => {
   const authModal = document.getElementById("auth-modal");
-
   if (user) {
     if (authModal) authModal.classList.remove("active");
     if (currentLessonId) {
@@ -66,9 +65,7 @@ onAuthStateChanged(auth, (user) => {
   } else {
     updateLoader(100, "Очікування входу...");
     hideLoader();
-    if (authModal) {
-      authModal.classList.add("active");
-    }
+    if (authModal) authModal.classList.add("active");
   }
 });
 
@@ -122,11 +119,10 @@ async function loadLesson(id) {
     renderLessonContent(data);
     renderFooter(data.links);
 
-    if (window.MathJax && typeof window.MathJax.typesetPromise === "function") {
+    // 🔥 ФІКС ФОРМУЛ
+    if (window.MathJax && window.MathJax.typesetPromise) {
       updateLoader(60, "Налаштування формул...");
-      MathJax.typesetPromise().catch((err) =>
-        console.log("MathJax error:", err),
-      );
+      await MathJax.typesetPromise();
     }
   } catch (error) {
     console.error(error);
@@ -161,24 +157,32 @@ function renderLessonContent(data) {
   }
 }
 
+// 🔥 ЛІКУВАННЯ ФОРМУЛ: Додає \( \) туди, де їх немає
+function smartFormatMath(text) {
+  if (!text) return "";
+  let str = text.toString();
+  if (str.includes("\\(") || str.includes("$")) return str;
+  if (str.match(/[\\^=<>]/)) {
+    return `\\( ${str} \\)`;
+  }
+  return str;
+}
+
 function renderExercises(exercises, lessonId, container) {
   exercises.forEach((ex) => {
     const card = document.createElement("div");
     card.className = "exercise-block";
 
-    // 1. Перевіряємо, чи є ЗАГАЛЬНА картинка для всієї вправи (ex.image)
     let exerciseImageHtml = ex.image
       ? `<div style="padding: 0 24px 20px; display:flex; justify-content:center;">
-           <img src="${ex.image}" alt="Рисунок до вправи" style="max-width: 100%; max-height: 400px; height: auto; border-radius: 8px; border: 1px solid #e2e8f0;">
+           <img src="${ex.image}" alt="Рисунок" style="max-width: 100%; border-radius: 8px;">
          </div>`
       : "";
 
-    // 2. Блок для HTML-вставок (якщо є)
     let visualHtml = ex.visual
       ? `<div style="padding: 0 24px 20px; display:flex; justify-content:center;">${ex.visual}</div>`
       : "";
 
-    // 3. Формуємо шапку картки: Заголовок -> Опис -> Картинка -> Завдання
     let html = `
       <div class="exercise-header">
         <h3>${ex.title}</h3>
@@ -190,9 +194,14 @@ function renderExercises(exercises, lessonId, container) {
 
     ex.tasks.forEach((task) => {
       const uniqueTaskId = `${lessonId}_${ex.id}_${task.id}`;
-      const safeAns = task.a.toString().replace(/"/g, "&quot;");
 
-      // (Опціонально) Картинка для конкретного завдання, якщо колись знадобиться
+      // 🔥 ВИПРАВЛЕННЯ 1: Склеюємо масив відповідей через "|"
+      const safeAns = Array.isArray(task.a)
+        ? task.a.join("|").replace(/"/g, "&quot;")
+        : task.a.toString().replace(/"/g, "&quot;");
+
+      const formattedQuestion = smartFormatMath(task.q);
+
       let taskImageHtml = task.image
         ? `<div class="task-image-container"><img src="${task.image}" class="task-img"></div>`
         : "";
@@ -200,7 +209,7 @@ function renderExercises(exercises, lessonId, container) {
       html += `<div class="task-row">
         <div class="task-content">
            <span style="font-weight:bold; margin-right:8px; color:#3b82f6;">${task.id}</span> 
-           ${task.q}
+           ${formattedQuestion}
            ${taskImageHtml}
         </div>
         <div class="interactive-area" id="area-${uniqueTaskId}">`;
@@ -209,14 +218,22 @@ function renderExercises(exercises, lessonId, container) {
         html += `<div class="options-container" id="container-${uniqueTaskId}">`;
         task.opts.forEach((opt) => {
           const safeOpt = opt.toString().replace(/"/g, "&quot;");
-          html += `<button class="option-btn" data-val="${safeOpt}" onclick="checkOption(this, '${safeOpt}', '${safeAns}', '${uniqueTaskId}')">${opt}</button>`;
+          const formattedOpt = smartFormatMath(opt);
+          html += `<button class="option-btn" data-val="${safeOpt}" onclick="checkOption(this, '${safeOpt}', '${safeAns}', '${uniqueTaskId}')">${formattedOpt}</button>`;
         });
         html += `</div>`;
       } else {
         html += `<div class="input-group">
-          <input type="text" id="input-${uniqueTaskId}" placeholder="..." autocomplete="off"
-             onkeydown="if(event.key==='Enter') this.nextElementSibling.click()"
-             onchange="if(document.body.classList.contains('mode-test')) checkInput(this, '${safeAns}', '${uniqueTaskId}')">
+          <div class="input-wrapper">
+             <div class="math-tools">
+                <button class="math-btn" onclick="insertMathSymbol(this, '√')" title="Корінь">√</button>
+                <button class="math-btn" onclick="togglePowerPopup(this)" title="Степінь">xⁿ</button>
+             </div>
+             
+             <input type="text" id="input-${uniqueTaskId}" placeholder="..." autocomplete="off"
+               onkeydown="if(event.key==='Enter') this.closest('.input-group').querySelector('.btn-check').click()"
+               onchange="if(document.body.classList.contains('mode-test')) checkInput(this, '${safeAns}', '${uniqueTaskId}')">
+          </div>
           <button class="btn-check" onclick="checkInput(this, '${safeAns}', '${uniqueTaskId}')">ОК</button>
         </div>`;
       }
@@ -236,14 +253,16 @@ function updateScoreUI() {
   let scoreEl = document.getElementById("score-display");
   if (!scoreEl) {
     const headerDiv = document.querySelector("header div:nth-child(2)");
-    scoreEl = document.createElement("div");
-    scoreEl.id = "score-display";
-    scoreEl.className = "lesson-score";
-    if (headerDiv) headerDiv.prepend(scoreEl);
+    if (headerDiv) {
+      scoreEl = document.createElement("div");
+      scoreEl.id = "score-display";
+      scoreEl.className = "lesson-score";
+      headerDiv.prepend(scoreEl);
+    }
   }
+  if (!scoreEl) return;
 
   const isTestMode = document.body.classList.contains("mode-test");
-
   if (isTestMode) {
     if (isTestFinished)
       scoreEl.innerText = `🏁 ${correctCount} / ${totalTasksCount}`;
@@ -253,31 +272,73 @@ function updateScoreUI() {
   }
 }
 
-// ВАЛІДАТОР
+// 🔥 ВИПРАВЛЕННЯ 2: Оновлений валідатор з підтримкою альтернатив "|"
 function validateAnswer(userRaw, correctRaw) {
   if (!userRaw) return false;
-  let u = userRaw.toString().toLowerCase().trim().replace(/,/g, ".");
-  let c = correctRaw.toString().toLowerCase().trim().replace(/,/g, ".");
-  if (u === c) return true;
-  if (c.includes(";")) {
-    const uParts = u
-      .split(";")
-      .map((s) => s.trim())
-      .filter((s) => s !== "")
-      .sort();
-    const cParts = c
-      .split(";")
-      .map((s) => s.trim())
-      .filter((s) => s !== "")
-      .sort();
-    if (uParts.length !== cParts.length) return false;
-    return uParts.every((val, index) => val === cParts[index]);
-  }
-  return false;
+
+  const normalizeSuperscripts = (str) => {
+    const map = {
+      "⁰": "0",
+      "¹": "1",
+      "²": "2",
+      "³": "3",
+      "⁴": "4",
+      "⁵": "5",
+      "⁶": "6",
+      "⁷": "7",
+      "⁸": "8",
+      "⁹": "9",
+      "⁻": "-",
+      ⁿ: "n",
+      ˣ: "x",
+    };
+    return str.replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹⁻ⁿ]+)/g, (match) => {
+      let converted = match
+        .split("")
+        .map((c) => map[c])
+        .join("");
+      return `^${converted}`;
+    });
+  };
+
+  let u = userRaw.toString().toLowerCase().trim();
+  u = normalizeSuperscripts(u);
+  // Нормалізація вводу користувача
+  u = u.replace(/,/g, ".").replace(/√/g, "r").replace(/sqrt/g, "r");
+
+  // Розбиваємо правильні відповіді по символу "|"
+  const alternatives = correctRaw.toString().split("|");
+
+  // Перевіряємо, чи підходить хоч одна з альтернатив
+  return alternatives.some((alt) => {
+    let c = alt.toLowerCase().trim().replace(/,/g, ".").replace(/sqrt/g, "r");
+
+    if (u === c) return true;
+
+    // Підтримка складних відповідей через крапку з комою (наприклад, системи рівнянь)
+    if (c.includes(";")) {
+      const uParts = u
+        .split(";")
+        .map((s) => s.trim())
+        .filter((s) => s !== "")
+        .sort();
+      const cParts = c
+        .split(";")
+        .map((s) => s.trim())
+        .filter((s) => s !== "")
+        .sort();
+      if (uParts.length !== cParts.length) return false;
+      return uParts.every((val, index) => val === cParts[index]);
+    }
+
+    return false;
+  });
 }
 
 window.checkInput = function (btn, correctAns, taskId) {
-  const input = btn.previousElementSibling || btn;
+  const input =
+    btn.previousElementSibling?.querySelector("input") ||
+    btn.closest(".input-group").querySelector("input");
   const userVal = input.value;
   const isCorrect = validateAnswer(userVal, correctAns);
   const isTestMode = document.body.classList.contains("mode-test");
@@ -307,7 +368,9 @@ window.checkInput = function (btn, correctAns, taskId) {
 window.checkOption = function (btn, userVal, correctAns, taskId) {
   const parent = btn.parentElement;
   const isTestMode = document.body.classList.contains("mode-test");
-  const isCorrect = userVal === correctAns;
+  // Для тестів відповідь зазвичай одна, тому можна просто порівняти
+  // Але якщо треба підтримка |, можна використати validateAnswer
+  const isCorrect = validateAnswer(userVal, correctAns);
 
   if (isTestFinished) return;
 
@@ -352,7 +415,6 @@ async function restoreProgress(email) {
     const solutionsRef = collection(db, "users", email, "solutions");
     const snapshot = await getDocs(solutionsRef);
 
-    // Скидаємо лічильники перед перерахунком
     correctCount = 0;
     wrongCount = 0;
 
@@ -361,11 +423,9 @@ async function restoreProgress(email) {
       const taskId = data.taskId;
 
       if (taskId && taskId.startsWith(currentLessonId)) {
-        // Рахуємо статистику
         if (data.correct) correctCount++;
         else wrongCount++;
 
-        // Відновлюємо UI
         const inputEl = document.getElementById(`input-${taskId}`);
         if (inputEl) {
           inputEl.value = data.answer;
@@ -373,8 +433,10 @@ async function restoreProgress(email) {
             inputEl.disabled = true;
             if (data.correct) inputEl.classList.add("correct");
             else inputEl.classList.add("wrong");
-            if (inputEl.nextElementSibling)
-              inputEl.nextElementSibling.style.display = "none";
+            const btnOk = inputEl
+              .closest(".input-group")
+              ?.querySelector(".btn-check");
+            if (btnOk) btnOk.style.display = "none";
           }
         }
         const optionsContainer = document.getElementById(`container-${taskId}`);
@@ -411,29 +473,23 @@ async function restoreProgress(email) {
   }
 }
 
-// 🔥 ЗБЕРЕЖЕННЯ (Виправлено логіку)
+// ЗБЕРЕЖЕННЯ
 async function saveProgress(taskId, isCorrect, userAnswer) {
-  if (!navigator.onLine) {
-    console.warn("Немає інтернету. Прогрес не збережено.");
-    return;
-  }
+  if (!navigator.onLine) return;
   const user = auth.currentUser;
   if (!user) return;
 
   try {
-    // 1. 🔥 СПОЧАТКУ ГАРАНТУЄМО, ЩО ЮЗЕР ІСНУЄ (Щоб не було "привидів")
-    // Це створить документ, якщо його немає, і адмінка його побачить
     await setDoc(
       doc(db, "users", user.email),
       {
         email: user.email,
         lastActive: new Date(),
-        displayName: user.displayName || "Учень", // Якщо імені немає в Google, пишемо заглушку
+        displayName: user.displayName || "Учень",
       },
       { merge: true },
     );
 
-    // 2. Тепер зберігаємо конкретну відповідь
     await setDoc(doc(db, "users", user.email, "solutions", taskId), {
       taskId: taskId,
       answer: userAnswer,
@@ -441,13 +497,11 @@ async function saveProgress(taskId, isCorrect, userAnswer) {
       timestamp: new Date(),
     });
 
-    // 3. Оновлюємо загальний прогрес уроку
     if (!document.body.classList.contains("mode-test")) {
       let percent =
         totalTasksCount > 0
           ? Math.round((correctCount / totalTasksCount) * 100)
           : 0;
-
       await setDoc(
         doc(db, "users", user.email, "progress", currentLessonId),
         {
@@ -462,11 +516,11 @@ async function saveProgress(taskId, isCorrect, userAnswer) {
       );
     }
   } catch (e) {
-    console.error("Помилка збереження:", e);
+    console.error(e);
   }
 }
 
-// 🔥 ЗАВЕРШЕННЯ (Виправлено логіку)
+// ЗАВЕРШЕННЯ
 window.finishLesson = function () {
   if (!navigator.onLine) {
     alert("🛑 Немає інтернету!");
@@ -480,7 +534,6 @@ window.finishLesson = function () {
 
   showConfirm("Завершити роботу?", "Оцінка буде збережена.", async () => {
     updateLoader(50, "Перевірка...");
-
     const solutionsRef = collection(db, "users", user.email, "solutions");
     const snapshot = await getDocs(solutionsRef);
 
@@ -489,11 +542,8 @@ window.finishLesson = function () {
 
     snapshot.forEach((doc) => {
       if (doc.data().taskId.startsWith(currentLessonId)) {
-        if (doc.data().correct) {
-          finalCorrect++;
-        } else {
-          finalWrong++; // Рахуємо тільки РЕАЛЬНІ помилки
-        }
+        if (doc.data().correct) finalCorrect++;
+        else finalWrong++;
       }
     });
 
@@ -503,14 +553,13 @@ window.finishLesson = function () {
         ? Math.round((finalCorrect / totalTasksCount) * 100)
         : 0;
 
-    // 🔥 Більше не пишемо "total - correct" у wrong.
     await setDoc(
       doc(db, "users", user.email, "progress", currentLessonId),
       {
         lessonId: currentLessonId,
         totalTasks: totalTasksCount,
         correct: finalCorrect,
-        wrong: finalWrong, // Тепер це чесне число помилок
+        wrong: finalWrong,
         percent: percent,
         lastUpdate: new Date(),
       },
@@ -631,10 +680,8 @@ function renderFooter(links) {
       container.appendChild(footer);
     } else return;
   }
-
   if (isTestFinished) return;
   footer.innerHTML = "";
-
   const finishBtn = document.createElement("button");
   finishBtn.className = "btn-finish-gradient";
   finishBtn.innerHTML = document.body.classList.contains("mode-test")
@@ -649,23 +696,106 @@ function showConfirm(title, text, onYesCallback) {
   const titleEl = document.getElementById("confirm-title");
   const textEl = document.getElementById("confirm-text");
   const yesBtn = document.getElementById("confirm-yes-btn");
-
   if (!modal) {
     if (confirm(title)) onYesCallback();
     return;
   }
-
   titleEl.innerText = title;
   textEl.innerText = text;
-
   const newBtn = yesBtn.cloneNode(true);
   yesBtn.parentNode.replaceChild(newBtn, yesBtn);
   newBtn.onclick = onYesCallback;
-
   modal.classList.add("active");
 }
 
 window.closeConfirmModal = function () {
   const modal = document.getElementById("confirm-modal");
   if (modal) modal.classList.remove("active");
+};
+
+// --- ІНСТРУМЕНТИ ВВОДУ ---
+
+// 🔥 ВИПРАВЛЕННЯ 3: Вставка символів у ПРАВИЛЬНЕ поле
+window.insertMathSymbol = function (btn, symbol) {
+  const wrapper = btn.closest(".input-wrapper");
+  // Шукаємо інпут, у якого ID починається з "input-" (щоб не сплутати з вікном степеня)
+  const input = wrapper.querySelector('input[id^="input-"]');
+  if (!input) return;
+
+  const start = input.selectionStart;
+  const end = input.selectionEnd;
+  const val = input.value;
+  input.value = val.substring(0, start) + symbol + val.substring(end);
+  input.focus();
+  input.selectionStart = input.selectionEnd = start + symbol.length;
+};
+
+// Віконце для степеня
+window.togglePowerPopup = function (btn) {
+  const existing = document.querySelector(".power-popup");
+  if (existing) {
+    existing.remove();
+    return;
+  }
+
+  const popup = document.createElement("div");
+  popup.className = "power-popup";
+  popup.innerHTML = `
+    <input type="text" placeholder="2, n, -1..." id="power-input" autocomplete="off">
+    <button onclick="applyPower(this)">OK</button>
+  `;
+  btn.appendChild(popup);
+  const input = popup.querySelector("input");
+  input.focus();
+
+  input.onkeydown = function (e) {
+    if (e.key === "Enter") {
+      e.stopPropagation();
+      applyPower(popup.querySelector("button"));
+    }
+  };
+
+  setTimeout(() => {
+    document.addEventListener("click", function closePopup(e) {
+      if (!popup.contains(e.target) && e.target !== btn) {
+        popup.remove();
+        document.removeEventListener("click", closePopup);
+      }
+    });
+  }, 100);
+};
+
+window.applyPower = function (confirmBtn) {
+  const popup = confirmBtn.closest(".power-popup");
+  const val = popup.querySelector("input").value;
+  if (val) {
+    const mainBtn = popup.parentElement;
+    const superscripts = {
+      0: "⁰",
+      1: "¹",
+      2: "²",
+      3: "³",
+      4: "⁴",
+      5: "⁵",
+      6: "⁶",
+      7: "⁷",
+      8: "⁸",
+      9: "⁹",
+      "+": "⁺",
+      "-": "⁻",
+      "=": "⁼",
+      "(": "⁽",
+      ")": "⁾",
+      n: "ⁿ",
+      i: "ⁱ",
+      x: "ˣ",
+      y: "ʸ",
+    };
+    let result = "";
+    for (let char of val.toLowerCase()) {
+      result += superscripts[char] || char;
+    }
+    insertMathSymbol(mainBtn, result);
+  }
+  popup.remove();
 };

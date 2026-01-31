@@ -966,3 +966,46 @@ body.mode-homework .btn-finish-gradient:hover {
     justify-content: center;
   }
 }
+
+/* Спливаюче вікно для степеня */
+.power-popup {
+  position: absolute;
+  bottom: 100%; /* Відображати НАД кнопкою */
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border: 1px solid #4f46e5;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  gap: 5px;
+  z-index: 100;
+  width: 140px;
+  animation: fadeIn 0.2s ease;
+}
+
+.power-popup input {
+  width: 100%;
+  padding: 4px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.power-popup button {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0 8px;
+  cursor: pointer;
+}
+
+/* Щоб кнопки інструментів мали relative позицію для прив'язки попапа */
+.math-tools {
+  position: relative;
+}
+.math-btn {
+  position: relative; /* Це важливо для позиціонування віконця */
+}
