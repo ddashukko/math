@@ -415,9 +415,13 @@ body.mode-homework .option-btn.wrong {
     display: block;
     margin: 10px auto;
   }
-  mjx-container {
+
+  /* 🔥 ВИПРАВЛЕНО: Скрол тільки для ВЕЛИКИХ формул */
+  mjx-container[display="true"] {
     overflow-x: auto;
+    overflow-y: hidden;
     max-width: 100%;
+    display: block;
   }
 }
 
@@ -433,6 +437,7 @@ body.mode-homework .option-btn.wrong {
   display: flex;
   gap: 6px;
   margin-bottom: 2px;
+  position: relative; /* Щоб popup знав своє місце */
 }
 
 .math-btn {
@@ -445,8 +450,7 @@ body.mode-homework .option-btn.wrong {
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
-  font-family:
-    "Times New Roman", serif; /* Щоб символи виглядали як у підручнику */
+  font-family: "Times New Roman", serif;
 }
 
 .math-btn:hover {
@@ -459,18 +463,17 @@ body.mode-homework .option-btn.wrong {
   transform: scale(0.95);
 }
 
-/* Адаптація для мобільних */
 @media (max-width: 768px) {
   .math-btn {
-    padding: 8px 14px; /* Більші кнопки для пальців */
+    padding: 8px 14px;
     font-size: 1rem;
   }
 }
 
-/* --- POPUP ДЛЯ СТЕПЕНЯ (Додай це в кінець файлу) --- */
+/* --- POPUP ДЛЯ СТЕПЕНЯ --- */
 .power-popup {
   position: absolute;
-  bottom: 115%; /* Піднімаємо віконце над кнопкою */
+  bottom: 115%;
   left: 50%;
   transform: translateX(-50%);
   background: white;
@@ -510,7 +513,13 @@ body.mode-homework .option-btn.wrong {
   background: #4338ca;
 }
 
-/* Батьківський блок кнопок має бути relative, щоб popup знав своє місце */
-.math-tools {
-  position: relative;
+/* --- 🔥 ГЛОБАЛЬНІ ФІКСИ ДЛЯ MathJax (ВКІНЦІ ФАЙЛУ) --- */
+mjx-container {
+  outline: none !important;
+}
+
+mjx-container:not([display="true"]) {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 1px !important;
 }

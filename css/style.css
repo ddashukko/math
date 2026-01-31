@@ -7,8 +7,6 @@
   --primary: #4f46e5;
   --text-main: #1e293b;
   --border: #e2e8f0;
-  --success: #10b981;
-  --error: #ef4444;
   --radius: 16px;
 }
 
@@ -28,7 +26,7 @@ body {
    2. ХЕДЕР ТА НАВІГАЦІЯ
    ========================================= */
 header {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   padding: 1rem 2rem;
   border-bottom: 1px solid var(--border);
   display: flex;
@@ -37,31 +35,44 @@ header {
   position: sticky;
   top: 0;
   z-index: 100;
-  backdrop-filter: blur(10px);
-}
-
-.btn-home {
-  text-decoration: none;
-  color: var(--text-main);
-  font-weight: 600;
-  padding: 8px 16px;
-  background: #f1f5f9;
-  border-radius: 8px;
-  transition: 0.2s;
-  cursor: pointer;
-  border: none;
-}
-
-.btn-home:hover {
-  background: #e2e8f0;
+  backdrop-filter: blur(8px);
 }
 
 .container {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
   width: 100%;
   box-sizing: border-box;
+}
+
+.btn-home,
+#login-btn,
+#logout-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 0.9rem;
+}
+.btn-home {
+  background: #f1f5f9;
+  color: #334155;
+  text-decoration: none;
+}
+.btn-home:hover {
+  background: #e2e8f0;
+}
+
+#login-btn {
+  background: var(--primary);
+  color: white;
+}
+#logout-btn {
+  background: #f1f5f9;
+  color: #334155;
 }
 
 .btn-teacher {
@@ -72,283 +83,429 @@ header {
   padding: 8px 16px;
   border-radius: 20px;
   font-size: 0.95rem;
-  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
-  border: 2px solid transparent;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   gap: 6px;
+  transition: transform 0.2s;
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
 }
 .btn-teacher:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.6);
-  background: linear-gradient(135deg, #6d28d9, #4338ca);
 }
-.btn-teacher:active {
-  transform: scale(0.95);
+
+/* Профіль */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.user-greeting {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #334155;
+}
+#user-avatar {
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: 0.2s;
+}
+#user-avatar:hover {
+  border-color: #e2e8f0;
 }
 
 /* =========================================
-   3. ПОШУК ТА ФІЛЬТРИ (DASHBOARD)
+   3. ПОШУК ТА ФІЛЬТРИ
    ========================================= */
 .filter-bar {
   background: white;
   padding: 20px;
-  border-radius: 20px;
-  box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
+  border-radius: 24px;
+  border: 1px solid var(--border);
   margin-bottom: 30px;
   display: flex;
   flex-direction: column;
   gap: 15px;
-  border: 1px solid var(--border);
+  box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.03);
 }
 
 .search-wrapper {
   position: relative;
   width: 100%;
 }
-.search-icon {
-  position: absolute;
-  left: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #94a3b8;
-  font-size: 1.1rem;
-  pointer-events: none;
-}
 .search-input {
   width: 100%;
-  padding: 14px 14px 14px 45px;
+  padding: 12px 12px 12px 40px;
   border: 2px solid #e2e8f0;
-  border-radius: 14px;
+  border-radius: 12px;
   font-size: 1rem;
   outline: none;
-  transition: all 0.2s ease;
-  font-family: inherit;
+  background: #fff
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E")
+    no-repeat 10px center;
   box-sizing: border-box;
+  transition: border-color 0.2s;
 }
 .search-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
 }
 
-/* Контейнер фільтрів */
 .filters-group {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
-/* 🔥 ОНОВЛЕНО: СТИЛЬ ФІЛЬТРІВ (MODERN CAPSULES) */
-.filter-select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+/* --- 🔥 CUSTOM SELECT (JS REPLACEMENT) --- */
+/* Контейнер для нашого нового селекта */
+.custom-select-container {
+  position: relative;
+  font-family: inherit;
+  min-width: 160px;
+  flex: 1;
+}
 
-  background-color: white;
+/* Приховуємо справжній select */
+.filter-select {
+  display: none;
+}
+
+/* Кнопка селекта (те, що бачить користувач) */
+.select-selected {
+  background-color: #ffffff;
   border: 2px solid #e2e8f0;
-  border-radius: 50px; /* Овальні */
-  padding: 12px 40px 12px 20px; /* Місце під стрілку */
+  border-radius: 50px;
+  color: #1e293b;
+  padding: 12px 20px;
   font-size: 0.95rem;
   font-weight: 700;
-  color: #475569;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
-  font-family: inherit;
-  flex: 1;
-  min-width: 140px;
-
-  /* Кастомна стрілочка */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 15px center;
-  background-size: 16px;
+  user-select: none;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.filter-select:hover {
-  border-color: #cbd5e1;
-  background-color: #f8fafc;
-  transform: translateY(-2px);
+/* Стрілочка */
+.select-selected:after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border: 2px solid #64748b;
+  border-top: none;
+  border-right: none;
+  transform: rotate(-45deg);
+  margin-left: 10px;
+  margin-top: -4px;
+  transition: transform 0.2s;
 }
 
-.filter-select:focus {
-  outline: none;
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-  color: #1e293b;
+/* Стан відкритого селекта */
+.select-selected.select-arrow-active {
+  border-color: var(--primary);
+  border-bottom-left-radius: 0; /* Щоб зливалося зі списком (опціонально) */
+  border-bottom-right-radius: 0; /* Або залишити круглим */
+}
+.select-selected.select-arrow-active:after {
+  transform: rotate(135deg);
+  margin-top: 4px;
+  border-color: var(--primary);
+}
+
+/* ВИПАДАЮЧЕ ВІКНО (СПИСОК) */
+.select-items {
+  position: absolute;
+  background-color: #ffffff;
+  top: 110%; /* Відступ від кнопки */
+  left: 0;
+  right: 0;
+  z-index: 99;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: none; /* JS покаже це */
+  animation: slideDown 0.2s ease;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.select-items div {
+  color: #475569;
+  padding: 12px 20px;
+  cursor: pointer;
+  border-bottom: 1px solid #f8fafc;
+  font-weight: 600;
+  transition: background 0.1s;
+}
+
+.select-items div:last-child {
+  border-bottom: none;
+}
+
+/* Ховер та активний елемент (Синій фон як на скріні) */
+.select-items div:hover,
+.same-as-selected {
+  background-color: #e0e7ff;
+  color: #4338ca;
+}
+
+/* Показати список */
+.select-show {
+  display: block;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* =========================================
-   4. КАРТКИ УРОКІВ (DASHBOARD)
+   4. КАРТКИ УРОКІВ (АКОРДЕОН)
    ========================================= */
 .lesson-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 24px;
-  padding-bottom: 40px;
+  padding-bottom: 60px;
 }
 
 .lesson-card {
   background: white;
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: 24px;
   padding: 24px;
-  text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
+  transition: all 0.3s ease;
   position: relative;
-  overflow: hidden;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
 }
 
 .lesson-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
   border-color: #cbd5e1;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }
 
+.card-main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
 }
 .lesson-grade {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #94a3b8;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
 }
 
-.lesson-type {
-  font-size: 0.8rem;
-  font-weight: 700;
-  padding: 6px 12px;
-  border-radius: 20px;
+.lesson-subject {
+  font-size: 0.7rem;
+  font-weight: 800;
   text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 50px;
   letter-spacing: 0.5px;
 }
-.badge-lesson {
-  background-color: #eef2ff;
-  color: #4f46e5;
+.badge-subject-algebra {
+  background: #e0e7ff;
+  color: #4338ca;
   border: 1px solid #c7d2fe;
 }
-.badge-homework {
-  background-color: #fff7ed;
-  color: #ea580c;
+.badge-subject-geometry {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+.badge-subject-history {
+  background: #ffedd5;
+  color: #c2410c;
   border: 1px solid #fed7aa;
 }
-.badge-test {
-  background-color: #faf5ff;
-  color: #9333ea;
-  border: 1px solid #e9d5ff;
+.badge-subject-math {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
 }
 
 .lesson-title {
-  font-size: 1.25rem;
-  font-weight: 500;
-  color: var(--text-main);
-  margin: 0 0 10px 0;
-  line-height: 1.4;
-}
-.desc-text {
-  color: #64748b;
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
-
-/* 🔥 ОНОВЛЕНО: ПРОГРЕС БАР */
-.progress-container {
-  background-color: #e2e8f0; /* Сірий для непройденого */
-  border-radius: 10px;
-  height: 8px;
-  width: 100%;
-  margin-top: 12px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  display: flex;
 }
 
-.progress-bar {
+.global-progress {
+  margin-top: 5px;
+}
+.global-progress-bar {
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.global-progress-fill {
   height: 100%;
-  transition: width 0.3s ease;
+  background: linear-gradient(90deg, #4f46e5, #8b5cf6);
+  border-radius: 10px;
+  transition: width 0.5s ease;
 }
 
-.progress-correct {
-  background-color: #22c55e;
-}
-
-.progress-wrong {
-  background-color: #ef4444;
-}
-
-.progress-info {
-  animation: fadeIn 0.3s ease;
-}
-.progress-stats {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.85rem;
-  font-weight: 600;
+.btn-toggle-accordion {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   color: #64748b;
-  margin-bottom: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: 0.2s;
 }
-.stat-correct {
+.btn-toggle-accordion:hover {
+  background: #fff;
+  border-color: #cbd5e1;
+  color: #334155;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.arrow-icon {
+  transition: transform 0.3s;
+}
+.btn-toggle-accordion.active .arrow-icon {
+  transform: rotate(180deg);
+}
+
+.materials-accordion {
+  max-height: 0;
+  overflow: hidden;
+  transition:
+    max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.4s ease,
+    margin-top 0.4s ease;
+  opacity: 0;
+}
+.materials-accordion.open {
+  max-height: 500px;
+  opacity: 1;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid #f1f5f9;
+  text-decoration: none;
+  color: #334155;
+  transition: 0.2s;
+}
+.detail-row:last-child {
+  border-bottom: none;
+}
+.detail-row:hover .detail-badge {
+  transform: translateY(-1px);
+}
+
+.detail-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Бейджі */
+.detail-badge {
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition: all 0.2s;
+  min-width: 80px;
+  text-align: center;
+}
+.badge-lesson {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+.badge-homework {
+  background: #ffedd5;
+  color: #ea580c;
+}
+.badge-test {
+  background: #f3e8ff;
+  color: #9333ea;
+}
+
+.detail-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 120px;
+  justify-content: flex-end;
+}
+.stat-text {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+.stat-text.good {
   color: #16a34a;
 }
-.stat-percent {
-  color: #4f46e5;
+.stat-text.bad {
+  color: #ef4444;
+}
+.mini-track {
+  width: 60px;
+  height: 6px;
+  background: #f1f5f9; /* Сірий (те, що не зроблено) */
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex; /* 🔥 Це дозволяє ставити кольори в рядок */
+}
+
+.mini-fill {
+  height: 100%;
+  border-radius: 0; /* Прибираємо скруглення всередині */
+  transition: width 0.3s ease;
+}
+.mini-fill.green {
+  background: #22c55e;
+}
+.mini-fill.orange {
+  background: #f59e0b;
+}
+.mini-fill.red {
+  background: #ef4444;
 }
 
 /* =========================================
-   5. ЕЛЕМЕНТИ УРОКУ
-   ========================================= */
-.footer-nav {
-  margin-top: 40px;
-  padding-top: 20px;
-  border-top: 2px dashed #e2e8f0;
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-  flex-wrap: wrap;
-  padding-bottom: 60px;
-}
-.btn-nav-link {
-  text-decoration: none;
-  padding: 14px 24px;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 1rem;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-.btn-nav-link:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-.btn-nav-link.homework {
-  background-color: #eef2ff;
-  color: #4f46e5;
-  border: 1px solid #c7d2fe;
-}
-.btn-nav-link.test {
-  background-color: #fff7ed;
-  color: #ea580c;
-  border: 1px solid #fed7aa;
-}
-.btn-nav-link.lesson {
-  background-color: #f0fdf4;
-  color: #15803d;
-  border: 1px solid #bbf7d0;
-}
-
-/* =========================================
-   6. МОДАЛЬНІ ВІКНА (ПОВЕРНУТО СТАРИЙ СТИЛЬ)
+   5. МОДАЛЬНІ ВІКНА
    ========================================= */
 .modal-overlay {
   position: fixed;
@@ -358,182 +515,133 @@ header {
   height: 100%;
   background: rgba(15, 23, 42, 0.6);
   backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 1000;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: none;
+  justify-content: center;
+  align-items: center;
 }
-
 .modal-overlay.active {
-  opacity: 1;
-  pointer-events: all;
+  display: flex;
 }
-
-.modal-overlay.gatekeeper {
-  z-index: 99999 !important;
-  background: rgba(255, 255, 255, 0.95);
-}
-
-/* Картка вікна - як було в завантаженому файлі */
 .modal-content {
-  background: #ffffff;
+  background: white;
   padding: 40px 30px;
-  border-radius: 32px;
-  text-align: center;
-  max-width: 420px;
+  border-radius: 24px;
   width: 90%;
-  box-shadow:
-    0 20px 60px -10px rgba(15, 23, 42, 0.2),
-    0 0 0 1px rgba(0, 0, 0, 0.03);
-  border: none;
-  transform: scale(0.95) translateY(10px);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-  overflow: hidden;
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.1);
 }
-
-.modal-content::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 6px;
-  background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
-}
-
-.modal-overlay.active .modal-content {
-  transform: scale(1) translateY(0);
-}
-
 .modal-icon {
   font-size: 3.5rem;
-  margin-bottom: 20px;
   display: block;
-  animation: float 3s ease-in-out infinite;
+  margin-bottom: 20px;
 }
-
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
-}
-
 .modal-title {
   font-size: 1.8rem;
-  margin: 0 0 8px 0;
-  color: #0f172a;
-  letter-spacing: -0.02em;
   font-weight: 800;
+  margin-bottom: 10px;
+  color: #0f172a;
 }
-
 .modal-desc {
-  font-size: 1.05rem;
   color: #64748b;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
   line-height: 1.6;
 }
-
-/* Поля вводу в модалці */
 .modal-input {
   width: 100%;
-  padding: 16px;
+  padding: 14px;
   border: 2px solid #e2e8f0;
-  border-radius: 16px;
+  border-radius: 12px;
   font-size: 1.1rem;
-  box-sizing: border-box;
-  margin-bottom: 24px;
-  outline: none;
-  transition: 0.2s;
   text-align: center;
   font-weight: 600;
-  color: #334155;
+  margin-bottom: 20px;
+  outline: none;
+  box-sizing: border-box;
 }
-
 .modal-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-  background: #fff;
 }
-
-/* Кнопки модальні */
 .btn-modal {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   width: 100%;
   padding: 16px;
-  border-radius: 18px;
-  font-size: 1rem;
+  border-radius: 16px;
   font-weight: 700;
   border: none;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  text-decoration: none;
-  box-sizing: border-box;
   margin-bottom: 12px;
-  position: relative;
-  gap: 10px;
+  font-size: 1rem;
+
+  /* 🔥 ЦЕНТРУВАННЯ + ПРИБИРАННЯ РИСКИ 🔥 */
+  display: flex; /* Вмикає режим контейнера */
+  justify-content: center; /* Центрує по горизонталі */
+  align-items: center; /* Центрує по вертикалі */
+  gap: 10px; /* Відступ між іконкою і текстом */
+  text-decoration: none; /* Прибирає підкреслення */
+
+  transition: transform 0.2s ease;
 }
 
 .btn-modal:active {
-  transform: scale(0.96);
+  transform: scale(0.98);
 }
-
-.btn-modal.action {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+.btn-modal:hover {
+  transform: translateY(-2px);
+}
+.btn-modal.primary {
+  background: var(--primary);
   color: white;
-  box-shadow:
-    0 4px 0 #5b21b6,
-    0 10px 20px -5px rgba(124, 58, 237, 0.4);
-  margin-bottom: 16px;
 }
-
-.btn-modal.action:hover {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-  transform: translateY(-2px);
-  box-shadow:
-    0 6px 0 #5b21b6,
-    0 15px 25px -5px rgba(124, 58, 237, 0.5);
+.btn-modal.action {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
 }
-
-.btn-modal.action:active {
-  box-shadow: 0 0 0 #5b21b6;
-  transform: translateY(4px);
-}
-
-.btn-modal.warning {
-  background: #fff7ed;
-  color: #ea580c;
-  border: 2px solid transparent;
-}
-.btn-modal.warning:hover {
-  background: #ffedd5;
-  color: #c2410c;
-  transform: translateY(-2px);
-}
-
 .btn-modal.secondary {
   background: #f8fafc;
   color: #64748b;
   border: 1px solid #e2e8f0;
 }
-.btn-modal.secondary:hover {
-  background: #f1f5f9;
-  color: #334155;
-  border-color: #cbd5e1;
+
+/* =========================================
+   6. LOADER & ADMIN
+   ========================================= */
+#loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+}
+#loader-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e2e8f0;
+  border-top: 4px solid #4f46e5;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-/* Коло з оцінкою */
+/* =========================================
+   7. ТЕМИ ТА ЕЛЕМЕНТИ УРОКУ
+   ========================================= */
 .score-circle {
   width: 110px;
   height: 110px;
@@ -548,185 +656,27 @@ header {
   font-weight: 800;
   color: #1e293b;
   margin: 0 auto 24px;
-  box-shadow: inset 0 0 20px rgba(79, 70, 229, 0.05);
-  position: relative;
 }
-
 .score-circle.bad {
   border-top-color: #ef4444;
   border-left-color: #ef4444;
   color: #ef4444;
 }
 
-.lesson-score {
-  background: #eef2ff;
-  color: #4338ca;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-weight: 700;
-  font-size: 0.95rem;
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-
-/* =========================================
-   7. LOADER
-   ========================================= */
-#loader-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #ffffff;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.5s ease;
-}
-
-#loader-overlay.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid #e2e8f0;
-  border-top: 5px solid #4f46e5;
-  border-radius: 50%;
-  margin: 0 auto 20px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.progress-line {
-  width: 100%;
-  height: 6px;
-  background: #e2e8f0;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: #4f46e5;
-  width: 0%;
-  transition: width 0.3s ease;
-}
-
-#loader-percent {
-  margin-top: 8px;
-  color: #64748b;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-/* =========================================
-   8. АДМІН ПАНЕЛЬ
-   ========================================= */
-.log-item {
-  margin-bottom: 10px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  overflow: hidden;
-}
-.log-summary {
-  padding: 12px 16px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: background 0.2s;
-}
-.log-summary:hover {
-  filter: brightness(0.95);
-}
-.log-details-hidden {
-  display: none;
-  background: #ffffff;
-  padding: 15px;
-  border-top: 1px solid #e2e8f0;
-  color: #334155;
-  font-size: 1rem;
-  line-height: 1.6;
-}
-.log-details-hidden.open {
-  display: block;
-  animation: fadeIn 0.3s ease;
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.test-result-panel {
-  background: white;
-  padding: 30px;
-  border-radius: 16px;
-  text-align: center;
-  border: 1px solid #e2e8f0;
-  margin-top: 30px;
-  animation: slideUp 0.5s ease;
-}
-
-/* =========================================
-   9. КНОПКА ЗАВЕРШЕННЯ
-   ========================================= */
 .btn-finish-gradient {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-  color: white !important;
-  border: none;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
   padding: 16px 32px;
-  font-size: 1.1rem;
-  font-weight: 800;
   border-radius: 20px;
-  cursor: pointer;
+  font-weight: 800;
+  border: none;
   width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  position: relative;
-  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
+  margin-top: 20px;
 }
 
-.btn-finish-gradient:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 20px 30px -10px rgba(124, 58, 237, 0.5);
-  background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
-}
-
-.btn-finish-gradient:active {
-  transform: scale(0.96);
-}
-
-/* =========================================
-   10. ТЕМИ (GLOBAL OVERRIDES)
-   ========================================= */
-
-/* --- TEST MODE --- */
 body.mode-test {
   background-color: #f3e8ff;
 }
@@ -736,93 +686,41 @@ body.mode-test header {
 }
 body.mode-test .test-result-panel {
   border: 2px solid #e9d5ff;
-  box-shadow: 0 10px 25px -5px rgba(147, 51, 234, 0.1);
+  padding: 30px;
+  background: white;
+  border-radius: 16px;
+  margin-top: 30px;
+  text-align: center;
 }
 body.mode-test .test-score-big {
   font-size: 3.5rem;
   font-weight: 900;
   color: #9333ea;
-  margin: 15px 0;
-}
-body.mode-test .test-feedback {
-  color: #64748b;
-  margin-bottom: 25px;
-  font-size: 1.1rem;
 }
 body.mode-test .btn-retry {
   background: #9333ea;
   color: white;
-  font-weight: 600;
-  padding: 14px 24px;
+  width: 100%;
+  padding: 14px;
   border-radius: 10px;
   border: none;
-  cursor: pointer;
-  width: 100%;
-  margin-bottom: 12px;
-  font-size: 1rem;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-}
-body.mode-test .btn-retry:hover {
-  background: #7e22ce;
-}
-body.mode-test .btn-back-lesson {
-  background: white;
-  color: #475569;
   font-weight: 600;
-  padding: 14px 24px;
-  border-radius: 10px;
-  border: 2px solid #e2e8f0;
   cursor: pointer;
-  width: 100%;
-  font-size: 1rem;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-}
-body.mode-test .btn-back-lesson:hover {
-  background: #faf5ff;
-  border-color: #d8b4fe;
-  color: #6b21a8;
-}
-
-body.mode-test .exercise-block {
-  background: white;
-  border: 1px solid #e9d5ff;
-  border-left: 5px solid #9333ea;
-}
-body.mode-test .exercise-header h3 {
-  color: #7e22ce;
-}
-body.mode-test input {
-  border: 2px solid #d8b4fe;
 }
 body.mode-test input:focus {
   border-color: #9333ea;
   box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.2);
 }
-body.mode-test .option-btn {
-  border-color: #e9d5ff;
-  color: #581c87;
-}
 body.mode-test .option-btn.selected {
   background: #f3e8ff;
-  color: #6b21a8;
   border-color: #9333ea;
+  color: #6b21a8;
 }
-
 body.mode-test .btn-finish-gradient {
-  background: linear-gradient(135deg, #9333ea 0%, #c026d3 100%);
+  background: linear-gradient(135deg, #9333ea, #c026d3);
   box-shadow: 0 10px 25px -5px rgba(147, 51, 234, 0.4);
 }
-body.mode-test .btn-finish-gradient:hover {
-  box-shadow: 0 20px 30px -10px rgba(192, 38, 211, 0.5);
-}
 
-/* --- HOMEWORK MODE --- */
 body.mode-homework {
   background-color: #fff7ed;
 }
@@ -835,177 +733,70 @@ body.mode-homework .btn-home {
   color: #ea580c;
   border: 1px solid #fed7aa;
 }
-body.mode-homework .btn-home:hover {
-  background: #ffedd5;
-}
-body.mode-homework .test-result-panel {
-  border: 2px solid #fed7aa;
-  background: white;
-}
-body.mode-homework .test-score-big {
-  color: #ea580c;
-  background: linear-gradient(135deg, #f97316, #ea580c);
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text;
-}
 body.mode-homework .btn-retry {
   background: #f97316;
   color: white;
-  box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.3);
 }
-body.mode-homework .btn-retry:hover {
-  background: #ea580c;
-}
-body.mode-homework .btn-back-lesson {
-  border-color: #ffedd5 !important;
-  color: #c2410c;
-}
-body.mode-homework .score-circle {
-  border-color: #f97316;
-  color: #ea580c;
-  background: #fff7ed;
-}
-body.mode-homework .modal-content button {
-  background: #f97316;
-}
-body.mode-homework .modal-content button:hover {
-  background: #ea580c;
-}
-
-body.mode-homework .exercise-block {
-  border-left: 5px solid #f97316;
-}
-body.mode-homework .exercise-header h3 {
-  color: #c2410c;
-}
-body.mode-homework input[type="text"]:focus {
+body.mode-homework input:focus {
   border-color: #f97316;
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
-}
-body.mode-homework .btn-check {
-  background: #f97316;
-}
-body.mode-homework .btn-check:hover {
-  background: #ea580c;
-}
-body.mode-homework .option-btn:hover {
-  border-color: #f97316;
-  color: #c2410c;
-  background: #fff7ed;
 }
 body.mode-homework .option-btn.selected {
   background: #fff7ed;
   border-color: #f97316;
   color: #c2410c;
 }
-
 body.mode-homework .btn-finish-gradient {
-  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+  background: linear-gradient(135deg, #ea580c, #f97316);
   box-shadow: 0 10px 25px -5px rgba(234, 88, 12, 0.4);
 }
-body.mode-homework .btn-finish-gradient:hover {
-  box-shadow: 0 20px 30px -10px rgba(249, 115, 22, 0.5);
-}
 
-/* =========================================
-   11. МОБІЛЬНА АДАПТАЦІЯ (GLOBAL)
-   ========================================= */
-@media (max-width: 768px) {
-  header {
-    padding: 10px 15px;
-    gap: 10px;
-  }
-  header div:first-child {
-    font-size: 1.2rem !important;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .btn-home,
-  #login-btn,
-  #logout-btn {
-    padding: 6px 12px;
-    font-size: 0.85rem;
-  }
-  #user-display {
-    display: none !important;
-  }
-  #user-avatar {
-    margin-right: 0;
-  }
-  .container {
-    padding: 15px;
-    max-width: 100%;
-  }
-  .filters-group {
-    flex-direction: column;
-  }
-  .lesson-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Стилі для картинок у завданнях */
 .task-image-container {
   margin: 15px 0;
   display: flex;
-  justify-content: flex-start; /* Для академічного стилю краще зліва або по центру */
+  justify-content: flex-start;
 }
-
 .task-img {
   max-width: 100%;
-  height: auto;
   border-radius: 8px;
-  border: 1px solid var(--border);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  background: white;
+  border: 1px solid #e2e8f0;
 }
 
-/* На мобільних пристроях центруємо */
-@media (max-width: 768px) {
-  .task-image-container {
-    justify-content: center;
-  }
-}
-
-/* Спливаюче вікно для степеня */
 .power-popup {
   position: absolute;
-  bottom: 100%; /* Відображати НАД кнопкою */
+  bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
   background: white;
   border: 1px solid #4f46e5;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   padding: 8px;
   border-radius: 8px;
   display: flex;
   gap: 5px;
   z-index: 100;
-  width: 140px;
-  animation: fadeIn 0.2s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
-
-.power-popup input {
-  width: 100%;
-  padding: 4px;
-  border: 1px solid #e2e8f0;
-  border-radius: 4px;
-  font-size: 0.9rem;
-}
-
-.power-popup button {
-  background: #4f46e5;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 0 8px;
-  cursor: pointer;
-}
-
-/* Щоб кнопки інструментів мали relative позицію для прив'язки попапа */
 .math-tools {
   position: relative;
 }
-.math-btn {
-  position: relative; /* Це важливо для позиціонування віконця */
+
+@media (max-width: 768px) {
+  header {
+    padding: 10px 15px;
+  }
+  .header-right {
+    gap: 10px;
+  }
+  .user-greeting {
+    display: none;
+  }
+  .lesson-grid {
+    grid-template-columns: 1fr;
+  }
+  .filters-group {
+    flex-direction: column;
+  }
+  .task-image-container {
+    justify-content: center;
+  }
 }

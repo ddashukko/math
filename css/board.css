@@ -1,28 +1,31 @@
-/* 🔥 ВАЖЛИВО: Блокуємо скрол ВСІЄЇ сторінки тільки тут (для уроку) */
+/* 🔥 ВАЖЛИВО: Налаштування сторінки */
 html,
 body {
-  height: 100dvh;
-  overflow: hidden; /* Щоб дошка не скакала */
+  height: 100%; /* Використовуємо 100% замість 100dvh для стабільності */
   width: 100vw;
   margin: 0;
-  touch-action: none; /* Додатковий захист від скролу на мобілках */
+  overflow: hidden; /* Забороняємо глобальний скрол */
 }
 
 /* --- ЛАЙАУТ (РОЗДІЛЕННЯ ЕКРАНУ) --- */
 #app-wrapper {
   display: flex;
-  height: calc(100vh - 70px);
+  height: calc(100vh - 70px); /* Віднімаємо висоту хедера */
   overflow: hidden;
   position: relative;
 }
 
 #tasks-section {
   flex: 35;
-  overflow-y: auto;
+  overflow-y: auto; /* Дозволяємо скрол тільки тут */
   padding: 20px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   min-width: 320px;
   border-right: 1px solid #e2e8f0;
+
+  /* 🔥 FIX: Дозволяємо скрол пальцем тут */
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 #board-section {
@@ -34,6 +37,18 @@ body {
   cursor: crosshair;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: block;
+
+  /* 🔥 FIX: Забороняємо скрол ТІЛЬКИ на дошці, щоб малювати */
+  touch-action: none;
+  user-select: none;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* Прибираємо контур при кліку */
+  outline: none;
 }
 
 /* --- РЕЖИМ "БЕЗ ДОШКИ" (ДЕСКТОП) --- */
@@ -128,100 +143,84 @@ body.board-hidden .btn-board-toggle:hover {
   box-shadow: inset 0 0 0 1px #4f46e5;
 }
 
-canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
 /* =========================================
    📱 MOBILE ADAPTATION (FIXED & CENTERED)
    ========================================= */
 
 @media (max-width: 768px) {
+  html,
+  body {
+    overflow: hidden; /* Критично для iOS */
+    position: fixed; /* Запобігає "гумінню" сторінки */
+  }
+
   #app-wrapper {
     flex-direction: column;
-    height: calc(100dvh - 65px);
+    height: 100vh; /* Стабільна висота */
     width: 100%;
-    position: relative;
   }
 
   /* Секція завдань */
   #tasks-section {
     width: 100%;
-    flex: 1;
+    flex: 1; /* Займає весь доступний простір */
     border-right: none;
     border-bottom: 2px solid #e2e8f0;
-
-    /* 🔥 FIX: Вимикаємо flex, використовуємо блок */
     display: block;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    padding-left: 0;
-    padding-right: 0;
+    padding: 20px 0;
 
+    /* Дозволяємо скрол завдань */
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
   }
 
-  /* 🔥 ЗАЛІЗОБЕТОННЕ ЦЕНТРУВАННЯ */
+  /* 🔥 ЦЕНТРУВАННЯ КОНТЕНТУ */
   #tasks-section > .container {
     display: block !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-
+    margin: 0 auto !important;
     width: 92% !important;
     max-width: 500px !important;
     padding: 0 !important;
     box-sizing: border-box;
+    /* Відступ знизу, щоб контент не ховався за дошкою */
+    padding-bottom: 220px !important;
   }
 
   /* Секція дошки (ВІДКРИТА) */
   #board-section {
+    position: fixed; /* Фіксуємо дошку знизу */
+    bottom: 0;
+    left: 0;
     width: 100%;
-    height: 35dvh;
-    min-height: 200px;
-    flex: none;
+    height: 35vh; /* Використовуємо vh замість dvh для стабільності */
+    min-height: 250px;
+    z-index: 50;
     border-top: 4px solid #cbd5e1;
-    z-index: 20;
-    display: block;
-    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
   }
 
   /* Секція дошки (ЗАКРИТА) */
   body.board-hidden #board-section {
+    transform: translateY(100%); /* Ховаємо вниз, а не display: none */
     height: 0;
-    min-height: 0;
-    display: none;
-    border: none;
+    display: block; /* Залишаємо в DOM для збереження малюнка */
   }
 
-  body.board-hidden #tasks-section {
-    height: 100%;
-    flex: 1;
+  body.board-hidden #tasks-section > .container {
+    padding-bottom: 40px !important;
   }
 
   /* Панель інструментів */
   .tools-panel {
     top: auto;
-    bottom: 15px;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     flex-direction: row;
-    padding: 8px 12px;
+    padding: 8px 16px;
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 50px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    gap: 15px;
-  }
-
-  .tool-btn {
-    width: 42px;
-    height: 42px;
-    font-size: 1.3rem;
-    border-radius: 50%;
+    gap: 20px;
   }
 }

@@ -36,7 +36,7 @@ export const courses = [
   {
     id: "algebra-8-14-lesson",
     title: "§ 14. Арифметичний квадратний корінь",
-    desc: "Теорія та класна робота: означення арифметичного квадратного кореня, добування кореня та розв'язування рівнянь виду √x = m.",
+    desc: "",
     type: "lesson",
     subject: "algebra",
     grade: 8,
@@ -46,7 +46,7 @@ export const courses = [
   {
     id: "algebra-8-14-hw",
     title: "Домашня робота: § 14",
-    desc: "Практичні вправи на обчислення значень квадратних коренів та знаходження допустимих значень змінної.",
+    desc: "",
     type: "homework",
     subject: "algebra",
     grade: 8,
@@ -56,7 +56,7 @@ export const courses = [
   {
     id: "algebra-8-14-test",
     title: "Тест: § 14",
-    desc: "Перевірка знань: обчислення коренів, властивості підкореневого виразу та розв'язування базових рівнянь.",
+    desc: "",
     type: "test",
     subject: "algebra",
     grade: 8,
@@ -67,7 +67,7 @@ export const courses = [
   {
     id: "algebra-8-16-lesson",
     title: "§ 16. Тотожність (√a)² = a. Рівняння x² = a",
-    desc: "Теорія та класна робота: розв'язування квадратних рівнянь, властивості арифметичного квадратного кореня.",
+    desc: "",
     type: "lesson",
     subject: "algebra",
     grade: 8,
@@ -98,7 +98,7 @@ export const courses = [
   {
     id: "algebra-8-17-lesson",
     title: "§ 17. Властивості арифметичного квадратного кореня",
-    desc: "Теорія та практика: корінь з добутку, дробу та степеня. Властивості \\(\\sqrt{a^2} = |a|\\).",
+    desc: "",
     type: "lesson",
     subject: "algebra",
     grade: 8,
@@ -128,7 +128,7 @@ export const courses = [
   {
     id: "algebra-8-18-lesson",
     title: "§ 18. Тотожні перетворення виразів з коренями",
-    desc: "Теорія та практика: винесення множника, внесення множника, дії з коренями.",
+    desc: "",
     type: "lesson",
     subject: "algebra",
     grade: 8,
@@ -160,7 +160,7 @@ export const courses = [
   {
     id: "geometry-8-14-lesson",
     title: "§ 14. Середні пропорційні відрізки у прямокутному трикутнику",
-    desc: "Теорія та класна робота: метричні співвідношення в прямокутному трикутнику, проекції катетів.",
+    desc: "",
     type: "lesson",
     subject: "geometry",
     grade: 8,

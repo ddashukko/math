@@ -162,6 +162,7 @@ function smartFormatMath(text) {
   if (!text) return "";
   let str = text.toString();
   if (str.includes("\\(") || str.includes("$")) return str;
+  // Якщо є корінь, степінь або інші спецсимволи - обгортаємо в формулу
   if (str.match(/[\\^=<>]/)) {
     return `\\( ${str} \\)`;
   }
@@ -194,12 +195,9 @@ function renderExercises(exercises, lessonId, container) {
 
     ex.tasks.forEach((task) => {
       const uniqueTaskId = `${lessonId}_${ex.id}_${task.id}`;
+      const safeAns = task.a.toString().replace(/"/g, "&quot;");
 
-      // 🔥 ВИПРАВЛЕННЯ 1: Склеюємо масив відповідей через "|"
-      const safeAns = Array.isArray(task.a)
-        ? task.a.join("|").replace(/"/g, "&quot;")
-        : task.a.toString().replace(/"/g, "&quot;");
-
+      // Форматуємо запитання, щоб формули відображалися
       const formattedQuestion = smartFormatMath(task.q);
 
       let taskImageHtml = task.image
@@ -272,7 +270,7 @@ function updateScoreUI() {
   }
 }
 
-// 🔥 ВИПРАВЛЕННЯ 2: Оновлений валідатор з підтримкою альтернатив "|"
+// ВАЛІДАТОР
 function validateAnswer(userRaw, correctRaw) {
   if (!userRaw) return false;
 
@@ -303,36 +301,33 @@ function validateAnswer(userRaw, correctRaw) {
 
   let u = userRaw.toString().toLowerCase().trim();
   u = normalizeSuperscripts(u);
-  // Нормалізація вводу користувача
   u = u.replace(/,/g, ".").replace(/√/g, "r").replace(/sqrt/g, "r");
 
-  // Розбиваємо правильні відповіді по символу "|"
-  const alternatives = correctRaw.toString().split("|");
+  let c = correctRaw
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/,/g, ".")
+    .replace(/sqrt/g, "r");
 
-  // Перевіряємо, чи підходить хоч одна з альтернатив
-  return alternatives.some((alt) => {
-    let c = alt.toLowerCase().trim().replace(/,/g, ".").replace(/sqrt/g, "r");
+  if (u === c) return true;
 
-    if (u === c) return true;
+  if (c.includes(";")) {
+    const uParts = u
+      .split(";")
+      .map((s) => s.trim())
+      .filter((s) => s !== "")
+      .sort();
+    const cParts = c
+      .split(";")
+      .map((s) => s.trim())
+      .filter((s) => s !== "")
+      .sort();
+    if (uParts.length !== cParts.length) return false;
+    return uParts.every((val, index) => val === cParts[index]);
+  }
 
-    // Підтримка складних відповідей через крапку з комою (наприклад, системи рівнянь)
-    if (c.includes(";")) {
-      const uParts = u
-        .split(";")
-        .map((s) => s.trim())
-        .filter((s) => s !== "")
-        .sort();
-      const cParts = c
-        .split(";")
-        .map((s) => s.trim())
-        .filter((s) => s !== "")
-        .sort();
-      if (uParts.length !== cParts.length) return false;
-      return uParts.every((val, index) => val === cParts[index]);
-    }
-
-    return false;
-  });
+  return false;
 }
 
 window.checkInput = function (btn, correctAns, taskId) {
@@ -368,9 +363,7 @@ window.checkInput = function (btn, correctAns, taskId) {
 window.checkOption = function (btn, userVal, correctAns, taskId) {
   const parent = btn.parentElement;
   const isTestMode = document.body.classList.contains("mode-test");
-  // Для тестів відповідь зазвичай одна, тому можна просто порівняти
-  // Але якщо треба підтримка |, можна використати validateAnswer
-  const isCorrect = validateAnswer(userVal, correctAns);
+  const isCorrect = userVal === correctAns;
 
   if (isTestFinished) return;
 
@@ -715,10 +708,10 @@ window.closeConfirmModal = function () {
 
 // --- ІНСТРУМЕНТИ ВВОДУ ---
 
-// 🔥 ВИПРАВЛЕННЯ 3: Вставка символів у ПРАВИЛЬНЕ поле
+// 🔥 ВИПРАВЛЕНА ФУНКЦІЯ ВСТАВКИ
 window.insertMathSymbol = function (btn, symbol) {
   const wrapper = btn.closest(".input-wrapper");
-  // Шукаємо інпут, у якого ID починається з "input-" (щоб не сплутати з вікном степеня)
+  // Шукаємо ТІЛЬКИ поле відповіді (воно має ID)
   const input = wrapper.querySelector('input[id^="input-"]');
   if (!input) return;
 

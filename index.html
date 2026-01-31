@@ -123,7 +123,7 @@
 
       <div class="filter-bar">
         <div class="search-wrapper">
-          <span class="search-icon">🔍</span>
+          <span class="search-icon"></span>
           <input
             type="text"
             id="search-input"
@@ -139,7 +139,7 @@
             class="filter-select"
             onchange="applyFilters()"
           >
-            <option value="all">📚 Всі предмети</option>
+            <option value="all">Всі предмети</option>
             <option value="algebra">Алгебра</option>
             <option value="geometry">Геометрія</option>
             <option value="history">Історія</option>
@@ -150,7 +150,7 @@
             class="filter-select"
             onchange="applyFilters()"
           >
-            <option value="all">🎓 Всі класи</option>
+            <option value="all">Всі класи</option>
             <option value="1">1 клас</option>
             <option value="2">2 клас</option>
             <option value="3">3 клас</option>
@@ -162,17 +162,6 @@
             <option value="9">9 клас</option>
             <option value="10">10 клас</option>
             <option value="11">11 клас</option>
-          </select>
-
-          <select
-            id="filter-type"
-            class="filter-select"
-            onchange="applyFilters()"
-          >
-            <option value="all">📂 Всі типи</option>
-            <option value="lesson">📘 Урок</option>
-            <option value="homework">🏠 Домашня</option>
-            <option value="test">📝 Тест</option>
           </select>
         </div>
       </div>
