@@ -413,10 +413,27 @@ async function restoreProgress(email) {
 
 // 🔥 ЗБЕРЕЖЕННЯ (Виправлено логіку)
 async function saveProgress(taskId, isCorrect, userAnswer) {
-  if (!navigator.onLine) return;
+  if (!navigator.onLine) {
+    console.warn("Немає інтернету. Прогрес не збережено.");
+    return;
+  }
   const user = auth.currentUser;
   if (!user) return;
+
   try {
+    // 1. 🔥 СПОЧАТКУ ГАРАНТУЄМО, ЩО ЮЗЕР ІСНУЄ (Щоб не було "привидів")
+    // Це створить документ, якщо його немає, і адмінка його побачить
+    await setDoc(
+      doc(db, "users", user.email),
+      {
+        email: user.email,
+        lastActive: new Date(),
+        displayName: user.displayName || "Учень", // Якщо імені немає в Google, пишемо заглушку
+      },
+      { merge: true },
+    );
+
+    // 2. Тепер зберігаємо конкретну відповідь
     await setDoc(doc(db, "users", user.email, "solutions", taskId), {
       taskId: taskId,
       answer: userAnswer,
@@ -424,19 +441,20 @@ async function saveProgress(taskId, isCorrect, userAnswer) {
       timestamp: new Date(),
     });
 
-    // Оновлюємо прогрес, використовуючи поточні лічильники
+    // 3. Оновлюємо загальний прогрес уроку
     if (!document.body.classList.contains("mode-test")) {
       let percent =
         totalTasksCount > 0
           ? Math.round((correctCount / totalTasksCount) * 100)
           : 0;
+
       await setDoc(
         doc(db, "users", user.email, "progress", currentLessonId),
         {
           lessonId: currentLessonId,
           totalTasks: totalTasksCount,
           correct: correctCount,
-          wrong: wrongCount, // Зберігаємо реальну кількість помилок, а не залишок
+          wrong: wrongCount,
           percent: percent,
           lastUpdate: new Date(),
         },
@@ -444,7 +462,7 @@ async function saveProgress(taskId, isCorrect, userAnswer) {
       );
     }
   } catch (e) {
-    console.error(e);
+    console.error("Помилка збереження:", e);
   }
 }
 

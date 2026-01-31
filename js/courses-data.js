@@ -125,6 +125,36 @@ export const courses = [
     filename: "17-arithmetic-roots-properties",
     badgeText: "Тест",
   },
+  {
+    id: "algebra-8-18-lesson",
+    title: "§ 18. Тотожні перетворення виразів з коренями",
+    desc: "Теорія та практика: винесення множника, внесення множника, дії з коренями.",
+    type: "lesson",
+    subject: "algebra",
+    grade: 8,
+    filename: "algebra-8-18",
+    badgeText: "Урок",
+  },
+  {
+    id: "algebra-8-18-hw",
+    title: "Домашня робота: § 18",
+    desc: "Закріплення навичок тотожних перетворень ірраціональних виразів.",
+    type: "homework",
+    subject: "algebra",
+    grade: 8,
+    filename: "algebra-8-18",
+    badgeText: "ДЗ",
+  },
+  {
+    id: "algebra-8-18-test",
+    title: "Тест: § 18",
+    desc: "Контроль знань з теми перетворення виразів, що містять квадратні корені.",
+    type: "test",
+    subject: "algebra",
+    grade: 8,
+    filename: "algebra-8-18",
+    badgeText: "Тест",
+  },
   // --- ГЕОМЕТРІЯ 8 КЛАС (Середні пропорційні відрізки) ---
 
   {
