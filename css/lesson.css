@@ -523,3 +523,27 @@ mjx-container:not([display="true"]) {
   vertical-align: middle;
   margin: 0 1px !important;
 }
+
+.btn-modal {
+  width: 100%;
+  padding: 16px;
+  border-radius: 16px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 12px;
+  font-size: 1rem;
+
+  /* 🔥 ЦЕНТРУВАННЯ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px; /* Тепер цей відступ запрацює */
+
+  text-decoration: none; /* Прибирає глючну лінію знизу */
+  transition: transform 0.2s ease;
+}
+
+.btn-modal:active {
+  transform: scale(0.98);
+}

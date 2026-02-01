@@ -573,19 +573,20 @@ header {
   margin-bottom: 12px;
   font-size: 1rem;
 
-  /* 🔥 ЦЕНТРУВАННЯ + ПРИБИРАННЯ РИСКИ 🔥 */
-  display: flex; /* Вмикає режим контейнера */
-  justify-content: center; /* Центрує по горизонталі */
-  align-items: center; /* Центрує по вертикалі */
-  gap: 10px; /* Відступ між іконкою і текстом */
-  text-decoration: none; /* Прибирає підкреслення */
+  /* 🔥 ЦЕНТРУВАННЯ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px; /* Тепер цей відступ запрацює */
 
+  text-decoration: none; /* Прибирає глючну лінію знизу */
   transition: transform 0.2s ease;
 }
 
 .btn-modal:active {
   transform: scale(0.98);
 }
+
 .btn-modal:hover {
   transform: translateY(-2px);
 }

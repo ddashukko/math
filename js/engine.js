@@ -664,22 +664,57 @@ window.reviewMistakes = function () {
 
 function renderFooter(links) {
   let footer = document.getElementById("lesson-footer");
+
+  // 1. Створюємо футер, якщо його немає
   if (!footer) {
-    const container = document.querySelector(".container");
+    // 🔥 ФІКС: Шукаємо .container, АБО батьківський блок quiz-root (щоб працювало і з дошкою)
+    let container = document.querySelector(".container");
+
+    if (!container) {
+      const root = document.getElementById("quiz-root");
+      if (root) container = root.parentElement; // Вставляємо в той же блок, де і завдання
+    }
+
     if (container) {
       footer = document.createElement("div");
       footer.id = "lesson-footer";
       footer.className = "footer-nav";
+
+      // Додаємо відступ, щоб кнопка не прилипала до останнього завдання
+      footer.style.marginTop = "30px";
+      footer.style.paddingBottom = "40px";
+
       container.appendChild(footer);
-    } else return;
+    } else {
+      console.error("Не знайдено куди вставити кнопку завершення!");
+      return;
+    }
   }
-  if (isTestFinished) return;
+
+  // 2. Якщо тест вже завершено — кнопку не показуємо
+  if (isTestFinished) {
+    footer.innerHTML = "";
+    return;
+  }
+
+  // 3. Малюємо кнопку
   footer.innerHTML = "";
   const finishBtn = document.createElement("button");
+
+  // Додаємо стилі прямо тут або використовуємо клас з CSS
   finishBtn.className = "btn-finish-gradient";
+
+  // 🔥 ДОДАТКОВІ СТИЛІ ДЛЯ ГАРАНТІЇ ВИГЛЯДУ (якщо CSS не підтягнувся)
+  finishBtn.style.display = "flex";
+  finishBtn.style.justifyContent = "center";
+  finishBtn.style.alignItems = "center";
+  finishBtn.style.width = "100%";
+  finishBtn.style.cursor = "pointer";
+
   finishBtn.innerHTML = document.body.classList.contains("mode-test")
     ? "Здати тест"
     : "Завершити урок";
+
   finishBtn.onclick = window.finishLesson;
   footer.appendChild(finishBtn);
 }
