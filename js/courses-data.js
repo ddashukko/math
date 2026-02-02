@@ -158,6 +158,36 @@ export const courses = [
   // --- ГЕОМЕТРІЯ 8 КЛАС (Середні пропорційні відрізки) ---
 
   {
+    id: "geometry-8-right-triangle-lesson",
+    title: "Прямокутний трикутник: Повторення",
+    desc: "",
+    type: "lesson",
+    subject: "geometry",
+    grade: 8,
+    filename: "geometry-8-right-triangle",
+    badgeText: "Урок",
+  },
+  {
+    id: "geometry-8-right-triangle-hw",
+    title: "Домашня робота: прямокутний трикутник",
+    desc: "",
+    type: "homework",
+    subject: "geometry",
+    grade: 8,
+    filename: "geometry-8-right-triangle",
+    badgeText: "ДЗ",
+  },
+  {
+    id: "geometry-8-right-triangle-test",
+    title: "Тест: Прямокутний трикутник",
+    desc: " ",
+    type: "test",
+    subject: "geometry",
+    grade: 8,
+    filename: "geometry-8-right-triangle",
+    badgeText: "Тест",
+  },
+  {
     id: "geometry-8-14-lesson",
     title: "§ 14. Середні пропорційні відрізки у прямокутному трикутнику",
     desc: "",

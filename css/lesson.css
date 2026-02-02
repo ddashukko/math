@@ -547,3 +547,19 @@ mjx-container:not([display="true"]) {
 .btn-modal:active {
   transform: scale(0.98);
 }
+
+/* Текст завдання (Times New Roman) */
+.task-content {
+  font-family: "Times New Roman", Times, serif;
+  font-weight: 500;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  color: #334155;
+
+  /* 🔥 ЛОГІКА ПЕРЕНОСУ 🔥 */
+  overflow-wrap: break-word; /* Переносить слова, якщо вони не влазять */
+  word-wrap: break-word; /* Дублювання для сумісності */
+  word-break: break-word; /* Дозволяє розривати довгі слова/формули */
+  hyphens: auto; /* Автоматично ставить дефіси (якщо мова задана в HTML) */
+  max-width: 100%; /* Гарантує, що текст не розтягне блок */
+}
