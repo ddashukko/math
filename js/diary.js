@@ -15,8 +15,8 @@ onAuthStateChanged(auth, async (user) => {
     let name = user.displayName || user.email;
     try {
       const userDoc = await getDoc(doc(db, "users", user.email));
-      if (userDoc.exists() && userDoc.data().nickname) {
-        name = userDoc.data().nickname;
+      if (userDoc.exists() && userDoc.data().displayName) {
+        name = userDoc.data().displayName;
       }
     } catch (e) {
       console.error(e);

@@ -221,5 +221,40 @@
         </button>
       </div>
     </div>
+
+    <div id="reg-modal" class="modal-overlay gatekeeper">
+      <div class="modal-content">
+        <span class="modal-icon">👋</span>
+        <h2 class="modal-title">Давай знайомитись!</h2>
+        <p class="modal-desc">
+          Я бачу, що ти тут вперше.<br />
+          Як тебе підписати для вчителя?
+        </p>
+
+        <label
+          style="
+            display: block;
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #64748b;
+            margin-bottom: 8px;
+            margin-left: 4px;
+          "
+          >Твоє ім'я та прізвище:</label
+        >
+
+        <input
+          type="text"
+          id="reg-name-input"
+          class="modal-input"
+          placeholder="Наприклад: Даша Янчук"
+        />
+
+        <button onclick="submitRegistration()" class="btn-modal">
+          💾 Зберегти
+        </button>
+      </div>
+    </div>
   </body>
 </html>

@@ -66,7 +66,7 @@ window.submitRegistration = async function () {
     await setDoc(
       doc(db, "users", currentUserEmail),
       {
-        nickname: newName,
+        displayName: newName,
         email: currentUserEmail,
         lastActive: new Date(),
         photoURL: user.photoURL,
@@ -111,7 +111,7 @@ window.changeNickname = async function () {
   if (newName && newName.trim() !== "") {
     await setDoc(
       doc(db, "users", user.email),
-      { nickname: newName.trim() },
+      { displayName: newName.trim() },
       { merge: true },
     );
     userDisplay.innerText = `${newName.trim()} ✏️`;
@@ -134,9 +134,9 @@ onAuthStateChanged(auth, async (user) => {
     const userDocRef = doc(db, "users", user.email);
     const userSnapshot = await getDoc(userDocRef);
 
-    if (userSnapshot.exists() && userSnapshot.data().nickname) {
+    if (userSnapshot.exists() && userSnapshot.data().displayName) {
       // Все ок, учень відомий
-      updateUI(userSnapshot.data().nickname, user.photoURL);
+      updateUI(userSnapshot.data().displayName, user.photoURL);
     } else {
       // Новий учень -> Показуємо вікно реєстрації (Ім'я)
       const input = document.getElementById("reg-name-input");

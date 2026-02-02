@@ -225,6 +225,8 @@ function renderExercises(exercises, lessonId, container) {
           <div class="input-wrapper">
              <div class="math-tools">
                 <button class="math-btn" onclick="insertMathSymbol(this, '√')" title="Корінь">√</button>
+                <button class="math-btn" onclick="insertMathSymbol(this, '∅')" title="Порожня множина">∅</button>
+                <button class="math-btn" onclick="insertMathSymbol(this, 'ℝ')" title="Множина дійсних чисел">ℝ</button>
                 <button class="math-btn" onclick="togglePowerPopup(this)" title="Степінь">xⁿ</button>
              </div>
              
