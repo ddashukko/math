@@ -20,7 +20,6 @@ let wrongCount = 0;
 let currentLessonId = "";
 let isTestFinished = false;
 let currentLinks = [];
-let isGuestMode = false;
 let currentUserEmail = "";
 
 // --- LOADER ---
@@ -66,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadLesson(currentLessonId);
 });
 
-// 2. АВТОРИЗАЦІЯ (ТІЛЬКИ ВХІД)
+// 2. АВТОРИЗАЦІЯ (ОБОВ'ЯЗКОВА)
 const welcomeModal = document.getElementById("welcome-modal");
 const regModal = document.getElementById("reg-modal");
 const userAvatar = document.getElementById("user-avatar");
@@ -76,7 +75,6 @@ onAuthStateChanged(auth, async (user) => {
   if (user) {
     // === КОРИСТУВАЧ УВІЙШОВ ===
     currentUserEmail = user.email;
-    isGuestMode = false;
 
     if (welcomeModal) welcomeModal.classList.remove("active");
 
@@ -86,7 +84,6 @@ onAuthStateChanged(auth, async (user) => {
     const userSnapshot = await getDoc(userDocRef);
 
     if (userSnapshot.exists() && userSnapshot.data().displayName) {
-      // Показуємо хто увійшов
       updateUI(userSnapshot.data().displayName, user.photoURL);
       if (currentLessonId) {
         updateLoader(80, "Синхронізація...");
@@ -99,13 +96,10 @@ onAuthStateChanged(auth, async (user) => {
       if (regModal) regModal.classList.add("active");
     }
   } else {
-    // === КОРИСТУВАЧ НЕ УВІЙШОВ ===
+    // === КОРИСТУВАЧ НЕ УВІЙШОВ -> БЛОКУЄМО ЕКРАН ===
     currentUserEmail = "";
-
-    if (!isGuestMode) {
-      hideLoader();
-      if (welcomeModal) welcomeModal.classList.add("active");
-    }
+    hideLoader();
+    if (welcomeModal) welcomeModal.classList.add("active");
 
     if (userAvatar) userAvatar.style.display = "none";
     if (userDisplay) userDisplay.style.display = "none";
@@ -134,11 +128,7 @@ window.googleLogin = async function () {
   }
 };
 
-window.enterAsGuest = function () {
-  isGuestMode = true;
-  if (welcomeModal) welcomeModal.classList.remove("active");
-  hideLoader();
-};
+// 🔥 ФУНКЦІЮ enterAsGuest ВИДАЛЕНО ПОВНІСТЮ
 
 window.submitRegistration = async function () {
   const input = document.getElementById("reg-name-input");
@@ -179,14 +169,12 @@ window.submitRegistration = async function () {
   }
 };
 
-// 🔥 ДОПОМІЖНА ФУНКЦІЯ ОЧІКУВАННЯ MATHJAX
+// 🔥 ДОПОМІЖНА ФУНКЦІЯ ОЧІКУВАННЯ MATHJAX (ЗБЕРЕЖЕНО)
 function waitForMathJax() {
   return new Promise((resolve) => {
-    // Якщо вже є - одразу ок
     if (window.MathJax && window.MathJax.typesetPromise) {
       return resolve();
     }
-    // Якщо ні - чекаємо
     let counter = 0;
     const check = setInterval(() => {
       counter++;
@@ -194,7 +182,6 @@ function waitForMathJax() {
         clearInterval(check);
         resolve();
       }
-      // Чекаємо максимум 5 секунд, щоб не зависло навічно
       if (counter > 50) {
         clearInterval(check);
         console.warn("MathJax is loading too slow...");
@@ -242,7 +229,7 @@ async function loadLesson(id) {
     renderLessonContent(data);
     renderFooter(data.links);
 
-    // 🔥 ФІКС ФОРМУЛ: Тепер чекаємо завантаження бібліотеки
+    // ФІКС ФОРМУЛ
     updateLoader(60, "Налаштування формул...");
     await waitForMathJax();
 
@@ -516,11 +503,6 @@ window.checkOption = function (btn, userVal, correctAns, taskId) {
 
 // ВІДНОВЛЕННЯ
 async function restoreProgress(email) {
-  if (isGuestMode) {
-    hideLoader();
-    return;
-  }
-
   try {
     const isTestMode = document.body.classList.contains("mode-test");
     const progressDoc = await getDoc(
@@ -599,8 +581,6 @@ async function restoreProgress(email) {
 // ЗБЕРЕЖЕННЯ
 async function saveProgress(taskId, isCorrect, userAnswer) {
   if (!navigator.onLine) return;
-  if (isGuestMode) return;
-
   const user = auth.currentUser;
   if (!user) return;
 
@@ -643,20 +623,6 @@ async function saveProgress(taskId, isCorrect, userAnswer) {
 
 // ЗАВЕРШЕННЯ
 window.finishLesson = function () {
-  if (isGuestMode) {
-    showConfirm(
-      "Завершити роботу?",
-      "Результат не буде збережено (Гість).",
-      () => {
-        isTestFinished = true;
-        lockAllInputs();
-        showFinishedState();
-        closeConfirmModal();
-      },
-    );
-    return;
-  }
-
   if (!navigator.onLine) {
     alert("🛑 Немає інтернету!");
     return;
@@ -766,12 +732,6 @@ function lockAllInputs() {
 window.retryTest = function () {
   showConfirm("Перездати?", "Всі відповіді будуть видалені.", async () => {
     updateLoader(30, "Очищення...");
-
-    if (isGuestMode) {
-      window.location.reload();
-      return;
-    }
-
     const user = auth.currentUser;
     if (!user) return;
     try {

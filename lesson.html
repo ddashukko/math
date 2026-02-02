@@ -78,6 +78,7 @@
           "
         ></div>
       </div>
+
       <button
         onclick="toggleBoard()"
         class="btn-board-toggle"
@@ -198,10 +199,11 @@
 
     <div id="welcome-modal" class="modal-overlay gatekeeper">
       <div class="modal-content">
-        <span class="modal-icon">🚀</span>
-        <h2 class="modal-title">Починаємо урок!</h2>
+        <span class="modal-icon">🔒</span>
+        <h2 class="modal-title">Вхід для учнів</h2>
         <p class="modal-desc">
-          Щоб твій результат зберігся для вчителя, потрібно увійти.
+          Цей урок доступний тільки зареєстрованим учням.<br />
+          Будь ласка, увійди.
         </p>
 
         <button onclick="googleLogin()" class="btn-modal">
@@ -229,14 +231,6 @@
             />
           </svg>
           Увійти через Google
-        </button>
-
-        <div style="margin: 15px 0; color: #94a3b8; font-size: 0.9rem">
-          — або —
-        </div>
-
-        <button onclick="enterAsGuest()" class="btn-modal secondary">
-          👀 Просто потренуватись (Гість)
         </button>
       </div>
     </div>
