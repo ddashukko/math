@@ -20,12 +20,25 @@ let wrongCount = 0;
 let currentLessonId = "";
 let isTestFinished = false;
 let currentLinks = [];
+let isGuestMode = false;
+let currentUserEmail = "";
 
 // --- LOADER ---
 function updateLoader(percent, text) {
+  if (
+    document.getElementById("welcome-modal")?.classList.contains("active") ||
+    document.getElementById("reg-modal")?.classList.contains("active")
+  ) {
+    hideLoader();
+    return;
+  }
+
   const bar = document.getElementById("loader-bar");
   const txt = document.getElementById("loader-text");
   const perc = document.getElementById("loader-percent");
+  const overlay = document.getElementById("loader-overlay");
+
+  if (overlay) overlay.classList.remove("hidden");
   if (bar) bar.style.width = `${percent}%`;
   if (txt && text) txt.innerText = text;
   if (perc) perc.innerText = `${percent}%`;
@@ -38,7 +51,7 @@ function hideLoader() {
   }, 500);
 }
 
-// 1. ЗАВАНТАЖЕННЯ
+// 1. ЗАВАНТАЖЕННЯ СТОРІНКИ
 document.addEventListener("DOMContentLoaded", () => {
   updateLoader(10, "Ініціалізація...");
   const urlParams = new URLSearchParams(window.location.search);
@@ -53,21 +66,64 @@ document.addEventListener("DOMContentLoaded", () => {
   loadLesson(currentLessonId);
 });
 
-// 2. АВТОРИЗАЦІЯ
-onAuthStateChanged(auth, (user) => {
-  const authModal = document.getElementById("auth-modal");
+// 2. АВТОРИЗАЦІЯ (ТІЛЬКИ ВХІД)
+const welcomeModal = document.getElementById("welcome-modal");
+const regModal = document.getElementById("reg-modal");
+const userAvatar = document.getElementById("user-avatar");
+const userDisplay = document.getElementById("user-display");
+
+onAuthStateChanged(auth, async (user) => {
   if (user) {
-    if (authModal) authModal.classList.remove("active");
-    if (currentLessonId) {
-      updateLoader(70, "Вхід в систему...");
-      restoreProgress(user.email);
+    // === КОРИСТУВАЧ УВІЙШОВ ===
+    currentUserEmail = user.email;
+    isGuestMode = false;
+
+    if (welcomeModal) welcomeModal.classList.remove("active");
+
+    updateLoader(60, "Перевірка профілю...");
+
+    const userDocRef = doc(db, "users", user.email);
+    const userSnapshot = await getDoc(userDocRef);
+
+    if (userSnapshot.exists() && userSnapshot.data().displayName) {
+      // Показуємо хто увійшов
+      updateUI(userSnapshot.data().displayName, user.photoURL);
+      if (currentLessonId) {
+        updateLoader(80, "Синхронізація...");
+        restoreProgress(user.email);
+      }
+    } else {
+      hideLoader();
+      const input = document.getElementById("reg-name-input");
+      if (input && user.displayName) input.value = user.displayName;
+      if (regModal) regModal.classList.add("active");
     }
   } else {
-    updateLoader(100, "Очікування входу...");
-    hideLoader();
-    if (authModal) authModal.classList.add("active");
+    // === КОРИСТУВАЧ НЕ УВІЙШОВ ===
+    currentUserEmail = "";
+
+    if (!isGuestMode) {
+      hideLoader();
+      if (welcomeModal) welcomeModal.classList.add("active");
+    }
+
+    if (userAvatar) userAvatar.style.display = "none";
+    if (userDisplay) userDisplay.style.display = "none";
   }
 });
+
+function updateUI(displayName, photoURL) {
+  if (userAvatar && photoURL) {
+    userAvatar.src = photoURL;
+    userAvatar.style.display = "block";
+  }
+  if (userDisplay) {
+    userDisplay.innerText = displayName;
+    userDisplay.style.display = "block";
+  }
+}
+
+// 3. ФУНКЦІЇ ВХОДУ / РЕЄСТРАЦІЇ
 
 window.googleLogin = async function () {
   try {
@@ -78,11 +134,79 @@ window.googleLogin = async function () {
   }
 };
 
-// ЗАВАНТАЖЕННЯ УРОКУ
+window.enterAsGuest = function () {
+  isGuestMode = true;
+  if (welcomeModal) welcomeModal.classList.remove("active");
+  hideLoader();
+};
+
+window.submitRegistration = async function () {
+  const input = document.getElementById("reg-name-input");
+  const newName = input.value.trim();
+
+  if (newName.length < 3) {
+    alert("Будь ласка, введи повне ім'я");
+    return;
+  }
+
+  const user = auth.currentUser;
+  if (!user) return;
+
+  updateLoader(70, "Зберігаємо профіль...");
+
+  try {
+    await setDoc(
+      doc(db, "users", user.email),
+      {
+        displayName: newName,
+        email: user.email,
+        lastActive: new Date(),
+        photoURL: user.photoURL,
+      },
+      { merge: true },
+    );
+
+    if (regModal) regModal.classList.remove("active");
+    updateUI(newName, user.photoURL);
+
+    if (currentLessonId) {
+      restoreProgress(user.email);
+    }
+  } catch (e) {
+    console.error("Помилка реєстрації:", e);
+    alert("Помилка збереження. Спробуй ще раз.");
+    hideLoader();
+  }
+};
+
+// 🔥 ДОПОМІЖНА ФУНКЦІЯ ОЧІКУВАННЯ MATHJAX
+function waitForMathJax() {
+  return new Promise((resolve) => {
+    // Якщо вже є - одразу ок
+    if (window.MathJax && window.MathJax.typesetPromise) {
+      return resolve();
+    }
+    // Якщо ні - чекаємо
+    let counter = 0;
+    const check = setInterval(() => {
+      counter++;
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        clearInterval(check);
+        resolve();
+      }
+      // Чекаємо максимум 5 секунд, щоб не зависло навічно
+      if (counter > 50) {
+        clearInterval(check);
+        console.warn("MathJax is loading too slow...");
+        resolve();
+      }
+    }, 100);
+  });
+}
+
+// 4. ЗАВАНТАЖЕННЯ УРОКУ
 async function loadLesson(id) {
   try {
-    updateLoader(30, "Пошук файлу...");
-
     const course = courses.find((c) => c.id === id);
     let fetchPath = "";
 
@@ -114,15 +238,16 @@ async function loadLesson(id) {
     if (data.repetition) countTotalTasks(data.repetition);
 
     updateScoreUI();
-    updateLoader(50, "Малюємо вправи...");
 
     renderLessonContent(data);
     renderFooter(data.links);
 
-    // 🔥 ФІКС ФОРМУЛ
+    // 🔥 ФІКС ФОРМУЛ: Тепер чекаємо завантаження бібліотеки
+    updateLoader(60, "Налаштування формул...");
+    await waitForMathJax();
+
     if (window.MathJax && window.MathJax.typesetPromise) {
-      updateLoader(60, "Налаштування формул...");
-      await MathJax.typesetPromise();
+      await window.MathJax.typesetPromise();
     }
   } catch (error) {
     console.error(error);
@@ -157,12 +282,11 @@ function renderLessonContent(data) {
   }
 }
 
-// 🔥 ЛІКУВАННЯ ФОРМУЛ: Додає \( \) туди, де їх немає
+// ЛІКУВАННЯ ФОРМУЛ
 function smartFormatMath(text) {
   if (!text) return "";
   let str = text.toString();
   if (str.includes("\\(") || str.includes("$")) return str;
-  // Якщо є корінь, степінь або інші спецсимволи - обгортаємо в формулу
   if (str.match(/[\\^=<>]/)) {
     return `\\( ${str} \\)`;
   }
@@ -197,7 +321,6 @@ function renderExercises(exercises, lessonId, container) {
       const uniqueTaskId = `${lessonId}_${ex.id}_${task.id}`;
       const safeAns = task.a.toString().replace(/"/g, "&quot;");
 
-      // Форматуємо запитання, щоб формули відображалися
       const formattedQuestion = smartFormatMath(task.q);
 
       let taskImageHtml = task.image
@@ -254,10 +377,11 @@ function updateScoreUI() {
   if (!scoreEl) {
     const headerDiv = document.querySelector("header div:nth-child(2)");
     if (headerDiv) {
+      const header = document.querySelector("header");
       scoreEl = document.createElement("div");
       scoreEl.id = "score-display";
       scoreEl.className = "lesson-score";
-      headerDiv.prepend(scoreEl);
+      header.insertBefore(scoreEl, header.children[2]);
     }
   }
   if (!scoreEl) return;
@@ -392,7 +516,11 @@ window.checkOption = function (btn, userVal, correctAns, taskId) {
 
 // ВІДНОВЛЕННЯ
 async function restoreProgress(email) {
-  updateLoader(80, "Відновлення...");
+  if (isGuestMode) {
+    hideLoader();
+    return;
+  }
+
   try {
     const isTestMode = document.body.classList.contains("mode-test");
     const progressDoc = await getDoc(
@@ -471,17 +599,15 @@ async function restoreProgress(email) {
 // ЗБЕРЕЖЕННЯ
 async function saveProgress(taskId, isCorrect, userAnswer) {
   if (!navigator.onLine) return;
+  if (isGuestMode) return;
+
   const user = auth.currentUser;
   if (!user) return;
 
   try {
     await setDoc(
       doc(db, "users", user.email),
-      {
-        email: user.email,
-        lastActive: new Date(),
-        displayName: user.displayName || "Учень",
-      },
+      { lastActive: new Date() },
       { merge: true },
     );
 
@@ -517,6 +643,20 @@ async function saveProgress(taskId, isCorrect, userAnswer) {
 
 // ЗАВЕРШЕННЯ
 window.finishLesson = function () {
+  if (isGuestMode) {
+    showConfirm(
+      "Завершити роботу?",
+      "Результат не буде збережено (Гість).",
+      () => {
+        isTestFinished = true;
+        lockAllInputs();
+        showFinishedState();
+        closeConfirmModal();
+      },
+    );
+    return;
+  }
+
   if (!navigator.onLine) {
     alert("🛑 Немає інтернету!");
     return;
@@ -626,6 +766,12 @@ function lockAllInputs() {
 window.retryTest = function () {
   showConfirm("Перездати?", "Всі відповіді будуть видалені.", async () => {
     updateLoader(30, "Очищення...");
+
+    if (isGuestMode) {
+      window.location.reload();
+      return;
+    }
+
     const user = auth.currentUser;
     if (!user) return;
     try {
@@ -666,47 +812,32 @@ window.reviewMistakes = function () {
 
 function renderFooter(links) {
   let footer = document.getElementById("lesson-footer");
-
-  // 1. Створюємо футер, якщо його немає
   if (!footer) {
-    // 🔥 ФІКС: Шукаємо .container, АБО батьківський блок quiz-root (щоб працювало і з дошкою)
     let container = document.querySelector(".container");
-
     if (!container) {
       const root = document.getElementById("quiz-root");
-      if (root) container = root.parentElement; // Вставляємо в той же блок, де і завдання
+      if (root) container = root.parentElement;
     }
-
     if (container) {
       footer = document.createElement("div");
       footer.id = "lesson-footer";
       footer.className = "footer-nav";
-
-      // Додаємо відступ, щоб кнопка не прилипала до останнього завдання
       footer.style.marginTop = "30px";
       footer.style.paddingBottom = "40px";
-
       container.appendChild(footer);
     } else {
-      console.error("Не знайдено куди вставити кнопку завершення!");
       return;
     }
   }
 
-  // 2. Якщо тест вже завершено — кнопку не показуємо
   if (isTestFinished) {
     footer.innerHTML = "";
     return;
   }
 
-  // 3. Малюємо кнопку
   footer.innerHTML = "";
   const finishBtn = document.createElement("button");
-
-  // Додаємо стилі прямо тут або використовуємо клас з CSS
   finishBtn.className = "btn-finish-gradient";
-
-  // 🔥 ДОДАТКОВІ СТИЛІ ДЛЯ ГАРАНТІЇ ВИГЛЯДУ (якщо CSS не підтягнувся)
   finishBtn.style.display = "flex";
   finishBtn.style.justifyContent = "center";
   finishBtn.style.alignItems = "center";
@@ -744,11 +875,8 @@ window.closeConfirmModal = function () {
 };
 
 // --- ІНСТРУМЕНТИ ВВОДУ ---
-
-// 🔥 ВИПРАВЛЕНА ФУНКЦІЯ ВСТАВКИ
 window.insertMathSymbol = function (btn, symbol) {
   const wrapper = btn.closest(".input-wrapper");
-  // Шукаємо ТІЛЬКИ поле відповіді (воно має ID)
   const input = wrapper.querySelector('input[id^="input-"]');
   if (!input) return;
 
@@ -760,14 +888,12 @@ window.insertMathSymbol = function (btn, symbol) {
   input.selectionStart = input.selectionEnd = start + symbol.length;
 };
 
-// Віконце для степеня
 window.togglePowerPopup = function (btn) {
   const existing = document.querySelector(".power-popup");
   if (existing) {
     existing.remove();
     return;
   }
-
   const popup = document.createElement("div");
   popup.className = "power-popup";
   popup.innerHTML = `

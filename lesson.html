@@ -13,8 +13,8 @@
       window.MathJax = {
         tex: {
           inlineMath: [
-            ["$", "$"], // Дозволяє формули через $...$
-            ["\\(", "\\)"], // Дозволяє формули через \(...\)
+            ["$", "$"],
+            ["\\(", "\\)"],
           ],
           displayMath: [
             ["$$", "$$"],
@@ -25,7 +25,7 @@
           fontCache: "global",
         },
         startup: {
-          typeset: false, // Важливо! Ми будемо запускати вручну
+          typeset: false,
         },
       };
     </script>
@@ -46,25 +46,43 @@
         <p id="loader-percent">0%</p>
       </div>
     </div>
+
     <header>
       <div style="display: flex; align-items: center; gap: 15px">
         <a href="index.html" class="btn-home">← Меню</a>
         <div id="lesson-title" style="font-weight: 700">...</div>
       </div>
 
-      <a
-        href="admin.html"
-        id="teacher-btn"
-        class="btn-teacher"
-        style="display: none"
+      <div
+        style="display: flex; align-items: center; gap: 10px; margin-left: auto"
       >
-        Кабінет
-      </a>
-
+        <img
+          id="user-avatar"
+          src=""
+          alt="Avatar"
+          style="
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: none;
+            border: 2px solid #4f46e5;
+          "
+        />
+        <div
+          id="user-display"
+          style="
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1e293b;
+            display: none;
+          "
+        ></div>
+      </div>
       <button
         onclick="toggleBoard()"
         class="btn-board-toggle"
         title="Показати/Сховати дошку"
+        style="margin-left: 10px"
       >
         <svg
           width="20"
@@ -89,7 +107,6 @@
       <div id="tasks-section">
         <div class="container" style="margin: 0; width: 100%; max-width: none">
           <div id="quiz-root"></div>
-
           <div id="lesson-footer" class="footer-nav"></div>
         </div>
       </div>
@@ -132,7 +149,6 @@
         <p class="modal-desc" id="confirm-text">
           Ти точно хочеш завершити роботу?
         </p>
-
         <div style="display: flex; gap: 10px; flex-direction: column">
           <button
             id="confirm-yes-btn"
@@ -144,7 +160,6 @@
           >
             Так, зробити це
           </button>
-
           <button onclick="closeConfirmModal()" class="btn-modal secondary">
             Ой, ні, назад
           </button>
@@ -157,7 +172,6 @@
         <div class="score-circle" id="final-score">0%</div>
         <h2 style="margin-bottom: 10px">Чудова робота! 🎉</h2>
         <p id="final-text" style="color: #64748b; margin-bottom: 24px">...</p>
-
         <a
           href="index.html"
           class="btn-home"
@@ -182,23 +196,20 @@
       </div>
     </div>
 
-    <script type="module" src="js/engine.js"></script>
-    <script src="js/board.js"></script>
-    <div id="auth-modal" class="modal-overlay gatekeeper">
+    <div id="welcome-modal" class="modal-overlay gatekeeper">
       <div class="modal-content">
-        <span class="modal-icon">🔒</span>
-        <h2 class="modal-title">Вхід у систему</h2>
+        <span class="modal-icon">🚀</span>
+        <h2 class="modal-title">Починаємо урок!</h2>
         <p class="modal-desc">
-          Щоб твій результат зберігся і вчитель його побачив, потрібно увійти.
+          Щоб твій результат зберігся для вчителя, потрібно увійти.
         </p>
 
         <button onclick="googleLogin()" class="btn-modal">
           <svg
-            width="24"
-            height="24"
+            width="20"
+            height="20"
             viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+            style="margin-right: 8px"
           >
             <path
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -218,6 +229,14 @@
             />
           </svg>
           Увійти через Google
+        </button>
+
+        <div style="margin: 15px 0; color: #94a3b8; font-size: 0.9rem">
+          — або —
+        </div>
+
+        <button onclick="enterAsGuest()" class="btn-modal secondary">
+          👀 Просто потренуватись (Гість)
         </button>
       </div>
     </div>
@@ -241,8 +260,9 @@
             margin-bottom: 8px;
             margin-left: 4px;
           "
-          >Твоє ім'я та прізвище:</label
         >
+          Твоє ім'я та прізвище:
+        </label>
 
         <input
           type="text"
@@ -252,9 +272,12 @@
         />
 
         <button onclick="submitRegistration()" class="btn-modal">
-          💾 Зберегти
+          💾 Зберегти і почати
         </button>
       </div>
     </div>
+
+    <script type="module" src="js/engine.js"></script>
+    <script src="js/board.js"></script>
   </body>
 </html>
