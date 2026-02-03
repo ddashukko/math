@@ -206,7 +206,7 @@ async function loadLesson(id) {
       document.body.classList.add("mode-lesson");
     }
 
-    if (window.innerWidth <= 768) {
+    if (window.innerWidth <= 1024) {
       document.body.classList.add("board-hidden");
     }
 
