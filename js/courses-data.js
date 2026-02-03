@@ -31,8 +31,38 @@ export const courses = [
     badgeText: "Тест",
   },
 
-  // --- АЛГЕБРА 8 КЛАС (Властивості кореня) ---
+  // --- АЛГЕБРА 8 КЛАС ---
 
+  {
+    id: "mixed-equations-lesson",
+    title: "Збірний урок: Рівняння 6-8 клас",
+    desc: "Повторення: лінійні, квадратні та дробові рівняння.",
+    type: "lesson",
+    subject: "algebra",
+    grade: 8,
+    filename: "mixed-equations",
+    badgeText: "Урок",
+  },
+  {
+    id: "mixed-equations-hw",
+    title: "Домашня робота: Рівняння",
+    desc: "Закріплення навичок розв'язування рівнянь різних типів.",
+    type: "homework",
+    subject: "algebra",
+    grade: 8,
+    filename: "mixed-equations",
+    badgeText: "ДЗ",
+  },
+  {
+    id: "mixed-equations-test",
+    title: "Тест: Рівняння (6-8 клас)",
+    desc: "Контрольний зріз знань з теми рівняння.",
+    type: "test",
+    subject: "algebra",
+    grade: 8,
+    filename: "mixed-equations",
+    badgeText: "Тест",
+  },
   {
     id: "algebra-8-14-lesson",
     title: "§ 14. Арифметичний квадратний корінь",
