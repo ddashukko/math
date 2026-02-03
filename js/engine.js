@@ -772,42 +772,28 @@ window.reviewMistakes = function () {
 
 function renderFooter(links) {
   let footer = document.getElementById("lesson-footer");
+
+  // Якщо футера немає, спробуємо знайти корінь квізу
   if (!footer) {
-    let container = document.querySelector(".container");
-    if (!container) {
-      const root = document.getElementById("quiz-root");
-      if (root) container = root.parentElement;
-    }
-    if (container) {
+    const quizRoot = document.getElementById("quiz-root");
+    if (quizRoot) {
       footer = document.createElement("div");
       footer.id = "lesson-footer";
-      footer.className = "footer-nav";
-      footer.style.marginTop = "30px";
-      footer.style.paddingBottom = "40px";
-      container.appendChild(footer);
-    } else {
-      return;
+      quizRoot.after(footer); // Вставляємо ПІСЛЯ квізу
     }
   }
 
-  if (isTestFinished) {
-    footer.innerHTML = "";
+  if (isTestFinished || !footer) {
+    if (footer) footer.innerHTML = "";
     return;
   }
 
   footer.innerHTML = "";
   const finishBtn = document.createElement("button");
   finishBtn.className = "btn-finish-gradient";
-  finishBtn.style.display = "flex";
-  finishBtn.style.justifyContent = "center";
-  finishBtn.style.alignItems = "center";
-  finishBtn.style.width = "100%";
-  finishBtn.style.cursor = "pointer";
-
   finishBtn.innerHTML = document.body.classList.contains("mode-test")
     ? "Здати тест"
     : "Завершити урок";
-
   finishBtn.onclick = window.finishLesson;
   footer.appendChild(finishBtn);
 }

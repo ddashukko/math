@@ -563,3 +563,16 @@ mjx-container:not([display="true"]) {
   hyphens: auto; /* Автоматично ставить дефіси (якщо мова задана в HTML) */
   max-width: 100%; /* Гарантує, що текст не розтягне блок */
 }
+
+#lesson-footer {
+  width: 100%;
+  padding: 20px 0 40px;
+  display: block !important;
+  clear: both;
+}
+
+/* Переконайся, що на планшетах tasks-section не обрізає контент */
+#tasks-section {
+  overflow-y: visible !important;
+  height: auto !important;
+}
