@@ -1,31 +1,31 @@
 /* 🔥 ВАЖЛИВО: Налаштування сторінки */
 html,
 body {
-  height: 100%; /* Використовуємо 100% замість 100dvh для стабільності */
   width: 100vw;
+  min-height: 100vh; /* Дозволяємо сторінці рости */
   margin: 0;
-  overflow: hidden; /* Забороняємо глобальний скрол */
+  overflow-x: hidden; /* Прибираємо тільки горизонтальний скрол */
+  overflow-y: auto; /* ✅ ДОЗВОЛЯЄМО вертикальний скрол */
 }
 
 /* --- ЛАЙАУТ (РОЗДІЛЕННЯ ЕКРАНУ) --- */
 #app-wrapper {
   display: flex;
-  height: calc(100vh - 70px); /* Віднімаємо висоту хедера */
-  overflow: hidden;
+  min-height: calc(
+    100vh - 70px
+  ); /* ✅ Використовуємо min-height замість height */
   position: relative;
+  /* Прибрано overflow: hidden, щоб не обрізати контент */
 }
 
 #tasks-section {
   flex: 35;
-  overflow-y: auto; /* Дозволяємо скрол тільки тут */
+  /* Прибрано overflow-y: auto, тепер скролиться вся сторінка разом */
   padding: 20px;
+  padding-bottom: 80px; /* Відступ знизу для кнопки */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   min-width: 320px;
   border-right: 1px solid #e2e8f0;
-
-  /* 🔥 FIX: Дозволяємо скрол пальцем тут */
-  touch-action: pan-y;
-  -webkit-overflow-scrolling: touch;
 }
 
 #board-section {
@@ -38,16 +38,16 @@ body {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: block;
 
-  /* 🔥 FIX: Забороняємо скрол ТІЛЬКИ на дошці, щоб малювати */
-  touch-action: none;
+  /* Забороняємо виділення тексту на дошці, щоб зручніше малювати */
   user-select: none;
+  /* touch-action: none залишаємо, щоб малювання пальцем не рухало екран ТІЛЬКИ коли торкаєшся дошки */
+  touch-action: none;
 }
 
 canvas {
   display: block;
   width: 100%;
   height: 100%;
-  /* Прибираємо контур при кліку */
   outline: none;
 }
 
@@ -57,6 +57,7 @@ body.board-hidden #board-section {
   width: 0 !important;
   overflow: hidden;
   border: none;
+  min-height: 0; /* Щоб не займав місце */
 }
 
 body.board-hidden #tasks-section {
@@ -148,32 +149,34 @@ body.board-hidden .btn-board-toggle:hover {
    ========================================= */
 
 @media (max-width: 768px) {
+  /* На мобільних все ще краще фіксувати, щоб не стрибало при вводі тексту */
   html,
   body {
-    overflow: hidden; /* Критично для iOS */
-    position: fixed; /* Запобігає "гумінню" сторінки */
+    overflow: hidden;
+    position: fixed;
+    height: 100%;
   }
 
   #app-wrapper {
     flex-direction: column;
-    height: 100vh; /* Стабільна висота */
+    height: 100vh;
+    min-height: 100vh;
     width: 100%;
+    overflow: hidden;
   }
 
   /* Секція завдань */
   #tasks-section {
     width: 100%;
-    flex: 1; /* Займає весь доступний простір */
+    flex: 1;
     border-right: none;
     border-bottom: 2px solid #e2e8f0;
     display: block;
     padding: 20px 0;
-
-    /* Дозволяємо скрол завдань */
-    overflow-y: auto;
+    overflow-y: auto; /* Повертаємо скрол тільки для мобільних */
   }
 
-  /* 🔥 ЦЕНТРУВАННЯ КОНТЕНТУ */
+  /* Центрування */
   #tasks-section > .container {
     display: block !important;
     margin: 0 auto !important;
@@ -181,17 +184,16 @@ body.board-hidden .btn-board-toggle:hover {
     max-width: 500px !important;
     padding: 0 !important;
     box-sizing: border-box;
-    /* Відступ знизу, щоб контент не ховався за дошкою */
     padding-bottom: 220px !important;
   }
 
   /* Секція дошки (ВІДКРИТА) */
   #board-section {
-    position: fixed; /* Фіксуємо дошку знизу */
+    position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 35vh; /* Використовуємо vh замість dvh для стабільності */
+    height: 35vh;
     min-height: 250px;
     z-index: 50;
     border-top: 4px solid #cbd5e1;
@@ -200,16 +202,16 @@ body.board-hidden .btn-board-toggle:hover {
 
   /* Секція дошки (ЗАКРИТА) */
   body.board-hidden #board-section {
-    transform: translateY(100%); /* Ховаємо вниз, а не display: none */
+    transform: translateY(100%);
     height: 0;
-    display: block; /* Залишаємо в DOM для збереження малюнка */
+    min-height: 0;
+    display: block;
   }
 
   body.board-hidden #tasks-section > .container {
     padding-bottom: 40px !important;
   }
 
-  /* Панель інструментів */
   .tools-panel {
     top: auto;
     bottom: 20px;
@@ -222,31 +224,5 @@ body.board-hidden .btn-board-toggle:hover {
     border-radius: 50px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     gap: 20px;
-  }
-}
-
-/* =========================================
-   🔥 ФІКС КНОПКИ ДЛЯ ПЛАНШЕТА (BOARD.CSS)
-   ========================================= */
-
-/* Робимо так, щоб кнопка точно влізла в екран */
-#tasks-section {
-  padding-bottom: 250px !important; /* Дуже великий відступ знизу */
-}
-
-/* Гарантуємо, що блок з кнопкою видимий */
-#lesson-footer {
-  display: block !important;
-  width: 100% !important;
-  min-height: 80px;
-  position: relative;
-  z-index: 50;
-  margin-top: 30px;
-}
-
-/* Додатково: якщо це iPad/Android планшет у режимі "спліт" */
-@media (min-width: 769px) {
-  #tasks-section .container {
-    padding-bottom: 100px !important;
   }
 }
