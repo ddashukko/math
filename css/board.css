@@ -19,17 +19,16 @@ body {
 }
 
 #tasks-section {
-  flex: 35;
-  /* Прибрано overflow-y: auto, тепер скролиться вся сторінка разом */
+  flex: 45;
   padding: 20px;
-  padding-bottom: 80px; /* Відступ знизу для кнопки */
+  padding-bottom: 80px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   min-width: 320px;
   border-right: 1px solid #e2e8f0;
 }
 
 #board-section {
-  flex: 65;
+  flex: 55;
   position: relative;
   background-color: #ffffff;
   background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
@@ -37,10 +36,7 @@ body {
   cursor: crosshair;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: block;
-
-  /* Забороняємо виділення тексту на дошці, щоб зручніше малювати */
   user-select: none;
-  /* touch-action: none залишаємо, щоб малювання пальцем не рухало екран ТІЛЬКИ коли торкаєшся дошки */
   touch-action: none;
 }
 
