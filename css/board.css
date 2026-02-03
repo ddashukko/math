@@ -224,3 +224,29 @@ body.board-hidden .btn-board-toggle:hover {
     gap: 20px;
   }
 }
+
+/* =========================================
+   🔥 ФІКС КНОПКИ ДЛЯ ПЛАНШЕТА (BOARD.CSS)
+   ========================================= */
+
+/* Робимо так, щоб кнопка точно влізла в екран */
+#tasks-section {
+  padding-bottom: 250px !important; /* Дуже великий відступ знизу */
+}
+
+/* Гарантуємо, що блок з кнопкою видимий */
+#lesson-footer {
+  display: block !important;
+  width: 100% !important;
+  min-height: 80px;
+  position: relative;
+  z-index: 50;
+  margin-top: 30px;
+}
+
+/* Додатково: якщо це iPad/Android планшет у режимі "спліт" */
+@media (min-width: 769px) {
+  #tasks-section .container {
+    padding-bottom: 100px !important;
+  }
+}
