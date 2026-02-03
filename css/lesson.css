@@ -563,3 +563,43 @@ mjx-container:not([display="true"]) {
   hyphens: auto; /* Автоматично ставить дефіси (якщо мова задана в HTML) */
   max-width: 100%; /* Гарантує, що текст не розтягне блок */
 }
+
+/* =========================================
+   🚑 ФІКС ДЛЯ ПЛАНШЕТА (ЩОБ БУЛО ВИДНО КНОПКУ)
+   ========================================= */
+
+@media (min-width: 769px) {
+  /* 1. ВАРІАНТ: ДОШКА ВІДКРИТА */
+  /* Робимо так, щоб ліва частина (завдання) скролилась окремо */
+  body:not(.board-hidden) #app-wrapper {
+    display: flex;
+    height: calc(100vh - 70px);
+    overflow: hidden; /* Ховаємо загальний скрол */
+  }
+
+  body:not(.board-hidden) #tasks-section {
+    flex: 1;
+    height: 100%;
+    overflow-y: auto !important; /* 🔥 ПРИМУСОВИЙ СКРОЛ ЗАВДАНЬ */
+    padding-bottom: 200px !important; /* 🔥 ВІДСТУП ЗНИЗУ, ЩОБ КНОПКУ НЕ ОБРІЗАЛО */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* 2. ВАРІАНТ: ДОШКА ЗАКРИТА (board-hidden) */
+  /* Повертаємо нормальний людський скрол для всієї сторінки */
+  body.board-hidden #app-wrapper {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  body.board-hidden #tasks-section {
+    height: auto !important;
+    overflow: visible !important;
+    padding-bottom: 60px;
+  }
+
+  body.board-hidden {
+    overflow-y: auto !important; /* Дозволяємо гортати сторінку */
+  }
+}
