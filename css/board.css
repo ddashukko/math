@@ -2,33 +2,44 @@
 html,
 body {
   width: 100vw;
-  min-height: 100vh; /* Дозволяємо сторінці рости */
+  min-height: 100vh;
   margin: 0;
-  overflow-x: hidden; /* Прибираємо тільки горизонтальний скрол */
-  overflow-y: auto; /* ✅ ДОЗВОЛЯЄМО вертикальний скрол */
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* --- ЛАЙАУТ (РОЗДІЛЕННЯ ЕКРАНУ) --- */
 #app-wrapper {
   display: flex;
-  min-height: calc(
-    100vh - 70px
-  ); /* ✅ Використовуємо min-height замість height */
+  min-height: calc(100vh - 70px);
   position: relative;
-  /* Прибрано overflow: hidden, щоб не обрізати контент */
+  width: 100%;
 }
 
+/* ✅ ВИПРАВЛЕНО: Секція завдань 
+   Використовуємо padding для відступів замість margin у дочірніх елементів.
+   box-sizing: border-box гарантує, що 50% ширини включають ці відступи.
+*/
 #tasks-section {
-  flex: 50;
-  padding: 20px;
-  padding-bottom: 80px;
+  flex: 0 0 50%;
+  max-width: 50%;
+
+  /* 🔥 Рівномірні відступи з усіх боків: Верх 20px, Право 40px, Низ 80px, Ліво 40px */
+  padding: 20px 40px 80px 40px;
+
+  box-sizing: border-box; /* Критично важливо: щоб відступи не розширювали блок > 50% */
+
+  border-right: 1px solid #e2e8f0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   min-width: 320px;
-  border-right: 1px solid #e2e8f0;
+
+  display: flex;
+  flex-direction: column;
 }
 
 #board-section {
-  flex: 50;
+  flex: 0 0 50%;
+  max-width: 50%;
   position: relative;
   background-color: #ffffff;
   background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
@@ -47,20 +58,40 @@ canvas {
   outline: none;
 }
 
-/* --- РЕЖИМ "БЕЗ ДОШКИ" (ДЕСКТОП) --- */
+/* ✅ РЕЖИМ "ДОШКА ВІДКРИТА" 
+   Контейнер розтягується на всю ширину відступів, заданих у #tasks-section.
+   Ніяких margin-left/right тут не треба, щоб не було накладання.
+*/
+body:not(.board-hidden) #tasks-section .container {
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important; /* Внутрішні відступи вже є у батьківського блоку */
+}
+
+/* --- РЕЖИМ "БЕЗ ДОШКИ" (ДЕСКТОП - ПО ЦЕНТРУ) --- */
 body.board-hidden #board-section {
-  flex: 0 !important;
+  flex: 0 0 0% !important;
   width: 0 !important;
+  max-width: 0 !important;
+  padding: 0 !important;
   overflow: hidden;
   border: none;
-  min-height: 0; /* Щоб не займав місце */
+  min-height: 0;
 }
 
 body.board-hidden #tasks-section {
-  flex: 100 !important;
-  max-width: 800px;
-  margin: 0 auto;
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
   border-right: none;
+  padding: 0; /* Скидаємо відступи, бо контейнер сам себе відцентрує */
+  padding-bottom: 80px;
+}
+
+body.board-hidden #tasks-section .container {
+  margin: 0 auto !important; /* Повертаємо центрування */
+  padding: 20px !important;
+  max-width: 900px !important;
 }
 
 /* --- КНОПКА "ДОШКА" --- */
@@ -141,11 +172,10 @@ body.board-hidden .btn-board-toggle:hover {
 }
 
 /* =========================================
-   📱 MOBILE ADAPTATION (FIXED & CENTERED)
+   📱 MOBILE ADAPTATION
    ========================================= */
 
 @media (max-width: 768px) {
-  /* На мобільних все ще краще фіксувати, щоб не стрибало при вводі тексту */
   html,
   body {
     overflow: hidden;
@@ -161,19 +191,20 @@ body.board-hidden .btn-board-toggle:hover {
     overflow: hidden;
   }
 
-  /* Секція завдань */
   #tasks-section {
     width: 100%;
-    flex: 1;
+    flex: 1 !important;
+    max-width: 100% !important;
     border-right: none;
     border-bottom: 2px solid #e2e8f0;
     display: block;
-    padding: 20px 0;
-    overflow-y: auto; /* Повертаємо скрол тільки для мобільних */
+    padding: 20px 0 !important; /* На мобільному свої відступи */
+    overflow-y: auto;
   }
 
-  /* Центрування */
-  #tasks-section > .container {
+  /* Центрування для мобільних */
+  #tasks-section > .container,
+  body:not(.board-hidden) #tasks-section .container {
     display: block !important;
     margin: 0 auto !important;
     width: 92% !important;
@@ -183,12 +214,13 @@ body.board-hidden .btn-board-toggle:hover {
     padding-bottom: 220px !important;
   }
 
-  /* Секція дошки (ВІДКРИТА) */
   #board-section {
+    flex: initial !important;
+    max-width: 100% !important;
     position: fixed;
     bottom: 0;
     left: 0;
-    width: 100%;
+    width: 100% !important;
     height: 35vh;
     min-height: 250px;
     z-index: 50;
@@ -196,7 +228,6 @@ body.board-hidden .btn-board-toggle:hover {
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
   }
 
-  /* Секція дошки (ЗАКРИТА) */
   body.board-hidden #board-section {
     transform: translateY(100%);
     height: 0;
@@ -220,5 +251,39 @@ body.board-hidden .btn-board-toggle:hover {
     border-radius: 50px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     gap: 20px;
+  }
+}
+
+/* =========================================
+   🚑 ФІКС СКРОЛУ (DESKTOP)
+   ========================================= */
+
+@media (min-width: 769px) {
+  body:not(.board-hidden) #app-wrapper {
+    display: flex;
+    height: calc(100vh - 70px);
+    overflow: hidden;
+  }
+
+  body:not(.board-hidden) #tasks-section {
+    overflow-y: auto !important;
+    /* padding-bottom вже заданий вище у основному блоці */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body.board-hidden #app-wrapper {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  body.board-hidden #tasks-section {
+    height: auto !important;
+    overflow: visible !important;
+    padding-bottom: 60px;
+  }
+
+  body.board-hidden {
+    overflow-y: auto !important;
   }
 }

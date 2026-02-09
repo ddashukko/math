@@ -128,8 +128,6 @@ window.googleLogin = async function () {
   }
 };
 
-// 🔥 ФУНКЦІЮ enterAsGuest ВИДАЛЕНО ПОВНІСТЮ
-
 window.submitRegistration = async function () {
   const input = document.getElementById("reg-name-input");
   const newName = input.value.trim();
@@ -169,7 +167,7 @@ window.submitRegistration = async function () {
   }
 };
 
-// 🔥 ДОПОМІЖНА ФУНКЦІЯ ОЧІКУВАННЯ MATHJAX (ЗБЕРЕЖЕНО)
+// 🔥 ДОПОМІЖНА ФУНКЦІЯ ОЧІКУВАННЯ MATHJAX
 function waitForMathJax() {
   return new Promise((resolve) => {
     if (window.MathJax && window.MathJax.typesetPromise) {
@@ -306,9 +304,14 @@ function renderExercises(exercises, lessonId, container) {
 
     ex.tasks.forEach((task) => {
       const uniqueTaskId = `${lessonId}_${ex.id}_${task.id}`;
-      const safeAns = task.a.toString().replace(/"/g, "&quot;");
+
+      // Готуємо правильну відповідь. Екрануємо тільки подвійні лапки для HTML.
+      // Апострофи всередині data-атрибутів безпечні.
+      let rawAns = Array.isArray(task.a) ? task.a.join("|") : task.a;
+      const safeAns = rawAns.toString().replace(/"/g, "&quot;");
 
       const formattedQuestion = smartFormatMath(task.q);
+      const taskOptions = task.opts || task.choices || task.options;
 
       let taskImageHtml = task.image
         ? `<div class="task-image-container"><img src="${task.image}" class="task-img"></div>`
@@ -322,12 +325,19 @@ function renderExercises(exercises, lessonId, container) {
         </div>
         <div class="interactive-area" id="area-${uniqueTaskId}">`;
 
-      if (task.opts) {
+      if (taskOptions && taskOptions.length > 0) {
         html += `<div class="options-container" id="container-${uniqueTaskId}">`;
-        task.opts.forEach((opt) => {
+        taskOptions.forEach((opt) => {
+          // Екрануємо тільки подвійні лапки для HTML атрибута data-val
           const safeOpt = opt.toString().replace(/"/g, "&quot;");
           const formattedOpt = smartFormatMath(opt);
-          html += `<button class="option-btn" data-val="${safeOpt}" onclick="checkOption(this, '${safeOpt}', '${safeAns}', '${uniqueTaskId}')">${formattedOpt}</button>`;
+
+          // 🔥 ЗМІНА: Всі дані зберігаємо в data-атрибутах, а не в дужках onclick
+          html += `<button class="option-btn" 
+              data-val="${safeOpt}" 
+              data-ans="${safeAns}" 
+              data-id="${uniqueTaskId}" 
+              onclick="checkOption(this)">${formattedOpt}</button>`;
         });
         html += `</div>`;
       } else {
@@ -385,10 +395,15 @@ function updateScoreUI() {
 
 // ВАЛІДАТОР
 function validateAnswer(userRaw, correctRaw) {
-  if (!userRaw) return false;
+  if (userRaw === null || userRaw === undefined) return false;
 
-  const normalizeSuperscripts = (str) => {
-    const map = {
+  // Функція нормалізації (очищення) одного рядка
+  const normalize = (str) => {
+    let s = str.toString().trim();
+    if (s === "∅" || s === "Ø") return "∅"; // Захист порожньої множини
+
+    s = s.toLowerCase();
+    const superscripts = {
       "⁰": "0",
       "¹": "1",
       "²": "2",
@@ -403,41 +418,50 @@ function validateAnswer(userRaw, correctRaw) {
       ⁿ: "n",
       ˣ: "x",
     };
-    return str.replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹⁻ⁿ]+)/g, (match) => {
+    s = s.replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹⁻ⁿˣ]+)/g, (match) => {
       let converted = match
         .split("")
-        .map((c) => map[c])
+        .map((c) => superscripts[c])
         .join("");
       return `^${converted}`;
     });
+    s = s.replace(/,/g, ".");
+    s = s.replace(/√/g, "r").replace(/sqrt/g, "r");
+    s = s.replace(/\s+/g, "");
+    return s;
   };
 
-  let u = userRaw.toString().toLowerCase().trim();
-  u = normalizeSuperscripts(u);
-  u = u.replace(/,/g, ".").replace(/√/g, "r").replace(/sqrt/g, "r");
+  const u = normalize(userRaw);
 
-  let c = correctRaw
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/,/g, ".")
-    .replace(/sqrt/g, "r");
+  // 🔥 1. Розбиваємо правильні відповіді по символу "|"
+  // Якщо correctRaw = "4; -4|-4; 4", то отримаємо масив ["4; -4", "-4; 4"]
+  const possibleAnswers = correctRaw.toString().split("|");
 
-  if (u === c) return true;
+  // 🔥 2. Перевіряємо кожну можливу відповідь
+  for (let option of possibleAnswers) {
+    const c = normalize(option);
 
-  if (c.includes(";")) {
-    const uParts = u
-      .split(";")
-      .map((s) => s.trim())
-      .filter((s) => s !== "")
-      .sort();
-    const cParts = c
-      .split(";")
-      .map((s) => s.trim())
-      .filter((s) => s !== "")
-      .sort();
-    if (uParts.length !== cParts.length) return false;
-    return uParts.every((val, index) => val === cParts[index]);
+    // Пряме співпадіння
+    if (u === c) return true;
+
+    // Співпадіння частин (для випадків з крапкою з комою, де порядок не важливий)
+    if (c.includes(";")) {
+      const uParts = u
+        .split(";")
+        .filter((x) => x)
+        .sort();
+      const cParts = c
+        .split(";")
+        .filter((x) => x)
+        .sort();
+
+      if (
+        uParts.length === cParts.length &&
+        uParts.every((val, index) => val === cParts[index])
+      ) {
+        return true;
+      }
+    }
   }
 
   return false;
@@ -473,10 +497,17 @@ window.checkInput = function (btn, correctAns, taskId) {
   }
 };
 
-window.checkOption = function (btn, userVal, correctAns, taskId) {
+window.checkOption = function (btn) {
+  // 🔥 ЗМІНА: Зчитуємо дані з атрибутів кнопки
+  const userVal = btn.getAttribute("data-val");
+  const correctAns = btn.getAttribute("data-ans");
+  const taskId = btn.getAttribute("data-id");
+
   const parent = btn.parentElement;
   const isTestMode = document.body.classList.contains("mode-test");
-  const isCorrect = userVal === correctAns;
+
+  // Використовуємо наш новий валідатор
+  const isCorrect = validateAnswer(userVal, correctAns);
 
   if (isTestFinished) return;
 
